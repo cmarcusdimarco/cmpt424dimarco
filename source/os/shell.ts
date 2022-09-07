@@ -235,6 +235,31 @@ module TSOS {
                         _StdOut.putText("Help displays a list of (hopefully) valid commands.");
                         break;
                     // TODO: Make descriptive MANual page entries for the the rest of the shell commands here.
+                    case "ver":
+                        _StdOut.putText("Ver displays the current version data.");
+                        break;
+                    case "shutdown":
+                        _StdOut.putText("Shutdown shuts down the virtual OS but leaves the underlying host / " +
+                                             "hardware simulation running.");
+                        break;
+                    case "cls":
+                        _StdOut.putText("Cls clears the screen and resets the cursor position.");
+                        break;
+                    case "man":
+                        _StdOut.putText("Now, that's an interesting idea...how would a manual define itself? " +
+                                             "Perhaps recursively?");
+                        break;
+                    case "trace":
+                        _StdOut.putText("Trace turns the OS trace on or off.");
+                        break;
+                    case "rot13":
+                        _StdOut.putText("Imagine a dial with 26 values, each being a letter of the English " +
+                                             "alphabet in sequence. Rot13 takes your string and replaces each letter " +
+                                             "with the one 13 places away on said dial.");
+                        break;
+                    case "prompt":
+                        _StdOut.putText("Prompt replaces the shell prompt, which is originally set to '>'.");
+                        break;
                     default:
                         _StdOut.putText("No manual entry for " + args[0] + ".");
                 }
