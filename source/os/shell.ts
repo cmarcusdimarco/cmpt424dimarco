@@ -302,6 +302,27 @@ module TSOS {
                     case "prompt":
                         _StdOut.putText("Prompt replaces the shell prompt, which is originally set to '>'.");
                         break;
+                    case "date":
+                        _StdOut.putText("Date provides the current date and time.");
+                        break;
+                    case "whereami":
+                        _StdOut.putText("Whereami provides the user's current (probable) location.");
+                        break;
+                    case "whoami":
+                        _StdOut.putText("Whoami provides the user's current (probable) identity.");
+                        break;
+                    case "howami":
+                        _StdOut.putText("Howami provides the user's current state and details of his/her origin.");
+                        break;
+                    case "whyami":
+                        _StdOut.putText("Whyami provides the user's current purpose.");
+                        break;
+                    case "whenami":
+                        _StdOut.putText("Whenami provides the user's current era.");
+                        break;
+                    case "whatami":
+                        _StdOut.putText("Whatami provides the user's current chemical composition.");
+                        break;
                     default:
                         _StdOut.putText("No manual entry for " + args[0] + ".");
                 }
