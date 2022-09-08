@@ -45,6 +45,27 @@ var TSOS;
             // prompt <string>
             sc = new TSOS.ShellCommand(this.shellPrompt, "prompt", "<string> - Sets the prompt.");
             this.commandList[this.commandList.length] = sc;
+            // date
+            sc = new TSOS.ShellCommand(this.shellDate, "date", "- Displays the current date and time.");
+            this.commandList[this.commandList.length] = sc;
+            // whereami
+            sc = new TSOS.ShellCommand(this.shellWhereAmI, "whereami", "- Displays the user's current location.");
+            this.commandList[this.commandList.length] = sc;
+            // whoami
+            sc = new TSOS.ShellCommand(this.shellWhoAmI, "whoami", "- Displays the user's current identity.");
+            this.commandList[this.commandList.length] = sc;
+            // howami
+            sc = new TSOS.ShellCommand(this.shellHowAmI, "howami", "- Displays the user's current state and provides details about creation.");
+            this.commandList[this.commandList.length] = sc;
+            // whyami
+            sc = new TSOS.ShellCommand(this.shellWhyAmI, "whyami", "- Displays the user's current purpose.");
+            this.commandList[this.commandList.length] = sc;
+            // whenami
+            sc = new TSOS.ShellCommand(this.shellWhenAmI, "whenami", "- Displays the user's current era.");
+            this.commandList[this.commandList.length] = sc;
+            // whatami
+            sc = new TSOS.ShellCommand(this.shellWhatAmI, "whatami", "- Displays the user's current material construction.");
+            this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
             // Display the initial prompt.
@@ -194,6 +215,52 @@ var TSOS;
                         _StdOut.putText("Help displays a list of (hopefully) valid commands.");
                         break;
                     // TODO: Make descriptive MANual page entries for the the rest of the shell commands here.
+                    case "ver":
+                        _StdOut.putText("Ver displays the current version data.");
+                        break;
+                    case "shutdown":
+                        _StdOut.putText("Shutdown shuts down the virtual OS but leaves the underlying host / " +
+                            "hardware simulation running.");
+                        break;
+                    case "cls":
+                        _StdOut.putText("Cls clears the screen and resets the cursor position.");
+                        break;
+                    case "man":
+                        _StdOut.putText("Now, that's an interesting idea...how would a manual define itself? " +
+                            "Perhaps recursively?");
+                        break;
+                    case "trace":
+                        _StdOut.putText("Trace turns the OS trace on or off.");
+                        break;
+                    case "rot13":
+                        _StdOut.putText("Imagine a dial with 26 values, each being a letter of the English " +
+                            "alphabet in sequence. Rot13 takes your string and replaces each letter " +
+                            "with the one 13 places away on said dial.");
+                        break;
+                    case "prompt":
+                        _StdOut.putText("Prompt replaces the shell prompt, which is originally set to '>'.");
+                        break;
+                    case "date":
+                        _StdOut.putText("Date provides the current date and time.");
+                        break;
+                    case "whereami":
+                        _StdOut.putText("Whereami provides the user's current (probable) location.");
+                        break;
+                    case "whoami":
+                        _StdOut.putText("Whoami provides the user's current (probable) identity.");
+                        break;
+                    case "howami":
+                        _StdOut.putText("Howami provides the user's current state and details of his/her origin.");
+                        break;
+                    case "whyami":
+                        _StdOut.putText("Whyami provides the user's current purpose.");
+                        break;
+                    case "whenami":
+                        _StdOut.putText("Whenami provides the user's current era.");
+                        break;
+                    case "whatami":
+                        _StdOut.putText("Whatami provides the user's current chemical composition.");
+                        break;
                     default:
                         _StdOut.putText("No manual entry for " + args[0] + ".");
                 }
@@ -243,6 +310,37 @@ var TSOS;
             else {
                 _StdOut.putText("Usage: prompt <string>  Please supply a string.");
             }
+        }
+        shellDate(args) {
+            let currentDate = new Date();
+            _StdOut.putText("Current date and time: " + currentDate);
+        }
+        shellWhereAmI(args) {
+            _StdOut.putText("Most likely, United States. Significantly likely, New York. Decent probability, Poughkeepsie.");
+        }
+        shellWhoAmI(args) {
+            _StdOut.putText("Most likely, a conscious mind inside a human. Significantly likely, Marcus or Alan.");
+        }
+        shellHowAmI(args) {
+            _StdOut.putText("User's emotional status: somewhere between disturbed and content.");
+            _StdOut.advanceLine();
+            _StdOut.putText("For details of the user's origin, please consult https://storks.com/legend-of-storks/");
+        }
+        shellWhyAmI(args) {
+            _StdOut.putText("Your mission: to serve and protect his Royal Majesty by working for the MI6, " +
+                "a part of the British Secret Servi-...wait, that can't be right.");
+        }
+        shellWhenAmI(args) {
+            _StdOut.putText("https://letmegooglethat.com/?q=current+era");
+            _StdOut.advanceLine();
+            _StdOut.putText("Sources suggest the current era is the Holocene era. The link above doesn't. " +
+                "But you deserve it for even thinking you might have time traveled.");
+        }
+        shellWhatAmI(args) {
+            _StdOut.putText("99% oxygen, hydrogen, nitrogen, carbon, calcium, and phosphorus. " +
+                "0.85% sulfur, potassium, sodium, chlorine, and magnesium. " +
+                // TODO: Make the below occur only during Sarcastic mode.
+                "Maybe the remaining 0.15% accounts for your humor and intelligence.");
         }
     }
     TSOS.Shell = Shell;
