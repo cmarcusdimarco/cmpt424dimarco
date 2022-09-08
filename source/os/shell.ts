@@ -74,43 +74,43 @@ module TSOS {
             this.commandList[this.commandList.length] = sc;
 
             // date
-            sc = new ShellCommand(this.shellPrompt,
+            sc = new ShellCommand(this.shellDate,
                                   "date",
                                   "- Displays the current date and time.");
             this.commandList[this.commandList.length] = sc;
 
             // whereami
-            sc = new ShellCommand(this.shellPrompt,
+            sc = new ShellCommand(this.shellWhereAmI,
                                   "whereami",
                                   "- Displays the user's current location.");
             this.commandList[this.commandList.length] = sc;
 
             // whoami
-            sc = new ShellCommand(this.shellPrompt,
+            sc = new ShellCommand(this.shellWhoAmI,
                                   "whoami",
                                   "- Displays the user's current identity.");
             this.commandList[this.commandList.length] = sc;
 
             // howami
-            sc = new ShellCommand(this.shellPrompt,
+            sc = new ShellCommand(this.shellHowAmI,
                                   "howami",
-                                  "- Displays the user's current state.");
+                                  "- Displays the user's current state and provides details about creation.");
             this.commandList[this.commandList.length] = sc;
 
             // whyami
-            sc = new ShellCommand(this.shellPrompt,
+            sc = new ShellCommand(this.shellWhyAmI,
                                   "whyami",
                                   "- Displays the user's current purpose.");
             this.commandList[this.commandList.length] = sc;
 
             // whenami
-            sc = new ShellCommand(this.shellPrompt,
+            sc = new ShellCommand(this.shellWhenAmI,
                                   "whenami",
                                   "- Displays the user's current era.");
             this.commandList[this.commandList.length] = sc;
 
             // whatami
-            sc = new ShellCommand(this.shellPrompt,
+            sc = new ShellCommand(this.shellWhatAmI,
                                   "whatami",
                                   "- Displays the user's current material construction.");
             this.commandList[this.commandList.length] = sc;
@@ -351,5 +351,42 @@ module TSOS {
             }
         }
 
+        public shellDate(args: string[]) {
+            let currentDate: Date = new Date();
+            _StdOut.putText("Current date and time: " + currentDate);
+        }
+
+        public shellWhereAmI(args: string[]) {
+            _StdOut.putText("Most likely, United States. Significantly likely, New York. Decent probability, Poughkeepsie.");
+        }
+
+        public shellWhoAmI(args: string[]) {
+            _StdOut.putText("Most likely, a conscious mind inside a human. Significantly likely, Marcus or Alan.");
+        }
+
+        public shellHowAmI(args: string[]) {
+            _StdOut.putText("User's emotional status: somewhere between disturbed and content.");
+            _StdOut.advanceLine();
+            _StdOut.putText("For details of the user's origin, please consult https://storks.com/legend-of-storks/");
+        }
+
+        public shellWhyAmI(args: string[]) {
+            _StdOut.putText("Your mission: to serve and protect his Royal Majesty by working for the MI6, " +
+                            "a part of the British Secret Servi-...wait, that can't be right.");
+        }
+
+        public shellWhenAmI(args: string[]) {
+            _StdOut.putText("https://letmegooglethat.com/?q=current+era");
+            _StdOut.advanceLine();
+            _StdOut.putText("Sources suggest the current era is the Holocene era. The link above doesn't. " +
+                            "But you deserve it for even thinking you might have time traveled.");
+        }
+
+        public shellWhatAmI(args: string[]) {
+            _StdOut.putText("99% oxygen, hydrogen, nitrogen, carbon, calcium, and phosphorus. " +
+                            "0.85% sulfur, potassium, sodium, chlorine, and magnesium. " +
+                            // TODO: Make the below occur only during Sarcastic mode.
+                            "Maybe the remaining 0.15% accounts for your humor and intelligence.");
+        }
     }
 }
