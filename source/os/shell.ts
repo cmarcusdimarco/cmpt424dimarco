@@ -73,6 +73,48 @@ module TSOS {
                                   "<string> - Sets the prompt.");
             this.commandList[this.commandList.length] = sc;
 
+            // date
+            sc = new ShellCommand(this.shellPrompt,
+                                  "date",
+                                  "- Displays the current date and time.");
+            this.commandList[this.commandList.length] = sc;
+
+            // whereami
+            sc = new ShellCommand(this.shellPrompt,
+                                  "whereami",
+                                  "- Displays the user's current location.");
+            this.commandList[this.commandList.length] = sc;
+
+            // whoami
+            sc = new ShellCommand(this.shellPrompt,
+                                  "whoami",
+                                  "- Displays the user's current identity.");
+            this.commandList[this.commandList.length] = sc;
+
+            // howami
+            sc = new ShellCommand(this.shellPrompt,
+                                  "howami",
+                                  "- Displays the user's current state.");
+            this.commandList[this.commandList.length] = sc;
+
+            // whyami
+            sc = new ShellCommand(this.shellPrompt,
+                                  "whyami",
+                                  "- Displays the user's current purpose.");
+            this.commandList[this.commandList.length] = sc;
+
+            // whenami
+            sc = new ShellCommand(this.shellPrompt,
+                                  "whenami",
+                                  "- Displays the user's current era.");
+            this.commandList[this.commandList.length] = sc;
+
+            // whatami
+            sc = new ShellCommand(this.shellPrompt,
+                                  "whatami",
+                                  "- Displays the user's current material construction.");
+            this.commandList[this.commandList.length] = sc;
+
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
 
