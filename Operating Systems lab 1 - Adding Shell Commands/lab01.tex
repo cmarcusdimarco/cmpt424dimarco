@@ -1,0 +1,103 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% CMPT 424
+% Lab One
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Short Sectioned Assignment
+% LaTeX Template
+% Version 1.0 (5/5/12)
+%
+% This template has been downloaded from: http://www.LaTeXTemplates.com
+% Original author: % Frits Wenneker (http://www.howtotex.com)
+% License: CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+% Modified by Alan G. Labouseur  - alan@labouseur.com
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[letterpaper, 10pt]{article} 
+
+\usepackage[english]{babel} % English language/hyphenation
+\usepackage{graphicx}
+\usepackage[lined,linesnumbered,commentsnumbered]{algorithm2e}
+\usepackage{listings}
+\usepackage{fancyhdr} % Custom headers and footers
+\pagestyle{fancyplain} % Makes all pages in the document conform to the custom headers and footers
+\usepackage{lastpage}
+\usepackage{url}
+\usepackage{xcolor}
+\usepackage{multirow}
+
+\fancyhead{} % No page header - if you want one, create it in the same way as the footers below
+\fancyfoot[L]{} % Empty left footer
+\fancyfoot[C]{page \thepage\ of \pageref{LastPage}} % Page numbering for center footer
+\fancyfoot[R]{}
+
+\definecolor{commentgreen}{rgb}{0, 0.6, 0}
+\definecolor{keywordmagenta}{rgb}{.84, 0.09, 0.41}
+
+\lstdefinestyle{mystyle}{
+    commentstyle=\color{commentgreen},
+    keywordstyle=\color{keywordmagenta},
+    numberstyle=\color{gray},
+    numbers=left,
+    literate={\ \ }{{\ }}1
+}
+
+\lstset{style=mystyle}
+
+\renewcommand{\headrulewidth}{0pt} % Remove header underlines
+\renewcommand{\footrulewidth}{0pt} % Remove footer underlines
+\setlength{\headheight}{13.6pt} % Customize the height of the header
+
+%----------------------------------------------------------------------------------------
+%	TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+\newcommand{\horrule}[1]{\rule{\linewidth}{#1}} % Create horizontal rule command with 1 argument of height
+
+\title{	
+   \normalfont \normalsize 
+   \textsc{CMPT 424 - Spring 2022 - Dr. Labouseur} \\[10pt] % Header stuff.
+   \horrule{0.5pt} \\[0.25cm] 	% Top horizontal rule
+   \huge Lab 1 -- Adding Shell Commands \\     	    % Assignment title
+   \horrule{0.5pt} \\[0.25cm] 	% Bottom horizontal rule
+}
+
+\author{C. Marcus DiMarco \\ \normalsize C.DiMarco1@Marist.edu}
+
+\date{\normalsize\ September 11, 2022} 	% Today's date.
+
+\begin{document}
+
+\maketitle % Print the title
+
+%----------------------------------------------------------------------------------------
+%   CONTENT SECTION
+%----------------------------------------------------------------------------------------
+
+% - -- -  - -- -  - -- -  -
+
+\section{Questions}
+
+\begin{itemize}
+    \item \hspace{0.5em}What are the advantages and disadvantages of using the same system call interface for manipulating both files and devices?
+    \item \hspace{0.5em}Would it be possible for the user to develop a new command interpreter using the system call interface provided by the operating system? How?
+\end{itemize}
+
+
+\section{Exploring the System Call - Pros vs. Cons}
+
+\hspace{1.0em}A clear advantage for using the same system call interface for multiple types of objects is that it is more in-line with the abstraction principle of object-oriented programming. By using a single interface and reducing variability in behavior, we as programmers can more easily understand and predict our code's behavior. However, this exact idea is a great disadvantage as well; in simplifying the way in which we can interact with files and devices, we might not have the best individual implementations for either case, and so we may fall short of the best possible performance.
+
+\section{Theory-crafting a New Command Interpreter}
+
+\hspace{1.0em}In short - yes, it's definitely possible to create a new command interpreter using the system call interface provided by the OS. As far as I understand it, this is what shells are. We would need to know the system calls that were possible, and then we would have to build the logic for each of the commands we'd like to create.  We would then also need to collect input from the keyboard, create a window and draw text in the window based on the input.
+
+\end{document}
