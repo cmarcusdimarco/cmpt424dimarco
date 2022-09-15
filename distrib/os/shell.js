@@ -264,6 +264,9 @@ var TSOS;
                     case "whatami":
                         _StdOut.putText("Whatami provides the user's current chemical composition.");
                         break;
+                    case "status":
+                        _StdOut.putText("Status updates the current status in the taskbar.");
+                        break;
                     default:
                         _StdOut.putText("No manual entry for " + args[0] + ".");
                 }
@@ -347,7 +350,6 @@ var TSOS;
         }
         shellStatus(args) {
             if (args.length > 0) {
-                // TODO: Grab the 0th argument, set a variable equal to it, update the HTML textContent using the new variable
                 _Status = args.join(" ");
             }
             else {
