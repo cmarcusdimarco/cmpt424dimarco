@@ -66,6 +66,9 @@ var TSOS;
             // whatami
             sc = new TSOS.ShellCommand(this.shellWhatAmI, "whatami", "- Displays the user's current material construction.");
             this.commandList[this.commandList.length] = sc;
+            // status <string>
+            sc = new TSOS.ShellCommand(this.shellStatus, "status", "<string> - Updates the current status to <string>.");
+            this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
             // Display the initial prompt.
@@ -341,6 +344,15 @@ var TSOS;
                 "0.85% sulfur, potassium, sodium, chlorine, and magnesium. " +
                 // TODO: Make the below occur only during Sarcastic mode.
                 "Maybe the remaining 0.15% accounts for your humor and intelligence.");
+        }
+        shellStatus(args) {
+            if (args.length > 0) {
+                // TODO: Grab the 0th argument, set a variable equal to it, update the HTML textContent using the new variable
+                _Status = args.join(" ");
+            }
+            else {
+                _StdOut.putText("Usage: prompt <string>  Please supply a string.");
+            }
         }
     }
     TSOS.Shell = Shell;

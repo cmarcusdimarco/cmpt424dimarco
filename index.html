@@ -83,6 +83,10 @@
          <span id="status">
             <script>
                // TODO: Check often (every second?) for an update to status variable in shell.js
+               function updateStatus() {
+                  document.getElementById("status").textContent = _Status;
+               }
+               setInterval(updateStatus, 1000);
             </script>
          </span>
       </div>

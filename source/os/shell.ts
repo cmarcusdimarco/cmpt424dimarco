@@ -419,6 +419,7 @@ module TSOS {
         public shellStatus(args: string[]) {
             if (args.length > 0) {
                 // TODO: Grab the 0th argument, set a variable equal to it, update the HTML textContent using the new variable
+                _Status = args.join(" ");
             } else {
                 _StdOut.putText("Usage: prompt <string>  Please supply a string.");
             }

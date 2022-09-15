@@ -48,6 +48,8 @@ var _hardwareClockID = null;
 // For testing (and enrichment)...
 var Glados = null; // This is the function Glados() in glados-ip*.js http://alanclasses.github.io/TSOS/test/ .
 var _GLaDOS = null; // If the above is linked in, this is the instantiated instance of Glados.
+// Global status variable for updating index.html based on user input
+var _Status = null;
 var onDocumentLoad = function () {
     TSOS.Control.hostInit();
 };
