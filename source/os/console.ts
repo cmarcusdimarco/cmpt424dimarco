@@ -83,12 +83,16 @@ module TSOS {
 
             this.currentYPosition += offsetY;
 
-            // TODO: Handle scrolling. (iProject 1)
-            if (this.currentYPosition > _Canvas.height - this.currentFontSize) {
-                let imageData = _DrawingContext.getImageData(0, 0, _Canvas.width, this.currentYPosition);
+            // If the text input would extend beyond the base of the canvas...
+            if (this.currentYPosition > _Canvas.height) {
+                // ...capture an image of the current canvas minus the top line, which will be truncated...
+                let imageData = _DrawingContext.getImageData(0, offsetY, _Canvas.width, _Canvas.height);
+                // ...clear the screen...
                 this.clearScreen();
-                _DrawingContext.putImageData(imageData, 0, -offsetY);
-                // TODO: Need to save existing canvas and redraw.
+                // ...and paste the truncated image at the top.
+                _DrawingContext.putImageData(imageData, 0, 0);
+                // Set the Y Position to place the cursor at the bottom of the existing text.
+                this.currentYPosition = _Canvas.height - _DefaultFontSize;
             }
         }
     }
