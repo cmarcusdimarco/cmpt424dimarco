@@ -37,6 +37,12 @@ var TSOS;
                     // ... and reset our buffer.
                     this.buffer = "";
                 }
+                else if (chr === String.fromCharCode(8) && this.buffer.length > 0) { // the Backspace key
+                    // Backspace should only clear the last character from the screen if there is text in the buffer...
+                    this.deleteText();
+                    // ...then it should remove the deleted character from the buffer.
+                    this.buffer = this.buffer.substring(0, this.buffer.length - 2);
+                }
                 else {
                     // This is a "normal" character, so ...
                     // ... draw it on the screen...
@@ -62,6 +68,14 @@ var TSOS;
                 var offset = _DrawingContext.measureText(this.currentFont, this.currentFontSize, text);
                 this.currentXPosition = this.currentXPosition + offset;
             }
+        }
+        deleteText() {
+            let charToDelete = this.buffer.charAt(this.buffer.length - 1);
+            // Clear the most recent character from the screen
+            var offset = _DrawingContext.measureText(this.currentFont, this.currentFontSize, charToDelete);
+            _DrawingContext.clearRect(this.currentXPosition, this.currentYPosition, -offset, this.currentFontSize);
+            // Move the current X position.
+            this.currentXPosition = this.currentXPosition - offset;
         }
         advanceLine() {
             this.currentXPosition = 0;
