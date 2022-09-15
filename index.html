@@ -67,6 +67,27 @@
              onclick="TSOS.Control.hostBtnReset_click(this);">
    </div>
 
+   <div id="divTaskbar" style="margin:4px; width:100%; float:left;">
+      <div id="divDateTime">
+         <span id="dateTime">
+            <script>
+               function displayRealTime() {
+                  document.getElementById("dateTime").textContent = new Date().toLocaleString();
+               }
+               setInterval(displayRealTime, 1000);
+            </script>
+         </span>
+      </div>
+
+      <div id="divStatus">
+         <span id="status">
+            <script>
+               // TODO: Check often (every second?) for an update to status variable in shell.js
+            </script>
+         </span>
+      </div>
+   </div>
+
    <div id="divConsole" style="margin:4px; width:500px; height:500px; float:left;">
       <canvas id="display"
               width="500px"
@@ -102,7 +123,7 @@
 
 <p class="footerText" style="clear:both;">
    <br>
-   Copyright &copy; 2008 - 2019 No Rights Reserved.
+   Copyright &copy; 2008 - 2022 No Rights Reserved.
    <br>
    Reproduction is inhibited without the express written consent of
    Ted Codd, Stevie Ray Vaughan, and Ian Fleming.
