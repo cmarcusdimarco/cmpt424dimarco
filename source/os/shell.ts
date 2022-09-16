@@ -129,7 +129,15 @@ module TSOS {
             this.commandList[this.commandList.length] = sc;
 
             // Sort the commandList for use in tab completion
-            this.commandList = this.commandList.sort();
+            this.commandList = this.commandList.sort((command1, command2) => {
+                if (command1.command > command2.command) {
+                    return 1;
+                } else if (command1.command < command2.command) {
+                    return -1;
+                } else {
+                    return 0;
+                }
+            });
 
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
