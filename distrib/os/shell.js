@@ -69,6 +69,8 @@ var TSOS;
             // status <string>
             sc = new TSOS.ShellCommand(this.shellStatus, "status", "<string> - Updates the current status to <string>.");
             this.commandList[this.commandList.length] = sc;
+            // Sort the commandList for use in tab completion
+            this.commandList = this.commandList.sort();
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
             // Display the initial prompt.
