@@ -145,16 +145,20 @@ var TSOS;
             var retVal = new TSOS.UserCommand();
             // 1. Remove leading and trailing spaces.
             buffer = TSOS.Utils.trim(buffer);
-            // 2. Lower-case it.
-            buffer = buffer.toLowerCase();
-            // 3. Separate on spaces so we can determine the command and command-line args, if any.
+            // 2. Separate on spaces so we can determine the command and command-line args, if any.
             var tempList = buffer.split(" ");
-            // 4. Take the first (zeroth) element and use that as the command.
-            var cmd = tempList.shift(); // Yes, you can do that to an array in JavaScript. See the Queue class.
-            // 4.1 Remove any left-over spaces.
+            // 3. Take the first (zeroth) element and use that as the command.
+            var cmd = tempList.shift().toLowerCase(); // Yes, you can do that to an array in JavaScript. See the Queue class.
+            // 3.1 Remove any left-over spaces.
             cmd = TSOS.Utils.trim(cmd);
-            // 4.2 Record it in the return value.
+            // 3.2 Record it in the return value.
             retVal.command = cmd;
+            // 4. If the command is not status or prompt, lower-case the args
+            if (cmd != 'status' && cmd != 'prompt') {
+                for (let arg in tempList) {
+                    tempList[arg] = tempList[arg].toLowerCase();
+                }
+            }
             // 5. Now create the args array from what's left.
             for (var i in tempList) {
                 var arg = TSOS.Utils.trim(tempList[i]);
