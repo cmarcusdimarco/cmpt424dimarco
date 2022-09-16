@@ -97,11 +97,17 @@ var TSOS;
         }
         deleteText() {
             let charToDelete = this.buffer.charAt(this.buffer.length - 1);
+            let offsetX = _DrawingContext.measureText(this.currentFont, this.currentFontSize, charToDelete);
+            let offsetY = _DefaultFontSize + // Ensures characters that go above or below line (f, j, etc.) are fully cleared
+                _DrawingContext.fontDescent(this.currentFont, this.currentFontSize) +
+                _FontHeightMargin;
+            // Move the current X and Y position.
+            this.currentXPosition = this.currentXPosition - offsetX;
+            this.currentYPosition = this.currentYPosition - this.currentFontSize;
             // Clear the most recent character from the screen
-            var offset = _DrawingContext.measureText(this.currentFont, this.currentFontSize, charToDelete);
-            _DrawingContext.clearRect(this.currentXPosition, this.currentYPosition, -offset, this.currentFontSize);
-            // Move the current X position.
-            this.currentXPosition = this.currentXPosition - offset;
+            _DrawingContext.clearRect(this.currentXPosition, this.currentYPosition, offsetX, offsetY);
+            // Reset Y position.
+            this.currentYPosition = this.currentYPosition + this.currentFontSize;
         }
         advanceLine() {
             this.currentXPosition = 0;
