@@ -7,12 +7,13 @@
 var TSOS;
 (function (TSOS) {
     class Console {
-        constructor(currentFont = _DefaultFontFamily, currentFontSize = _DefaultFontSize, currentXPosition = 0, currentYPosition = _DefaultFontSize, buffer = "", tabBuffer = "") {
+        constructor(currentFont = _DefaultFontFamily, currentFontSize = _DefaultFontSize, currentXPosition = 0, currentYPosition = _DefaultFontSize, buffer = "", tabIndex = -1, tabBuffer = "") {
             this.currentFont = currentFont;
             this.currentFontSize = currentFontSize;
             this.currentXPosition = currentXPosition;
             this.currentYPosition = currentYPosition;
             this.buffer = buffer;
+            this.tabIndex = tabIndex;
             this.tabBuffer = tabBuffer;
         }
         init() {
@@ -35,8 +36,9 @@ var TSOS;
                     // The enter key marks the end of a console command, so ...
                     // ... tell the shell ...
                     _OsShell.handleInput(this.buffer);
-                    // ... and reset our buffers.
+                    // ... and reset our buffer and tabIndex.
                     this.buffer = "";
+                    this.tabIndex = -1;
                     this.tabBuffer = "";
                 }
                 else if (chr === String.fromCharCode(8) && this.buffer.length > 0) { // the Backspace key
@@ -46,14 +48,22 @@ var TSOS;
                     this.buffer = this.buffer.substring(0, this.buffer.length - 1);
                 }
                 else if (chr === String.fromCharCode(9) && this.buffer.length > 0) { // the Tab key
+                    // Incrementing the tabIndex each time tab is pressed will allow iteration past matched commands.
+                    this.tabIndex++;
+                    // Check tabIndex for out-of-bounds exception. If greater than array length, start over.
+                    if (this.tabIndex >= _OsShell.commandList.length) {
+                        this.tabIndex = 0;
+                    }
                     // Check tabBuffer for contents.
                     if (this.tabBuffer.length == 0) {
                         this.tabBuffer = this.buffer;
                     }
-                    // The tab key should search the OsShell command list from the beginning...
-                    for (let i = 0; i < _OsShell.commandList.length; i++) {
-                        let command = _OsShell.commandList[i].command;
-                        // ...and on finding a match other than the most recent match...
+                    // The tab key should search the OsShell command list from the last result (or beginning)...
+                    for (let i = this.tabIndex; i < _OsShell.commandList.length + this.tabIndex; i++) {
+                        // Use modular division to loop back to start of array once array bound is exceeded
+                        let index = i % _OsShell.commandList.length;
+                        let command = _OsShell.commandList[index].command;
+                        // ...and on finding a match...
                         if (command.startsWith(this.tabBuffer) && command != this.buffer) {
                             // ...delete previous tab completion, if present...
                             let k = this.buffer.length; // Preserve value since we are manipulating buffer length in loop.
@@ -65,6 +75,7 @@ var TSOS;
                             // ...and type command to buffer, ensuring that we only type the characters that remain.
                             this.putText(command.substring(this.buffer.length));
                             this.buffer += command.substring(this.buffer.length);
+                            this.tabIndex = index;
                             break;
                         }
                         // TODO: Allow for multiple tab presses to cycle through commands.
