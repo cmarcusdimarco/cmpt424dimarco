@@ -41,7 +41,7 @@ var TSOS;
                     // Backspace should only clear the last character from the screen if there is text in the buffer...
                     this.deleteText();
                     // ...then it should remove the deleted character from the buffer.
-                    this.buffer = this.buffer.substring(0, this.buffer.length - 2);
+                    this.buffer = this.buffer.substring(0, this.buffer.length - 1);
                 }
                 else {
                     // This is a "normal" character, so ...
