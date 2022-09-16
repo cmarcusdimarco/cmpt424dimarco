@@ -65,6 +65,10 @@ var TSOS;
                         // TODO: Allow for multiple tab presses to cycle through commands.
                     }
                 }
+                else if (chr === String.fromCharCode(38) && this.buffer.length == 0) {
+                    this.putText(_OsShell.commandsPassed[_OsShell.commandsPassed.length - 1]);
+                    this.buffer += _OsShell.commandsPassed[_OsShell.commandsPassed.length - 1];
+                }
                 else {
                     // This is a "normal" character, so ...
                     // ... draw it on the screen...
