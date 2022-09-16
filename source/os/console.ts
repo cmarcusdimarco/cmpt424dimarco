@@ -81,7 +81,6 @@ module TSOS {
                             this.tabIndex = index;
                             break;
                         }
-                        // TODO: Allow for multiple tab presses to cycle through commands.
                     }
                 } else if (chr === String.fromCharCode(38) && this.buffer.length == 0) {
                     this.putText(_OsShell.commandsPassed[_OsShell.commandsPassed.length - 1]);
