@@ -396,13 +396,17 @@ var TSOS;
                 return;
             }
             // Clean up input by forcing caps and splitting to an array.
-            userProgram.toUpperCase();
+            userProgram = userProgram.toUpperCase();
             let program = userProgram.split(' ');
             // Convert each instruction to hex, or return as invalid on a failure.
-            for (let instruction in program) {
+            for (let i = 0; i < program.length; i++) {
                 // Comparison with NaN provided by https://stackoverflow.com/questions/8965364/comparing-nan-values-for-equality-in-javascript
-                if (isNaN(parseInt(instruction, 16))) {
-                    _StdOut.putText(`Validation error - instruction ${instruction} could not be converted to hex.`);
+                if (isNaN(parseInt(program[i], 16))) {
+                    _StdOut.putText(`Validation error - instruction at index ${i} could not be converted to hex.`);
+                    return;
+                }
+                if (program[i].length > 2) {
+                    _StdOut.putText(`Validation error - instruction at index ${i} must be two characters long.`);
                     return;
                 }
             }
