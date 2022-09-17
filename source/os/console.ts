@@ -15,7 +15,9 @@ module TSOS {
                     public currentYPosition = _DefaultFontSize,
                     public buffer = "",
                     public tabIndex: number = -1,
-                    public tabBuffer: string = "") {
+                    public tabBuffer: string = "",
+                    public commandsPassed: string[] = [],
+                    public previousCommandIndex: number = 0) {
         }
 
         public init(): void {
@@ -41,10 +43,13 @@ module TSOS {
                     // The enter key marks the end of a console command, so ...
                     // ... tell the shell ...
                     _OsShell.handleInput(this.buffer);
+                    // ... add the value to our command history ...
+                    this.commandsPassed.push(this.buffer);
                     // ... and reset our buffer and tabIndex.
                     this.buffer = "";
                     this.tabIndex = -1;
                     this.tabBuffer = "";
+                    this.previousCommandIndex = this.commandsPassed.length;
                 } else if (chr === String.fromCharCode(8) && this.buffer.length > 0) {    // the Backspace key
                     // Backspace should only clear the last character from the screen if there is text in the buffer...
                     this.deleteText();
@@ -82,9 +87,34 @@ module TSOS {
                             break;
                         }
                     }
-                } else if (chr === String.fromCharCode(38) && this.buffer.length == 0) {
-                    this.putText(_OsShell.commandsPassed[_OsShell.commandsPassed.length - 1]);
-                    this.buffer += _OsShell.commandsPassed[_OsShell.commandsPassed.length - 1];
+                } else if (chr === String.fromCharCode(38)) {
+                    // The up arrow should decrement the previousCommandIndex...
+                    if (this.previousCommandIndex != 0) {
+                        this.previousCommandIndex--;
+                    }
+                    let upBufferLength = this.buffer.length;
+                    // ...delete all current input...
+                    for (let i = 0; i < upBufferLength; i++) {
+                        this.deleteText();
+                        this.buffer = this.buffer.substring(0, this.buffer.length - 1);
+                    }
+                    // ...and replace it with the previous command used.
+                    this.putText(this.commandsPassed[this.previousCommandIndex]);
+                    this.buffer = this.commandsPassed[this.previousCommandIndex];
+                } else if (chr === String.fromCharCode(40)) {
+                    // The down arrow should only execute after an up arrow input.
+                    if (this.previousCommandIndex != this.commandsPassed.length) {
+                        this.previousCommandIndex++;
+                        let downBufferLength = this.buffer.length;
+                        // Delete all input...
+                        for (let i = 0; i < downBufferLength; i++) {
+                            this.deleteText();
+                            this.buffer = this.buffer.substring(0, this.buffer.length - 1);
+                        }
+                        // ...and replace it with the subsequent command.
+                        this.putText(this.commandsPassed[this.previousCommandIndex]);
+                        this.buffer = this.commandsPassed[this.previousCommandIndex];
+                    }
                 } else {
                     // This is a "normal" character, so ...
                     // ... draw it on the screen...
