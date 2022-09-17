@@ -16,7 +16,6 @@ var TSOS;
             this.commandList = [];
             this.curses = "[fuvg],[cvff],[shpx],[phag],[pbpxfhpxre],[zbgureshpxre],[gvgf]";
             this.apologies = "[sorry]";
-            this.commandsPassed = [];
         }
         init() {
             var sc;
@@ -70,9 +69,6 @@ var TSOS;
             // status <string>
             sc = new TSOS.ShellCommand(this.shellStatus, "status", "<string> - Updates the current status to <string>.");
             this.commandList[this.commandList.length] = sc;
-            // history
-            sc = new TSOS.ShellCommand(this.shellHistory, "history", "- Shows previously used commands.");
-            this.commandList[this.commandList.length] = sc;
             // Sort the commandList for use in tab completion
             this.commandList = this.commandList.sort((command1, command2) => {
                 if (command1.command > command2.command) {
@@ -120,8 +116,6 @@ var TSOS;
                     ++index;
                 }
             }
-            // Whether correct or not, push to commandsPassed array for recall.
-            this.commandsPassed[this.commandsPassed.length] = cmd;
             if (found) {
                 this.execute(fn, args); // Note that args is always supplied, though it might be empty.
             }
@@ -377,10 +371,6 @@ var TSOS;
             else {
                 _StdOut.putText("Usage: prompt <string>  Please supply a string.");
             }
-        }
-        // For debugging
-        shellHistory(args) {
-            _StdOut.putText(this.commandsPassed);
         }
     }
     TSOS.Shell = Shell;
