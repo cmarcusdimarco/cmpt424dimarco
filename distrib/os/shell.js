@@ -72,6 +72,9 @@ var TSOS;
             // bluescreen
             sc = new TSOS.ShellCommand(this.shellBlueScreen, "bluescreen", "- Causes panic via changing screen color.");
             this.commandList[this.commandList.length] = sc;
+            // load
+            sc = new TSOS.ShellCommand(this.shellLoad, "load", "- Loads and validates a user program.");
+            this.commandList[this.commandList.length] = sc;
             // Sort the commandList for use in tab completion
             this.commandList = this.commandList.sort((command1, command2) => {
                 if (command1.command > command2.command) {
@@ -287,6 +290,10 @@ var TSOS;
                         break;
                     case "bluescreen":
                         _StdOut.putText("WARNING: System will require restart after this command. Use sparingly.");
+                        break;
+                    case "load":
+                        _StdOut.putText("Loads a user program and validates the code within.");
+                        break;
                     default:
                         _StdOut.putText("No manual entry for " + args[0] + ".");
                 }
@@ -378,6 +385,28 @@ var TSOS;
         }
         shellBlueScreen(args) {
             _Kernel.krnTrapError("blue screen test");
+        }
+        shellLoad(args) {
+            // Cast to HTMLInputElement so TypeScript doesn't cry.
+            // See https://stackoverflow.com/questions/12989741/the-property-value-does-not-exist-on-value-of-type-htmlelement
+            let userProgram = document.getElementById("taProgramInput").value;
+            // Validation tests
+            if (userProgram.length == 0) {
+                _StdOut.putText("Invalid user program - the program is a lie.");
+                return;
+            }
+            // Clean up input by forcing caps and splitting to an array.
+            userProgram.toUpperCase();
+            let program = userProgram.split(' ');
+            // Convert each instruction to hex, or return as invalid on a failure.
+            for (let instruction in program) {
+                // Comparison with NaN provided by https://stackoverflow.com/questions/8965364/comparing-nan-values-for-equality-in-javascript
+                if (isNaN(parseInt(instruction, 16))) {
+                    _StdOut.putText(`Validation error - instruction ${instruction} could not be converted to hex.`);
+                    return;
+                }
+            }
+            _StdOut.putText("User program valid. Please proceed carefully.");
         }
     }
     TSOS.Shell = Shell;
