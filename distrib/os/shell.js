@@ -69,6 +69,9 @@ var TSOS;
             // status <string>
             sc = new TSOS.ShellCommand(this.shellStatus, "status", "<string> - Updates the current status to <string>.");
             this.commandList[this.commandList.length] = sc;
+            // bluescreen
+            sc = new TSOS.ShellCommand(this.shellBlueScreen, "bluescreen", "- Causes panic via changing screen color.");
+            this.commandList[this.commandList.length] = sc;
             // Sort the commandList for use in tab completion
             this.commandList = this.commandList.sort((command1, command2) => {
                 if (command1.command > command2.command) {
@@ -233,7 +236,6 @@ var TSOS;
                     case "help":
                         _StdOut.putText("Help displays a list of (hopefully) valid commands.");
                         break;
-                    // TODO: Make descriptive MANual page entries for the the rest of the shell commands here.
                     case "ver":
                         _StdOut.putText("Ver displays the current version data.");
                         break;
@@ -283,6 +285,8 @@ var TSOS;
                     case "status":
                         _StdOut.putText("Status updates the current status in the taskbar.");
                         break;
+                    case "bluescreen":
+                        _StdOut.putText("WARNING: System will require restart after this command. Use sparingly.");
                     default:
                         _StdOut.putText("No manual entry for " + args[0] + ".");
                 }
@@ -371,6 +375,9 @@ var TSOS;
             else {
                 _StdOut.putText("Usage: prompt <string>  Please supply a string.");
             }
+        }
+        shellBlueScreen(args) {
+            _Kernel.krnTrapError("blue screen test");
         }
     }
     TSOS.Shell = Shell;
