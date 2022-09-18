@@ -139,7 +139,26 @@ module TSOS {
                 var offset = _DrawingContext.measureText(this.currentFont, this.currentFontSize, text);
                 // Check if text will exceed horizontal bounds. (Line-wrap)
                 if (this.currentXPosition + offset > _Canvas.width) {
-                    this.advanceLine();
+                    // If text contains multiple words, split into an array to check individual words.
+                    let textArray = text.split(" ");
+                    for (let word in textArray) {
+                        // Same thing as above...calculate offset...
+                        let wordOffset = _DrawingContext.measureText(this.currentFont, this.currentFontSize, textArray[word]);
+                        let spaceOffset = _DrawingContext.measureText(this.currentFont, this.currentFontSize, " ");
+                        // ...compare to the canvas width and advance line if exceeded...
+                        if (this.currentXPosition + wordOffset > _Canvas.width) {
+                            this.advanceLine();
+                        }
+                        // ...put text and move the X position.
+                        _DrawingContext.drawText(this.currentFont, this.currentFontSize, this.currentXPosition, this.currentYPosition, textArray[word]);
+                        this.currentXPosition += wordOffset;
+                        // Lastly, add a space if not the last word in the string.
+                        if (textArray.indexOf(word) != textArray.length - 1) {
+                            _DrawingContext.drawText(this.currentFont, this.currentFontSize, this.currentXPosition, this.currentYPosition, " ");
+                            this.currentXPosition += spaceOffset;
+                        }
+                    }
+                    return;
                 }
                 // Draw the text at the current X and Y coordinates.
                 _DrawingContext.drawText(this.currentFont, this.currentFontSize, this.currentXPosition, this.currentYPosition, text);
