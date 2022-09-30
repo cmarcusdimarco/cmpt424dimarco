@@ -13,29 +13,24 @@
 
 module TSOS {
 
-    // import { Ascii } from "../libraries/Ascii";
-    // import {System} from "../System";
-    // import {Hardware} from "./Hardware";
-    // import { ClockListener } from "./imp/ClockListener";
-    // import { InterruptController } from "./InterruptController";
-    // import { MMU } from "./MMU";
-
     export class Cpu extends Hardware implements ClockListener {
 
         private cpuClockCount: number;
         // private IC: InterruptController;            // Pointer to System's Interrupt Controller
-        private MMU: MMU;                           // Pointer to System's MMU
+        private MMU: MMU;                              // Pointer to System's MMU
         // private system: System;                     // Pointer to System
-        private currentStep: number = 0x0;          // Placeholder to identify current step of instruction cycle
+        private currentStep: number = 0x0;             // Placeholder to identify current step of instruction cycle
 
         // Registers
         private accumulator: number = 0x00;
-        private instructionRegister: number = 0x00; // Register to hold current instruction
-        private programCounter: number = 0x0000;    // Register to hold program counter
+        private instructionRegister: number = 0x00;    // Register to hold current instruction
+        private programCounter: number = 0x0000;       // Register to hold program counter
         private xRegister: number = 0x00;
         private yRegister: number = 0x00;
         private carryFlag: number = 0x0;
         private zFlag: number = 0x0;
+
+        public isExecuting: boolean = false;           // Shows OS if CPU has program left to execute
 
 
         // Multi-dimensional array representing instruction set. First dimension stores op codes.
@@ -84,8 +79,16 @@ module TSOS {
         //     this.IC = IC;
         // }
 
+        // Initialize CPU for running a resident program.
         public init() {
             this.cpuClockCount = 0;
+            this.accumulator = 0x00;
+            this.instructionRegister = 0x00;
+            this.programCounter = 0x0000;
+            this.xRegister = 0x00;
+            this.yRegister = 0x00;
+            this.carryFlag = 0x0;
+            this.zFlag = 0x0;
         }
 
         public pulse() {
@@ -119,7 +122,7 @@ module TSOS {
                     this.writeBack();
                     break;
                 case 0x6:
-                    this.interruptCheck();
+                    // this.interruptCheck();
                     break;
                 default:
                     break;
@@ -210,7 +213,7 @@ module TSOS {
             // Perform the action specified by the instruction
             switch (this.instructionRegister) {
                 case 0x00:  // Halt
-                    this.system.stopSystem();
+                    this.isExecuting = false;
                     break;
                 case 0x6D:  // Add with carry
                     this.accumulator += this.MMU.read();
@@ -315,12 +318,12 @@ module TSOS {
             this.currentStep++;
         }
 
-        private interruptCheck() {
-            // Check for interrupts - if present, put program and register data on stack and execute
-            // interrupt
-            this.IC.emptyNextInterruptQueues();
-            this.currentStep = 0;
-        }
+        // private interruptCheck() {
+        //     // Check for interrupts - if present, put program and register data on stack and execute
+        //     // interrupt
+        //     this.IC.emptyNextInterruptQueues();
+        //     this.currentStep = 0;
+        // }
 
     }
 }
