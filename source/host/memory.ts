@@ -1,11 +1,12 @@
-// import {Hardware} from "./Hardware";
-// import { ClockListener } from "./imp/ClockListener";
+/**
+ * A virtual 6502 memory module.
+ */
 
 module TSOS {
 
     export class Memory extends Hardware implements ClockListener {
         // Maximum range of memory addresses as a constant
-        private readonly range: number = 0x10000;
+        private readonly range: number = 0x300;
         // Maximum value of memory data as a constant
         private readonly dataRange: number = 0x100;
         // Desired string length of memory addresses
