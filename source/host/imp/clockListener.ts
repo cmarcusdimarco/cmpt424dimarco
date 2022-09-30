@@ -1,4 +1,6 @@
-export interface ClockListener {
-    // Notify all clock-attached hardware when a pulse occurs
-    pulse(): void
+module TSOS {
+    export interface ClockListener {
+        // Notify all clock-attached hardware when a pulse occurs
+        pulse(): void
+    }
 }
