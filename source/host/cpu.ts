@@ -13,19 +13,19 @@
 
 module TSOS {
 
-    import { Ascii } from "../libraries/Ascii";
-    import {System} from "../System";
-    import {Hardware} from "./Hardware";
-    import { ClockListener } from "./imp/ClockListener";
-    import { InterruptController } from "./InterruptController";
-    import { MMU } from "./MMU";
+    // import { Ascii } from "../libraries/Ascii";
+    // import {System} from "../System";
+    // import {Hardware} from "./Hardware";
+    // import { ClockListener } from "./imp/ClockListener";
+    // import { InterruptController } from "./InterruptController";
+    // import { MMU } from "./MMU";
 
     export class Cpu extends Hardware implements ClockListener {
 
         private cpuClockCount: number;
-        private IC: InterruptController;            // Pointer to System's Interrupt Controller
+        // private IC: InterruptController;            // Pointer to System's Interrupt Controller
         private MMU: MMU;                           // Pointer to System's MMU
-        private system: System;                     // Pointer to System
+        // private system: System;                     // Pointer to System
         private currentStep: number = 0x0;          // Placeholder to identify current step of instruction cycle
 
         // Registers
@@ -77,11 +77,15 @@ module TSOS {
             this.cpuClockCount = 0;
         }
 
-        // Reset clock count on boot and assign MMU pointer - to be called by startSystem()
-        public boot(MMU: MMU, IC: InterruptController) {
+        // // Reset clock count on boot and assign MMU pointer - to be called by startSystem()
+        // public boot(MMU: MMU, IC: InterruptController) {
+        //     this.cpuClockCount = 0;
+        //     this.MMU = MMU;
+        //     this.IC = IC;
+        // }
+
+        public init() {
             this.cpuClockCount = 0;
-            this.MMU = MMU;
-            this.IC = IC;
         }
 
         public pulse() {
