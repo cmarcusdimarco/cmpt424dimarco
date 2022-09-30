@@ -2,9 +2,9 @@ module TSOS {
 
     export class Hardware {
 
-        private idNumber: number;
+        private readonly idNumber: number;
 
-        private name: String = null;
+        private readonly name: String = null;
 
         public debug: boolean = true;
 
