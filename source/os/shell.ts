@@ -490,6 +490,11 @@ module TSOS {
                 }
             }
             _StdOut.putText("User program valid. Please proceed carefully.");
+
+            // What needs to happen here?
+            // System needs memory allocated by MMU - set base for logical to physical address conversion
+            // System must write to memory starting at logical 0x0000 up until, but not exceeding, logical 0x0100.
+            // System should create the PCB and return the process ID of the program.
         }
     }
 }
