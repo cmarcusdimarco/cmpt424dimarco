@@ -16,9 +16,6 @@ module TSOS {
     export class Cpu extends Hardware implements ClockListener {
 
         private cpuClockCount: number;
-        // private IC: InterruptController;            // Pointer to System's Interrupt Controller
-        private MMU: MMU;                              // Pointer to System's MMU
-        // private system: System;                     // Pointer to System
         private currentStep: number = 0x0;             // Placeholder to identify current step of instruction cycle
 
         // Registers
@@ -72,13 +69,6 @@ module TSOS {
             this.cpuClockCount = 0;
         }
 
-        // // Reset clock count on boot and assign MMU pointer - to be called by startSystem()
-        // public boot(MMU: MMU, IC: InterruptController) {
-        //     this.cpuClockCount = 0;
-        //     this.MMU = MMU;
-        //     this.IC = IC;
-        // }
-
         // Initialize CPU for running a resident program.
         public init() {
             this.cpuClockCount = 0;
@@ -102,6 +92,7 @@ module TSOS {
                 `zFlag: ${this.hexLog(this.zFlag, 1)} ` +
                 `Step: ${this.hexLog(this.currentStep, 1)}`);
 
+            // TO-DO: Complete one fetch/decode/execute cycle per pulse for the purposes of the OS class.
             switch (this.currentStep) {
                 case 0x0:
                     this.fetch();
@@ -122,7 +113,7 @@ module TSOS {
                     this.writeBack();
                     break;
                 case 0x6:
-                    // this.interruptCheck();
+                    this.interruptCheck();
                     break;
                 default:
                     break;
@@ -132,7 +123,7 @@ module TSOS {
         // Pipelining outline
         private fetch() {
             // Get the next instruction from the memory address in the program counter
-            this.instructionRegister = this.MMU.readImmediate(this.programCounter);
+            this.instructionRegister = _MMU.readImmediate(this.programCounter);
             // End by incrementing program counter and step counter
             this.programCounter++;
             this.currentStep++;
@@ -170,20 +161,20 @@ module TSOS {
                     switch (this.instructionRegister) {
                         // Loading constant cases, skip to interrupt check
                         case 0xA0:
-                            this.yRegister = this.MMU.readImmediate(this.programCounter);
+                            this.yRegister = _MMU.readImmediate(this.programCounter);
                             this.currentStep = 6;
                             break;
                         case 0xA2:
-                            this.xRegister = this.MMU.readImmediate(this.programCounter);
+                            this.xRegister = _MMU.readImmediate(this.programCounter);
                             this.currentStep = 6;
                             break;
                         case 0xA9:
-                            this.accumulator = this.MMU.readImmediate(this.programCounter);
+                            this.accumulator = _MMU.readImmediate(this.programCounter);
                             this.currentStep = 6;
                             break;
                         // Branch to relative address
                         case 0xD0:
-                            this.MMU.setLowOrder(this.MMU.readImmediate(this.programCounter));
+                            _MMU.setLowOrder(_MMU.readImmediate(this.programCounter));
                             this.currentStep += 2;
                             break;
                         default:
@@ -193,7 +184,7 @@ module TSOS {
                     this.programCounter++;
                     return;
                 case 0x02:
-                    this.MMU.setLowOrder(this.MMU.readImmediate(this.programCounter));
+                    _MMU.setLowOrder(_MMU.readImmediate(this.programCounter));
                     this.programCounter++;
                     this.currentStep++;
                     return;
@@ -204,7 +195,7 @@ module TSOS {
 
         private decode2() {
             // If reached, load high order byte
-            this.MMU.setHighOrder(this.MMU.readImmediate(this.programCounter));
+            _MMU.setHighOrder(_MMU.readImmediate(this.programCounter));
             this.programCounter++;
             this.currentStep++;
         }
@@ -216,7 +207,7 @@ module TSOS {
                     this.isExecuting = false;
                     break;
                 case 0x6D:  // Add with carry
-                    this.accumulator += this.MMU.read();
+                    this.accumulator += _MMU.read();
                     if (this.accumulator > 0xFF) {
                         this.accumulator -= 0x100;
                         this.carryFlag = 1;
@@ -226,7 +217,7 @@ module TSOS {
                     this.accumulator = this.xRegister;
                     break;
                 case 0x8D:  // Store accumulator in memory
-                    this.MMU.write(this.accumulator);
+                    _MMU.write(this.accumulator);
                     break;
                 case 0x98:  // Load accumulator from Y register
                     this.accumulator = this.yRegister;
@@ -238,32 +229,32 @@ module TSOS {
                     this.xRegister = this.accumulator;
                     break;
                 case 0xAC:  // Load Y register from memory
-                    this.yRegister = this.MMU.read();
+                    this.yRegister = _MMU.read();
                     break;
                 case 0xAD:  // Load accumulator from memory
-                    this.accumulator = this.MMU.read();
+                    this.accumulator = _MMU.read();
                     break;
                 case 0xAE:  // Load X register from memory
-                    this.xRegister = this.MMU.read();
+                    this.xRegister = _MMU.read();
                     break;
                 case 0xD0:  // Branch n bytes if Z flag not set
                     if (this.zFlag == 0) {
-                        if (this.MMU.getLowOrderByte() <= 0x7F) {
-                            this.programCounter += this.MMU.getLowOrderByte();
+                        if (_MMU.getLowOrderByte() <= 0x7F) {
+                            this.programCounter += _MMU.getLowOrderByte();
                         } else {
-                            this.programCounter -= (256 - this.MMU.getLowOrderByte());
+                            this.programCounter -= (256 - _MMU.getLowOrderByte());
                         }
                     }
                     break;
                 case 0xEA:  // No operation
                     break;
                 case 0xEC:  // Compare memory to X register, set Z flag if equal
-                    if (this.xRegister == this.MMU.read()) {
+                    if (this.xRegister == _MMU.read()) {
                         this.zFlag = 1;
                     }
                     break;
                 case 0xEE:  // Increment value of a byte
-                    this.accumulator = this.MMU.read();
+                    this.accumulator = _MMU.read();
                     this.currentStep -= 2;  // Relative decrement to reach execute2()
                     break;
                 case 0xFF:  // System call
@@ -275,20 +266,20 @@ module TSOS {
                         case 0x2:
                             // Print 0x00 terminating string starting from address in Y register
                             let currentAddress = this.yRegister;
-                            while (this.MMU.readImmediate(currentAddress) != 0x00) {
-                                let toPrint = Ascii.lookup(this.MMU.readImmediate(currentAddress));
+                            while (_MMU.readImmediate(currentAddress) != 0x00) {
+                                let toPrint = Ascii.lookup(_MMU.readImmediate(currentAddress));
                                 _StdOut.putText(toPrint);
                                 currentAddress++;
                             }
                             break;
                         case 0x3:
                             // Print 0x00 terminating string starting from address in MMU
-                            let lowString = this.MMU.getLowOrderByte().toString(16);
-                            let highString = this.MMU.getHighOrderByte().toString(16);
+                            let lowString = _MMU.getLowOrderByte().toString(16);
+                            let highString = _MMU.getHighOrderByte().toString(16);
                             let fullString = "0x".concat(highString.concat(lowString));
                             let desiredAddress = Number(fullString);
-                            while (this.MMU.readImmediate(desiredAddress) != 0x00) {
-                                let toPrint = Ascii.lookup(this.MMU.readImmediate(desiredAddress));
+                            while (_MMU.readImmediate(desiredAddress) != 0x00) {
+                                let toPrint = Ascii.lookup(_MMU.readImmediate(desiredAddress));
                                 _StdOut.putText(toPrint);
                                 desiredAddress++;
                             }
@@ -314,16 +305,17 @@ module TSOS {
             // An operation which requires updating a value will need to call writeBack
             // in order to write the new value back to the memory address
             // Currently only exists for EE
-            this.MMU.write(this.accumulator);
+            _MMU.write(this.accumulator);
             this.currentStep++;
         }
 
-        // private interruptCheck() {
-        //     // Check for interrupts - if present, put program and register data on stack and execute
-        //     // interrupt
-        //     this.IC.emptyNextInterruptQueues();
-        //     this.currentStep = 0;
-        // }
+        private interruptCheck() {
+            // Check for hardware interrupts - if present, put program and register data on stack and execute
+            // interrupt. This is commented out as in our OS, we will be bypassing hardware interrupts and
+            // handling interrupts exclusively through software.
+            // this.IC.emptyNextInterruptQueues();
+            this.currentStep = 0;
+        }
 
     }
 }
