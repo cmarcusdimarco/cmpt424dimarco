@@ -92,32 +92,37 @@ module TSOS {
                 `zFlag: ${this.hexLog(this.zFlag, 1)} ` +
                 `Step: ${this.hexLog(this.currentStep, 1)}`);
 
-            // TO-DO: Complete one fetch/decode/execute cycle per pulse for the purposes of the OS class.
-            switch (this.currentStep) {
-                case 0x0:
-                    this.fetch();
-                    break;
-                case 0x1:
-                    this.decode();
-                    break;
-                case 0x2:
-                    this.decode2();
-                    break;
-                case 0x3:
-                    this.execute();
-                    break;
-                case 0x4:
-                    this.execute2();
-                    break;
-                case 0x5:
-                    this.writeBack();
-                    break;
-                case 0x6:
-                    this.interruptCheck();
-                    break;
-                default:
-                    break;
-            }
+            // At the hardware level, each case below will require at least one clock cycle to complete.
+            // However, for the purposes of our OS creation, we are abstracting the full fetch/decode/execute
+            // cycle to complete in a single clock cycle. In order to best emulate the hardware, remove the
+            // encapsulating do/while loop.
+            do {
+                switch (this.currentStep) {
+                    case 0x0:
+                        this.fetch();
+                        break;
+                    case 0x1:
+                        this.decode();
+                        break;
+                    case 0x2:
+                        this.decode2();
+                        break;
+                    case 0x3:
+                        this.execute();
+                        break;
+                    case 0x4:
+                        this.execute2();
+                        break;
+                    case 0x5:
+                        this.writeBack();
+                        break;
+                    case 0x6:
+                        this.interruptCheck();
+                        break;
+                    default:
+                        break;
+                }
+            } while (this.currentStep != 0x00);
         }
 
         // Pipelining outline
