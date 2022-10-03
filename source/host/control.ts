@@ -91,12 +91,12 @@ module TSOS {
             // ...do the same for Memory and the MMU...
             _Memory = new Memory();
             _Memory.initializeMemoryAddresses();
-            _MMU = new MMU(_Memory);
+            _MemoryAccessor = new MemoryAccessor(_Memory);
 
             // ...set their respective debugs...
             _CPU.debug = false;
             _Memory.debug = false;
-            _MMU.debug = false;
+            _MemoryAccessor.debug = false;
 
             // ... then set the host clock pulse ...
             _hardwareClockID = setInterval(Devices.hostClockPulse, CPU_CLOCK_INTERVAL);

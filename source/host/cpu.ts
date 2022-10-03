@@ -123,7 +123,7 @@ module TSOS {
         // Pipelining outline
         private fetch() {
             // Get the next instruction from the memory address in the program counter
-            this.instructionRegister = _MMU.readImmediate(this.programCounter);
+            this.instructionRegister = _MemoryAccessor.readImmediate(this.programCounter);
             // End by incrementing program counter and step counter
             this.programCounter++;
             this.currentStep++;
@@ -161,20 +161,20 @@ module TSOS {
                     switch (this.instructionRegister) {
                         // Loading constant cases, skip to interrupt check
                         case 0xA0:
-                            this.yRegister = _MMU.readImmediate(this.programCounter);
+                            this.yRegister = _MemoryAccessor.readImmediate(this.programCounter);
                             this.currentStep = 6;
                             break;
                         case 0xA2:
-                            this.xRegister = _MMU.readImmediate(this.programCounter);
+                            this.xRegister = _MemoryAccessor.readImmediate(this.programCounter);
                             this.currentStep = 6;
                             break;
                         case 0xA9:
-                            this.accumulator = _MMU.readImmediate(this.programCounter);
+                            this.accumulator = _MemoryAccessor.readImmediate(this.programCounter);
                             this.currentStep = 6;
                             break;
                         // Branch to relative address
                         case 0xD0:
-                            _MMU.setLowOrder(_MMU.readImmediate(this.programCounter));
+                            _MemoryAccessor.setLowOrder(_MemoryAccessor.readImmediate(this.programCounter));
                             this.currentStep += 2;
                             break;
                         default:
@@ -184,7 +184,7 @@ module TSOS {
                     this.programCounter++;
                     return;
                 case 0x02:
-                    _MMU.setLowOrder(_MMU.readImmediate(this.programCounter));
+                    _MemoryAccessor.setLowOrder(_MemoryAccessor.readImmediate(this.programCounter));
                     this.programCounter++;
                     this.currentStep++;
                     return;
@@ -195,7 +195,7 @@ module TSOS {
 
         private decode2() {
             // If reached, load high order byte
-            _MMU.setHighOrder(_MMU.readImmediate(this.programCounter));
+            _MemoryAccessor.setHighOrder(_MemoryAccessor.readImmediate(this.programCounter));
             this.programCounter++;
             this.currentStep++;
         }
@@ -207,7 +207,7 @@ module TSOS {
                     this.isExecuting = false;
                     break;
                 case 0x6D:  // Add with carry
-                    this.accumulator += _MMU.read();
+                    this.accumulator += _MemoryAccessor.read();
                     if (this.accumulator > 0xFF) {
                         this.accumulator -= 0x100;
                         this.carryFlag = 1;
@@ -217,7 +217,7 @@ module TSOS {
                     this.accumulator = this.xRegister;
                     break;
                 case 0x8D:  // Store accumulator in memory
-                    _MMU.write(this.accumulator);
+                    _MemoryAccessor.write(this.accumulator);
                     break;
                 case 0x98:  // Load accumulator from Y register
                     this.accumulator = this.yRegister;
@@ -229,32 +229,32 @@ module TSOS {
                     this.xRegister = this.accumulator;
                     break;
                 case 0xAC:  // Load Y register from memory
-                    this.yRegister = _MMU.read();
+                    this.yRegister = _MemoryAccessor.read();
                     break;
                 case 0xAD:  // Load accumulator from memory
-                    this.accumulator = _MMU.read();
+                    this.accumulator = _MemoryAccessor.read();
                     break;
                 case 0xAE:  // Load X register from memory
-                    this.xRegister = _MMU.read();
+                    this.xRegister = _MemoryAccessor.read();
                     break;
                 case 0xD0:  // Branch n bytes if Z flag not set
                     if (this.zFlag == 0) {
-                        if (_MMU.getLowOrderByte() <= 0x7F) {
-                            this.programCounter += _MMU.getLowOrderByte();
+                        if (_MemoryAccessor.getLowOrderByte() <= 0x7F) {
+                            this.programCounter += _MemoryAccessor.getLowOrderByte();
                         } else {
-                            this.programCounter -= (256 - _MMU.getLowOrderByte());
+                            this.programCounter -= (256 - _MemoryAccessor.getLowOrderByte());
                         }
                     }
                     break;
                 case 0xEA:  // No operation
                     break;
                 case 0xEC:  // Compare memory to X register, set Z flag if equal
-                    if (this.xRegister == _MMU.read()) {
+                    if (this.xRegister == _MemoryAccessor.read()) {
                         this.zFlag = 1;
                     }
                     break;
                 case 0xEE:  // Increment value of a byte
-                    this.accumulator = _MMU.read();
+                    this.accumulator = _MemoryAccessor.read();
                     this.currentStep -= 2;  // Relative decrement to reach execute2()
                     break;
                 case 0xFF:  // System call
@@ -266,20 +266,20 @@ module TSOS {
                         case 0x2:
                             // Print 0x00 terminating string starting from address in Y register
                             let currentAddress = this.yRegister;
-                            while (_MMU.readImmediate(currentAddress) != 0x00) {
-                                let toPrint = Ascii.lookup(_MMU.readImmediate(currentAddress));
+                            while (_MemoryAccessor.readImmediate(currentAddress) != 0x00) {
+                                let toPrint = Ascii.lookup(_MemoryAccessor.readImmediate(currentAddress));
                                 _StdOut.putText(toPrint);
                                 currentAddress++;
                             }
                             break;
                         case 0x3:
                             // Print 0x00 terminating string starting from address in MMU
-                            let lowString = _MMU.getLowOrderByte().toString(16);
-                            let highString = _MMU.getHighOrderByte().toString(16);
+                            let lowString = _MemoryAccessor.getLowOrderByte().toString(16);
+                            let highString = _MemoryAccessor.getHighOrderByte().toString(16);
                             let fullString = "0x".concat(highString.concat(lowString));
                             let desiredAddress = Number(fullString);
-                            while (_MMU.readImmediate(desiredAddress) != 0x00) {
-                                let toPrint = Ascii.lookup(_MMU.readImmediate(desiredAddress));
+                            while (_MemoryAccessor.readImmediate(desiredAddress) != 0x00) {
+                                let toPrint = Ascii.lookup(_MemoryAccessor.readImmediate(desiredAddress));
                                 _StdOut.putText(toPrint);
                                 desiredAddress++;
                             }
@@ -305,7 +305,7 @@ module TSOS {
             // An operation which requires updating a value will need to call writeBack
             // in order to write the new value back to the memory address
             // Currently only exists for EE
-            _MMU.write(this.accumulator);
+            _MemoryAccessor.write(this.accumulator);
             this.currentStep++;
         }
 

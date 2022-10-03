@@ -1,13 +1,13 @@
 module TSOS {
 
-    export class MMU extends Hardware {
+    export class MemoryAccessor extends Hardware {
         private memory: Memory;
         private lowOrderByte: number;
         private highOrderByte: number;
 
         // Constructor
         constructor(memory: Memory) {
-            super('MMU', 0);
+            super('MA', 0);
             this.memory = memory;
         }
 
