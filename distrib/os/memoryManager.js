@@ -15,7 +15,10 @@ var TSOS;
                 _StdOut.putText('ERR: Unable to allocate memory - memory block already in use.');
                 return;
             }
-            // Allocate memory
+            // Allocate memory, calling the Memory Accessor to write the program to the allocated space.
+            _MemoryAccessor.writeProgram(program, this.baseRegister, this.limitRegister);
+            _StdOut.putText(`Program loaded into memory block ${this.baseRegister / this.limitRegister} ` +
+                `with process ID 0.`);
         }
     }
     TSOS.MemoryManager = MemoryManager;

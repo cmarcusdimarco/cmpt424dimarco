@@ -7,6 +7,10 @@ module TSOS {
     export class MemoryManager {
         public baseRegister: number = 0x0000;               // First physical address to allocate
         public readonly limitRegister: number = 0x0100;     // Maximum range of logical addresses
+        public processIds: number[];
+
+        constructor() {
+        }
 
         public allocateMemory(program: number[]) {
             // Query current baseRegister for existing data
@@ -15,7 +19,10 @@ module TSOS {
                 return;
             }
 
-            // Allocate memory
+            // Allocate memory, calling the Memory Accessor to write the program to the allocated space.
+            _MemoryAccessor.writeProgram(program, this.baseRegister, this.limitRegister);
+            _StdOut.putText(`Program loaded into memory block ${this.baseRegister / this.limitRegister} ` +
+                                 `with process ID 0.`)
         }
     }
 }
