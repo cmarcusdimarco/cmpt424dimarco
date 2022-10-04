@@ -411,8 +411,15 @@ var TSOS;
                 }
             }
             _StdOut.putText("User program valid. Please proceed carefully.");
+            _StdOut.advanceLine();
+            // After successful validation, convert type to number.
+            let programInHex = [];
+            for (let index in program) {
+                programInHex[index] = parseInt(program[index], 16);
+            }
             // What needs to happen here?
             // System needs memory allocated by MMU - set base for logical to physical address conversion
+            _MemoryManager.allocateMemory(programInHex);
             // System must write to memory starting at logical 0x0000 up until, but not exceeding, logical 0x0100.
             // System should create the PCB and return the process ID of the program.
         }
