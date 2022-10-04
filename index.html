@@ -10,10 +10,15 @@
 
    <!-- Globals CONSTANTS and _Variables. Must included be first. -->
    <script type="text/javascript" src="distrib/globals.js"></script>
+   <script type="text/javascript" src="distrib/host/libraries/ascii.js"></script>
+   <script type="text/javascript" src="distrib/host/imp/clockListener.js"></script>
 
    <!-- Host (Virtual Machine / Hardware Simulation) Routines -->
    <script type="text/javascript" src="distrib/host/control.js"></script>
    <script type="text/javascript" src="distrib/host/devices.js"></script>
+   <script type="text/javascript" src="distrib/host/hardware.js"></script>
+   <script type="text/javascript" src="distrib/host/memory.js"></script>
+   <script type="text/javascript" src="distrib/host/memoryAccessor.js"></script>
    <script type="text/javascript" src="distrib/host/cpu.js"></script>
 
    <!-- Virtual OS Routines: Make sure Kernel code is last, since it needs those above it. -->
@@ -82,7 +87,6 @@
       <div id="divStatus">
          <span id="status">
             <script>
-               // TODO: Check often (every second?) for an update to status variable in shell.js
                function updateStatus() {
                   document.getElementById("status").textContent = _Status;
                }
@@ -106,7 +110,31 @@
          <br>
          <textarea name="taHostLog"
                    id  ="taHostLog"
-                   rows="26"
+                   rows="8"
+                   cols="48"
+         ></textarea>
+      </label>
+   </div>
+
+   <div id="divProcessControlBlock" style="margin-left:520px;">
+      <label>
+         Processes
+         <br>
+         <textarea name="taProcessControlBlock"
+                   id  ="taProcessControlBlock"
+                   rows="8"
+                   cols="48"
+         ></textarea>
+      </label>
+   </div>
+
+   <div id="divMemory" style="margin-left:520px;">
+      <label>
+         Memory
+         <br>
+         <textarea name="taMemory"
+                   id  ="taMemory"
+                   rows="8"
                    cols="48"
          ></textarea>
       </label>
