@@ -322,5 +322,16 @@ module TSOS {
             this.currentStep = 0;
         }
 
+        // Returns the current state of the CPU. For use in creating Process Control Blocks.
+        public getCpuState() {
+            return {
+                accumulator: this.accumulator,
+                instructionRegister: this.instructionRegister,
+                programCounter: this.programCounter,
+                xRegister: this.xRegister,
+                yRegister: this.yRegister,
+                zFlag: this.zFlag
+            };
+        }
     }
 }

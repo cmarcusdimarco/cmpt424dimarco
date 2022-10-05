@@ -302,6 +302,17 @@ var TSOS;
             // this.IC.emptyNextInterruptQueues();
             this.currentStep = 0;
         }
+        // Returns the current state of the CPU. For use in creating Process Control Blocks.
+        getCpuState() {
+            return {
+                accumulator: this.accumulator,
+                instructionRegister: this.instructionRegister,
+                programCounter: this.programCounter,
+                xRegister: this.xRegister,
+                yRegister: this.yRegister,
+                zFlag: this.zFlag
+            };
+        }
     }
     TSOS.Cpu = Cpu;
 })(TSOS || (TSOS = {}));
