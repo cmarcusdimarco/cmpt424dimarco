@@ -8,6 +8,8 @@ var TSOS;
         constructor() {
             this.baseRegister = 0x0000; // First physical address to allocate
             this.limitRegister = 0x0100; // Maximum range of logical addresses
+            this.registeredProcesses = [];
+            this.processIdCounter = 0;
         }
         allocateMemory(program) {
             // Query current baseRegister for existing data
@@ -17,8 +19,22 @@ var TSOS;
             }
             // Allocate memory, calling the Memory Accessor to write the program to the allocated space.
             _MemoryAccessor.writeProgram(program, this.baseRegister, this.limitRegister);
+            // Create the Process Control Block, assign a process ID, and push to the registered processes array.
+            let processControlBlock = new TSOS.ProcessControlBlock(this.processIdCounter++, this.baseRegister, _CPU);
+            this.registeredProcesses.push(processControlBlock);
+            // Write the Process Control Block to index.html to test this functionality
+            // TODO: Clean this up for a proper display of stored processes.
+            let textArea = document.getElementById('taProcessControlBlock');
+            if (!textArea.innerText) {
+                textArea.innerText = `PID: ${processControlBlock.processId}`;
+            }
+            else {
+                // TODO: Does not yet update input if textArea has text already in it.
+                textArea.innerText += ` PID: ${processControlBlock.processId}`;
+            }
+            // Print info to console
             _StdOut.putText(`Program loaded into memory block ${this.baseRegister / this.limitRegister} ` +
-                `with process ID 0.`);
+                `with process ID ${processControlBlock.processId}.`);
         }
     }
     TSOS.MemoryManager = MemoryManager;
