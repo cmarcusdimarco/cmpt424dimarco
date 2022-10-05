@@ -7,6 +7,7 @@
 module TSOS {
     export class ProcessControlBlock {
         public readonly processId: number;
+        public readonly startingAddress: number;
         public programCounter: number;
         public instructionRegister: number;
         public accumulator: number;
@@ -15,7 +16,20 @@ module TSOS {
         public zFlag: number;
         public state: string;
 
-        constructor() {
+        constructor(processId: number, address: number, CPU: TSOS.Cpu) {
+            this.processId = processId;
+            this.startingAddress = address;
+
+            // Get state from CPU
+            let currentState = CPU.getCpuState();
+            this.accumulator = currentState[0];
+            this.instructionRegister = currentState[1];
+            this.programCounter = currentState[2];
+            this.xRegister = currentState[3];
+            this.yRegister = currentState[4];
+            this.zFlag = currentState[5];
+
+            this.state = 'RESIDENT';
         }
     }
 }
