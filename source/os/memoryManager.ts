@@ -13,6 +13,7 @@ module TSOS {
         constructor() {
         }
 
+        // Allocates memory for the program passed via param.
         public allocateMemory(program: number[]) {
             // Query current baseRegister for existing data
             if (_MemoryAccessor.readImmediate(this.baseRegister) != 0x0000) {
@@ -40,6 +41,11 @@ module TSOS {
             // Print info to console
             _StdOut.putText(`Program loaded into memory block ${this.baseRegister / this.limitRegister} ` +
                                  `with process ID ${processControlBlock.processId}.`);
+        }
+
+        // Deallocates the memory assigned to a process after execution.
+        public deallocateMemory() {
+            _MemoryAccessor.clearProgram(this.baseRegister, this.limitRegister);
         }
     }
 }
