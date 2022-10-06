@@ -62,7 +62,6 @@ var TSOS;
         }
         // Initialize CPU for running a resident program.
         init() {
-            this.cpuClockCount = 0;
             this.accumulator = 0x00;
             this.instructionRegister = 0x00;
             this.programCounter = 0x0000;
@@ -193,6 +192,10 @@ var TSOS;
             switch (this.instructionRegister) {
                 case 0x00: // Halt
                     this.isExecuting = false;
+                    // TODO: Put the following 3 function calls where they belong. Hardware should not trigger OS level calls.
+                    _MemoryManager.deallocateMemory();
+                    _StdOut.advanceLine();
+                    _OsShell.putPrompt();
                     break;
                 case 0x6D: // Add with carry
                     this.accumulator += _MemoryAccessor.read();
