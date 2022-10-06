@@ -133,6 +133,12 @@ module TSOS {
                                   "- Loads and validates a user program.");
             this.commandList[this.commandList.length] = sc;
 
+            // run <pid>
+            sc = new ShellCommand(this.shellRun,
+                                  "run",
+                                  "<pid> - Runs the program in memory with the specified process ID.");
+            this.commandList[this.commandList.length] = sc;
+
             // Sort the commandList for use in tab completion
             this.commandList = this.commandList.sort((command1, command2) => {
                 if (command1.command > command2.command) {
@@ -366,6 +372,9 @@ module TSOS {
                     case "load":
                         _StdOut.putText("Loads a user program and validates the code within.");
                         break;
+                    case "run":
+                        _StdOut.putText("Runs the program at a specified process ID.");
+                        break;
                     default:
                         _StdOut.putText("No manual entry for " + args[0] + ".");
                 }
@@ -503,6 +512,15 @@ module TSOS {
             _MemoryManager.allocateMemory(programInHex);
             // System must write to memory starting at logical 0x0000 up until, but not exceeding, logical 0x0100.
             // System should create the PCB and return the process ID of the program.
+        }
+
+        public shellRun(args: string[]) {
+            // Reset CPU - start with 0s in all registers
+            // Set base address based on process
+            // Update state to READY
+            // When executing instructions, add base address to memory operands
+            // Update state to EXECUTING or RUNNING
+            // When finished, remove program from memory and update state
         }
     }
 }
