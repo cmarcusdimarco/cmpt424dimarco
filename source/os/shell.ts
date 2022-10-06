@@ -515,12 +515,37 @@ module TSOS {
         }
 
         public shellRun(args: string[]) {
-            // Reset CPU - start with 0s in all registers
-            // Set base address based on process
-            // Update state to READY
-            // When executing instructions, add base address to memory operands
-            // Update state to EXECUTING or RUNNING
-            // When finished, remove program from memory and update state
+            // TODO: Set base address based on process. For now, only base address is 0000.
+
+            // Get process at id of first arg
+            try {
+                let processId = parseInt(args[0]);
+                let process = _MemoryManager.registeredProcesses[processId];
+
+                // Validate if process has been executed
+                if (process.state === 'TERMINATED') {
+                    throw new Error(`Process with ID ${args[0]} has already been executed.`);
+                }
+
+                // Reset CPU - start with 0s in all registers
+                _CPU.init();
+
+                // Update state to READY
+                process.state = 'READY';
+
+                // TODO: When executing instructions, add base address to memory operands
+
+                // Run process, setting state as appropriate.
+                _CPU.isExecuting = true;
+                process.state = 'RUNNING';
+
+                // When finished, CPU halt op code will call for memory de-allocation.
+                // For now, set the process state to TERMINATED to prevent future run calls.
+                process.state = 'TERMINATED';
+            } catch (e) {
+                _Kernel.krnTrace(e);
+                _StdOut.putText(`ERR: Check console for details.`);
+            }
         }
     }
 }

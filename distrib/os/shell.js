@@ -75,6 +75,9 @@ var TSOS;
             // load
             sc = new TSOS.ShellCommand(this.shellLoad, "load", "- Loads and validates a user program.");
             this.commandList[this.commandList.length] = sc;
+            // run <pid>
+            sc = new TSOS.ShellCommand(this.shellRun, "run", "<pid> - Runs the program in memory with the specified process ID.");
+            this.commandList[this.commandList.length] = sc;
             // Sort the commandList for use in tab completion
             this.commandList = this.commandList.sort((command1, command2) => {
                 if (command1.command > command2.command) {
@@ -294,6 +297,9 @@ var TSOS;
                     case "load":
                         _StdOut.putText("Loads a user program and validates the code within.");
                         break;
+                    case "run":
+                        _StdOut.putText("Runs the program at a specified process ID.");
+                        break;
                     default:
                         _StdOut.putText("No manual entry for " + args[0] + ".");
                 }
@@ -422,6 +428,33 @@ var TSOS;
             _MemoryManager.allocateMemory(programInHex);
             // System must write to memory starting at logical 0x0000 up until, but not exceeding, logical 0x0100.
             // System should create the PCB and return the process ID of the program.
+        }
+        shellRun(args) {
+            // TODO: Set base address based on process. For now, only base address is 0000.
+            // Get process at id of first arg
+            try {
+                let processId = parseInt(args[0]);
+                let process = _MemoryManager.registeredProcesses[processId];
+                // Validate if process has been executed
+                if (process.state === 'TERMINATED') {
+                    throw new Error(`Process with ID ${args[0]} has already been executed.`);
+                }
+                // Reset CPU - start with 0s in all registers
+                _CPU.init();
+                // Update state to READY
+                process.state = 'READY';
+                // TODO: When executing instructions, add base address to memory operands
+                // Run process, setting state as appropriate.
+                _CPU.isExecuting = true;
+                process.state = 'RUNNING';
+                // When finished, CPU halt op code will call for memory de-allocation.
+                // For now, set the process state to TERMINATED to prevent future run calls.
+                process.state = 'TERMINATED';
+            }
+            catch (e) {
+                _Kernel.krnTrace(e);
+                _StdOut.putText(`ERR: Check console for details.`);
+            }
         }
     }
     TSOS.Shell = Shell;
