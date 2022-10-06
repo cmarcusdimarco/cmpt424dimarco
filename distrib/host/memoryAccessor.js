@@ -69,6 +69,12 @@ var TSOS;
                 this.writeImmediate(address + i, program[i]);
             }
         }
+        // clearProgram() will remove all data from the provided range after executing that program.
+        clearProgram(address, limit) {
+            for (let i = 0; i < address + limit; i++) {
+                this.writeImmediate(address + i, 0x00);
+            }
+        }
         // memoryDump() takes two parameters, fromAddress and toAddress, and prints
         // the value stored within the defined range of addresses.
         memoryDump(fromAddress, toAddress) {
