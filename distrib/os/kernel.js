@@ -9,6 +9,10 @@
 var TSOS;
 (function (TSOS) {
     class Kernel {
+        constructor() {
+            // Boolean value to enforce Single Step Mode
+            this.singleStep = false;
+        }
         //
         // OS Startup and Shutdown Routines
         //
@@ -72,8 +76,13 @@ var TSOS;
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
             }
             else if (_CPU.isExecuting) { // If there are no interrupts then run one CPU cycle if there is anything being processed.
-                _CPU.pulse();
-                this.krnTrace("Executing...");
+                if (!this.singleStep) {
+                    _CPU.pulse();
+                    this.krnTrace("Executing...");
+                }
+                else {
+                    this.krnTrace("Single Step Mode...awaiting Step...");
+                }
             }
             else { // If there are no interrupts and there is nothing being executed then just be idle.
                 this.krnTrace("Idle");
@@ -137,7 +146,7 @@ var TSOS;
         krnTrace(msg) {
             // Check globals to see if trace is set ON.  If so, then (maybe) log the message.
             if (_Trace) {
-                if (msg === "Idle" || msg === "Executing...") {
+                if (msg === "Idle" || msg === "Single Step Mode...awaiting Step...") {
                     // We can't log every idle clock pulse because it would quickly lag the browser quickly.
                     if (_OSclock % 10 == 0) {
                         // Check the CPU_CLOCK_INTERVAL in globals.ts for an

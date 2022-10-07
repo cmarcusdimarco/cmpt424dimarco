@@ -61,9 +61,10 @@ var TSOS;
         static hostBtnStartOS_click(btn) {
             // Disable the (passed-in) start button...
             btn.disabled = true;
-            // .. enable the Halt and Reset buttons ...
+            // .. enable the Halt, Reset and Single Step buttons ...
             document.getElementById("btnHaltOS").disabled = false;
             document.getElementById("btnReset").disabled = false;
+            document.getElementById("btnSingleStep").disabled = false;
             // .. set focus on the OS console display ...
             document.getElementById("display").focus();
             // ... Create and initialize the CPU (because it's part of the hardware)  ...
@@ -90,7 +91,11 @@ var TSOS;
             _Kernel.krnShutdown();
             // Stop the interval that's simulating our clock pulse.
             clearInterval(_hardwareClockID);
-            // TODO: Is there anything else we need to do here?
+            // Re-enable Start and disable other buttons
+            document.getElementById("btnStartOS").disabled = false;
+            document.getElementById("btnHaltOS").disabled = true;
+            document.getElementById("btnReset").disabled = true;
+            document.getElementById("btnSingleStep").disabled = true;
         }
         static hostBtnReset_click(btn) {
             // The easiest and most thorough way to do this is to reload (not refresh) the document.
@@ -98,6 +103,18 @@ var TSOS;
             // That boolean parameter is the 'forceget' flag. When it is true it causes the page to always
             // be reloaded from the server. If it is false or not specified the browser may reload the
             // page from its cache, which is not what we want.
+        }
+        static hostBtnSingleStep_click(btn) {
+            // Either enable or disable Single Step Mode, depending on current setting.
+            _Kernel.singleStep = !_Kernel.singleStep;
+            // Enable or disable Step button, depending on current setting.
+            document.getElementById("btnStep").disabled =
+                !document.getElementById("btnStep").disabled;
+        }
+        static hostBtnStep_click(btn) {
+            // Step through execution once per click
+            _CPU.pulse();
+            _Kernel.krnTrace("Stepping through.");
         }
     }
     TSOS.Control = Control;
