@@ -541,7 +541,7 @@ module TSOS {
 
                 // Update OS GUI to reflect change in process state
                 let docProcess = document.getElementById('taProcessControlBlock');
-                docProcess.textContent = `PID: ${process.processId} State: ${process.state}`;
+                docProcess.textContent = `PID: ${process.processId} State: ${process.state}\r\n`;
 
                 // When finished, CPU halt op code will call for memory de-allocation.
             } catch (e) {
