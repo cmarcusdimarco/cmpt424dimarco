@@ -259,6 +259,8 @@ module TSOS {
                 case 0xEC:  // Compare memory to X register, set Z flag if equal
                     if (this.xRegister == _MemoryAccessor.read()) {
                         this.zFlag = 1;
+                    } else {
+                        this.zFlag = 0;
                     }
                     break;
                 case 0xEE:  // Increment value of a byte

@@ -244,6 +244,9 @@ var TSOS;
                     if (this.xRegister == _MemoryAccessor.read()) {
                         this.zFlag = 1;
                     }
+                    else {
+                        this.zFlag = 0;
+                    }
                     break;
                 case 0xEE: // Increment value of a byte
                     this.accumulator = _MemoryAccessor.read();
