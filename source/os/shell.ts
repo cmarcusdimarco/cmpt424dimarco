@@ -539,9 +539,16 @@ module TSOS {
                 _CPU.isExecuting = true;
                 process.state = 'RUNNING';
 
+                // Update OS GUI to reflect change in process state
+                let docProcess = document.getElementById('taProcessControlBlock');
+                docProcess.textContent = `PID: ${process.processId} State: ${process.state}`;
+
                 // When finished, CPU halt op code will call for memory de-allocation.
                 // For now, set the process state to TERMINATED to prevent future run calls.
                 process.state = 'TERMINATED';
+
+                // Update OS GUI to reflect change in process state
+                docProcess.textContent = `PID: ${process.processId} State: ${process.state}`;
             } catch (e) {
                 _Kernel.krnTrace(e);
                 _StdOut.putText(`ERR: Check console for details.`);

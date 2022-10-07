@@ -31,11 +31,11 @@ module TSOS {
             // Write the Process Control Block to index.html to test this functionality
             // TODO: Clean this up for a proper display of stored processes.
             let textArea = document.getElementById('taProcessControlBlock');
-            if (!textArea.innerText) {
-                textArea.innerText = `PID: ${processControlBlock.processId}`;
+            if (!textArea.textContent) {
+                textArea.textContent = `PID: ${processControlBlock.processId} State: ${processControlBlock.state}`;
             } else {
                 // TODO: Does not yet update input if textArea has text already in it.
-                textArea.innerText += ` PID: ${processControlBlock.processId}`;
+                textArea.textContent += `\r\nPID: ${processControlBlock.processId} State: ${processControlBlock.state}`;
             }
 
             // Print info to console
