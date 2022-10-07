@@ -66,7 +66,11 @@ var TSOS;
         // writeProgram() will write a user-provided program into memory starting at the base address.
         writeProgram(program, address, limit) {
             for (let i = 0; i < program.length && i < address + limit; i++) {
+                // Write the op code into the desired memory address
                 this.writeImmediate(address + i, program[i]);
+                // Update the OS GUI
+                let location = document.getElementById(`memoryCell${this.hexLog(address + i, 4)}`);
+                location.textContent = this.hexLog(program[i], 2);
             }
         }
         // clearProgram() will remove all data from the provided range after executing that program.

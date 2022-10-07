@@ -80,7 +80,11 @@ module TSOS {
         // writeProgram() will write a user-provided program into memory starting at the base address.
         public writeProgram(program: number[], address: number, limit: number) {
             for (let i = 0; i < program.length && i < address + limit; i++) {
+                // Write the op code into the desired memory address
                 this.writeImmediate(address + i, program[i]);
+                // Update the OS GUI
+                let location = document.getElementById(`memoryCell${this.hexLog(address + i, 4)}`);
+                location.textContent = this.hexLog(program[i], 2);
             }
         }
 
