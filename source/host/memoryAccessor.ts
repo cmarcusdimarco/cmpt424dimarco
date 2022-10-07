@@ -68,6 +68,9 @@ module TSOS {
             this.setMARLittleEndian(this.lowOrderByte, this.highOrderByte);
             this.memory.setMDR(value);
             this.memory.write();
+            // Update the OS GUI
+            let location = document.getElementById(`memoryCell${this.hexLog(this.memory.getMAR(), 4)}`);
+            location.textContent = this.hexLog(value, 2);
         }
 
         // writeImmediate() writes a value to a single byte of memory.
@@ -75,6 +78,9 @@ module TSOS {
             this.memory.setMAR(address);
             this.memory.setMDR(value);
             this.memory.write();
+            // Update the OS GUI
+            let location = document.getElementById(`memoryCell${this.hexLog(address, 4)}`);
+            location.textContent = this.hexLog(value, 2);
         }
 
         // writeProgram() will write a user-provided program into memory starting at the base address.
@@ -82,9 +88,6 @@ module TSOS {
             for (let i = 0; i < program.length && i < address + limit; i++) {
                 // Write the op code into the desired memory address
                 this.writeImmediate(address + i, program[i]);
-                // Update the OS GUI
-                let location = document.getElementById(`memoryCell${this.hexLog(address + i, 4)}`);
-                location.textContent = this.hexLog(program[i], 2);
             }
         }
 
@@ -92,9 +95,6 @@ module TSOS {
         public clearProgram(address: number, limit: number) {
             for (let i = 0; i < address + limit; i++) {
                 this.writeImmediate(address + i, 0x00);
-                // Update the OS GUI
-                let location = document.getElementById(`memoryCell${this.hexLog(address + i, 4)}`);
-                location.textContent = '00';
             }
         }
 
