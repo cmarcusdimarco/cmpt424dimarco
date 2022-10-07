@@ -73,6 +73,7 @@ var TSOS;
             }
             else if (_CPU.isExecuting) { // If there are no interrupts then run one CPU cycle if there is anything being processed.
                 _CPU.pulse();
+                this.krnTrace("Executing...");
             }
             else { // If there are no interrupts and there is nothing being executed then just be idle.
                 this.krnTrace("Idle");
@@ -136,7 +137,7 @@ var TSOS;
         krnTrace(msg) {
             // Check globals to see if trace is set ON.  If so, then (maybe) log the message.
             if (_Trace) {
-                if (msg === "Idle") {
+                if (msg === "Idle" || msg === "Executing...") {
                     // We can't log every idle clock pulse because it would quickly lag the browser quickly.
                     if (_OSclock % 10 == 0) {
                         // Check the CPU_CLOCK_INTERVAL in globals.ts for an
