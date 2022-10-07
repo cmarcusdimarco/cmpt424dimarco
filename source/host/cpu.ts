@@ -29,6 +29,14 @@ module TSOS {
 
         public isExecuting: boolean = false;           // Shows OS if CPU has program left to execute
 
+        // OS GUI Objects
+        private docAccumulator = document.getElementById(`cpuAccumulator`);
+        private docInstructionRegister = document.getElementById(`cpuInstructionRegister`);
+        private docProgramCounter = document.getElementById(`cpuProgramCounter`);
+        private docXRegister = document.getElementById(`cpuXRegister`);
+        private docYRegister = document.getElementById(`cpuYRegister`);
+        private docZFlag = document.getElementById(`cpuZFlag`);
+
 
         // Multi-dimensional array representing instruction set. First dimension stores op codes.
         // Second dimension stores number of operands to expect after op code or stores 0xFF if the number of
@@ -78,6 +86,14 @@ module TSOS {
             this.yRegister = 0x00;
             this.carryFlag = 0x0;
             this.zFlag = 0x0;
+
+            // Update OS GUI fields.
+            this.docAccumulator.textContent = '00';
+            this.docInstructionRegister.textContent = '00';
+            this.docProgramCounter.textContent = '0000';
+            this.docXRegister.textContent = '00';
+            this.docYRegister.textContent = '00';
+            this.docZFlag.textContent = '00';
         }
 
         public pulse() {
@@ -131,6 +147,9 @@ module TSOS {
             // End by incrementing program counter and step counter
             this.programCounter++;
             this.currentStep++;
+            // Update OS GUI
+            this.docInstructionRegister.textContent = this.hexLog(this.instructionRegister, 2);
+            this.docProgramCounter.textContent = this.hexLog(this.programCounter, 4);
         }
 
         private decode() {
@@ -167,6 +186,8 @@ module TSOS {
                         case 0xA0:
                             this.yRegister = _MemoryAccessor.readImmediate(this.programCounter);
                             this.currentStep = 6;
+                            // Update OS GUI
+                            this.docYRegister.textContent = this.hexLog(this.yRegister, 2);
                             break;
                         case 0xA2:
                             this.xRegister = _MemoryAccessor.readImmediate(this.programCounter);
@@ -175,6 +196,8 @@ module TSOS {
                         case 0xA9:
                             this.accumulator = _MemoryAccessor.readImmediate(this.programCounter);
                             this.currentStep = 6;
+                            // Update OS GUI
+                            this.docAccumulator.textContent = this.hexLog(this.accumulator, 2);
                             break;
                         // Branch to relative address
                         case 0xD0:
@@ -186,11 +209,15 @@ module TSOS {
                             break;
                     }
                     this.programCounter++;
+                    // Update OS GUI
+                    this.docProgramCounter.textContent = this.hexLog(this.programCounter, 4);
                     return;
                 case 0x02:
                     _MemoryAccessor.setLowOrder(_MemoryAccessor.readImmediate(this.programCounter));
                     this.programCounter++;
                     this.currentStep++;
+                    // Update OS GUI
+                    this.docProgramCounter.textContent = this.hexLog(this.programCounter, 4);
                     return;
                 default:
                     return;
@@ -202,6 +229,8 @@ module TSOS {
             _MemoryAccessor.setHighOrder(_MemoryAccessor.readImmediate(this.programCounter));
             this.programCounter++;
             this.currentStep++;
+            // Update OS GUI
+            this.docProgramCounter.textContent = this.hexLog(this.programCounter, 4);
         }
 
         private execute() {
@@ -209,6 +238,7 @@ module TSOS {
             switch (this.instructionRegister) {
                 case 0x00:  // Halt
                     this.isExecuting = false;
+                    this.init();
                     // TODO: Put the following 3 function calls where they belong. Hardware should not trigger OS level calls.
                     _MemoryManager.deallocateMemory();
                     _StdOut.advanceLine();
@@ -220,30 +250,46 @@ module TSOS {
                         this.accumulator -= 0x100;
                         this.carryFlag = 1;
                     }
+                    // Update OS GUI
+                    this.docAccumulator.textContent = this.hexLog(this.accumulator, 2);
                     break;
                 case 0x8A:  // Load accumulator from X register
                     this.accumulator = this.xRegister;
+                    // Update OS GUI
+                    this.docAccumulator.textContent = this.hexLog(this.accumulator, 2);
                     break;
                 case 0x8D:  // Store accumulator in memory
                     _MemoryAccessor.write(this.accumulator);
                     break;
                 case 0x98:  // Load accumulator from Y register
                     this.accumulator = this.yRegister;
+                    // Update OS GUI
+                    this.docAccumulator.textContent = this.hexLog(this.accumulator, 2);
                     break;
                 case 0xA8:  // Load Y register from accumulator
                     this.yRegister = this.accumulator;
+                    // Update OS GUI
+                    this.docYRegister.textContent = this.hexLog(this.yRegister, 2);
                     break;
                 case 0xAA:  // Load X register from accumulator
                     this.xRegister = this.accumulator;
+                    // Update OS GUI
+                    this.docXRegister.textContent = this.hexLog(this.xRegister, 2);
                     break;
                 case 0xAC:  // Load Y register from memory
                     this.yRegister = _MemoryAccessor.read();
+                    // Update OS GUI
+                    this.docYRegister.textContent = this.hexLog(this.yRegister, 2);
                     break;
                 case 0xAD:  // Load accumulator from memory
                     this.accumulator = _MemoryAccessor.read();
+                    // Update OS GUI
+                    this.docAccumulator.textContent = this.hexLog(this.accumulator, 2);
                     break;
                 case 0xAE:  // Load X register from memory
                     this.xRegister = _MemoryAccessor.read();
+                    // Update OS GUI
+                    this.docXRegister.textContent = this.hexLog(this.xRegister, 2);
                     break;
                 case 0xD0:  // Branch n bytes if Z flag not set
                     if (this.zFlag == 0) {
@@ -252,6 +298,8 @@ module TSOS {
                         } else {
                             this.programCounter -= (256 - _MemoryAccessor.getLowOrderByte());
                         }
+                        // Update OS GUI
+                        this.docProgramCounter.textContent = this.hexLog(this.programCounter, 4);
                     }
                     break;
                 case 0xEA:  // No operation
@@ -262,10 +310,14 @@ module TSOS {
                     } else {
                         this.zFlag = 0;
                     }
+                    // Update OS GUI
+                    this.docZFlag.textContent = this.hexLog(this.zFlag, 1);
                     break;
                 case 0xEE:  // Increment value of a byte
                     this.accumulator = _MemoryAccessor.read();
                     this.currentStep -= 2;  // Relative decrement to reach execute2()
+                    // Update OS GUI
+                    this.docAccumulator.textContent = this.hexLog(this.accumulator, 2);
                     break;
                 case 0xFF:  // System call
                     switch (this.xRegister) {
@@ -309,6 +361,8 @@ module TSOS {
             // Currently only exists for EE
             this.accumulator++;
             this.currentStep++;
+            // Update OS GUI
+            this.docAccumulator.textContent = this.hexLog(this.accumulator, 2);
         }
 
         private writeBack() {
