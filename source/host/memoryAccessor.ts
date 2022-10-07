@@ -92,6 +92,9 @@ module TSOS {
         public clearProgram(address: number, limit: number) {
             for (let i = 0; i < address + limit; i++) {
                 this.writeImmediate(address + i, 0x00);
+                // Update the OS GUI
+                let location = document.getElementById(`memoryCell${this.hexLog(address + i, 4)}`);
+                location.textContent = '00';
             }
         }
 
