@@ -522,9 +522,9 @@ module TSOS {
                 let processId = parseInt(args[0]);
                 let process = _MemoryManager.registeredProcesses[processId];
 
-                // Validate if process has been executed
-                if (process.state === 'TERMINATED') {
-                    throw new Error(`Process with ID ${args[0]} has already been executed.`);
+                // Validate if process has been executed or is currently executing
+                if (process.state != 'RESIDENT') {
+                    throw new Error(`Process with ID ${args[0]} is not available for additional execution.`);
                 }
 
                 // Reset CPU - start with 0s in all registers
@@ -544,11 +544,6 @@ module TSOS {
                 docProcess.textContent = `PID: ${process.processId} State: ${process.state}`;
 
                 // When finished, CPU halt op code will call for memory de-allocation.
-                // For now, set the process state to TERMINATED to prevent future run calls.
-                process.state = 'TERMINATED';
-
-                // Update OS GUI to reflect change in process state
-                docProcess.textContent = `PID: ${process.processId} State: ${process.state}`;
             } catch (e) {
                 _Kernel.krnTrace(e);
                 _StdOut.putText(`ERR: Check console for details.`);

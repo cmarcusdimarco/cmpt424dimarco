@@ -219,11 +219,15 @@ var TSOS;
             switch (this.instructionRegister) {
                 case 0x00: // Halt
                     this.isExecuting = false;
-                    this.init();
-                    // TODO: Put the following 3 function calls where they belong. Hardware should not trigger OS level calls.
-                    _MemoryManager.deallocateMemory();
+                    // TODO: Put the following statements where they belong. Hardware should not trigger OS level calls.
+                    let haltAddress = _MemoryAccessor.readImmediate(this.programCounter - 1);
+                    _MemoryManager.deallocateMemory(haltAddress);
                     _StdOut.advanceLine();
                     _OsShell.putPrompt();
+                    _Kernel.singleStep = false;
+                    document.getElementById("btnStep").disabled = true;
+                    // Reset CPU state
+                    this.init();
                     break;
                 case 0x6D: // Add with carry
                     this.accumulator += _MemoryAccessor.read();

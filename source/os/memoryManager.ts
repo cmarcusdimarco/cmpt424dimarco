@@ -32,10 +32,10 @@ module TSOS {
             // TODO: Clean this up for a proper display of stored processes.
             let textArea = document.getElementById('taProcessControlBlock');
             if (!textArea.textContent) {
-                textArea.textContent = `PID: ${processControlBlock.processId} State: ${processControlBlock.state}`;
+                textArea.textContent = `PID: ${processControlBlock.processId} State: ${processControlBlock.state}\r\n`;
             } else {
                 // TODO: Does not yet update input if textArea has text already in it.
-                textArea.textContent += `\r\nPID: ${processControlBlock.processId} State: ${processControlBlock.state}`;
+                textArea.append(`PID: ${processControlBlock.processId} State: ${processControlBlock.state}\r\n`);
             }
 
             // Print info to console
@@ -44,7 +44,17 @@ module TSOS {
         }
 
         // Deallocates the memory assigned to a process after execution.
-        public deallocateMemory() {
+        public deallocateMemory(haltAddress: number) {
+            // Find the non-terminated process whose halt command occurs within a specific address range.
+            for (let process of this.registeredProcesses) {
+                // If found, set status to TERMINATED and update OS GUI
+                if (process.startingAddress == haltAddress % this.limitRegister) {
+                    process.state = 'TERMINATED';
+                    let docProcess = document.getElementById('taProcessControlBlock');
+                    docProcess.textContent = `PID: ${process.processId} State: ${process.state}`;
+                    break;
+                }
+            }
             _MemoryAccessor.clearProgram(this.baseRegister, this.limitRegister);
         }
     }
