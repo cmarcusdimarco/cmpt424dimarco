@@ -4,16 +4,16 @@ module TSOS {
 
         private readonly idNumber: number;
 
-        private readonly name: String = null;
+        private readonly name: string = null;
 
         public debug: boolean = true;
 
-        constructor(name: String, idNumber: number) {
+        constructor(name: string, idNumber: number) {
             this.name = name;
             this.idNumber = idNumber;
         }
 
-        public log(message: String): boolean {
+        public log(message: string): boolean {
             if (this.debug) {
                 console.log(`HW - ${this.name} id: ${this.idNumber} - ${Date.now()}: ${message}`);
                 return true;
@@ -22,10 +22,10 @@ module TSOS {
             return false;
         }
 
-        public hexLog(target: number, desiredLength: number): String {
+        public hexLog(target: number, desiredLength: number): string {
             // Determine number of leading 0's to add, if necessary, by subtracting the
             // string length from the desired length
-            let result: String = target.toString(16);
+            let result: string = target.toString(16);
             let padding: number = desiredLength - result.length;
             result = result.toUpperCase();
 
