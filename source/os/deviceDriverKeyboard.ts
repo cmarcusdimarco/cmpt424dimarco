@@ -32,10 +32,14 @@ module TSOS {
             var keyCode = params[0];
             var isShifted = params[1];
             var isControlled = params[2];
-            _Kernel.krnTrace("Key code:" + keyCode + " shifted:" + isShifted);
+            _Kernel.krnTrace("Key code:" + keyCode + " shifted:" + isShifted + " controlled:" + isControlled);
             var chr = "";
             // Check to see if we even want to deal with the key that was pressed.
             if ((keyCode >= 65) && (keyCode <= 90)) { // letter
+                if (isControlled === true && keyCode == 67) {
+                    _Kernel.krnHaltProgram();
+                    return;
+                }
                 if (isShifted === true) { 
                     chr = String.fromCharCode(keyCode); // Uppercase A-Z
                 } else {

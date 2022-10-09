@@ -189,5 +189,20 @@ module TSOS {
             // TODO: Display error on console, perhaps in some sort of colored screen. (Maybe blue?)
             this.krnShutdown();
         }
+
+        public krnHaltProgram() {
+            // Break current program on CTRL+C
+            _CPU.isExecuting = false;
+            _CPU.init();
+            // Display CTRL+C on console.
+            _StdOut.putText('^');
+            _StdOut.putText('C');
+            // Empty key buffer, advance line and put prompt.
+            while (!_KernelInputQueue.isEmpty()) {
+                _KernelInputQueue.dequeue();
+            }
+            _StdOut.advanceLine();
+            _OsShell.putPrompt();
+        }
     }
 }

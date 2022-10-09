@@ -115,10 +115,6 @@ module TSOS {
                         this.putText(this.commandsPassed[this.previousCommandIndex]);
                         this.buffer = this.commandsPassed[this.previousCommandIndex];
                     }
-                } else if (chr === String.fromCharCode(17) && _KernelInputQueue.peek() === 'c') {
-                    // Break current program on CTRL+C
-                    _CPU.isExecuting = false;
-                    _CPU.init();
                 } else {
                     // This is a "normal" character, so ...
                     // ... draw it on the screen...
@@ -126,7 +122,6 @@ module TSOS {
                     // ... and add it to our buffer.
                     this.buffer += chr;
                 }
-                // TODO: Add a case for Ctrl-C that would allow the user to break the current program.
             }
         }
 
