@@ -77,9 +77,10 @@ module TSOS {
             // Disable the (passed-in) start button...
             btn.disabled = true;
 
-            // .. enable the Halt and Reset buttons ...
+            // .. enable the Halt, Reset and Single Step buttons ...
             (<HTMLButtonElement>document.getElementById("btnHaltOS")).disabled = false;
             (<HTMLButtonElement>document.getElementById("btnReset")).disabled = false;
+            (<HTMLButtonElement>document.getElementById("btnSingleStep")).disabled = false;
 
             // .. set focus on the OS console display ...
             document.getElementById("display").focus();
@@ -87,6 +88,16 @@ module TSOS {
             // ... Create and initialize the CPU (because it's part of the hardware)  ...
             _CPU = new Cpu();  // Note: We could simulate multi-core systems by instantiating more than one instance of the CPU here.
             _CPU.init();       //       There's more to do, like dealing with scheduling and such, but this would be a start. Pretty cool.
+
+            // ...do the same for Memory and the MMU...
+            _Memory = new Memory();
+            _Memory.initializeMemoryAddresses();
+            _MemoryAccessor = new MemoryAccessor(_Memory);
+
+            // ...set their respective debugs...
+            _CPU.debug = false;
+            _Memory.debug = false;
+            _MemoryAccessor.debug = false;
 
             // ... then set the host clock pulse ...
             _hardwareClockID = setInterval(Devices.hostClockPulse, CPU_CLOCK_INTERVAL);
@@ -102,7 +113,11 @@ module TSOS {
             _Kernel.krnShutdown();
             // Stop the interval that's simulating our clock pulse.
             clearInterval(_hardwareClockID);
-            // TODO: Is there anything else we need to do here?
+            // Re-enable Start and disable other buttons
+            (<HTMLButtonElement>document.getElementById("btnStartOS")).disabled = false;
+            (<HTMLButtonElement>document.getElementById("btnHaltOS")).disabled = true;
+            (<HTMLButtonElement>document.getElementById("btnReset")).disabled = true;
+            (<HTMLButtonElement>document.getElementById("btnSingleStep")).disabled = true;
         }
 
         public static hostBtnReset_click(btn): void {
@@ -111,6 +126,20 @@ module TSOS {
             // That boolean parameter is the 'forceget' flag. When it is true it causes the page to always
             // be reloaded from the server. If it is false or not specified the browser may reload the
             // page from its cache, which is not what we want.
+        }
+
+        public static hostBtnSingleStep_click(btn): void {
+            // Either enable or disable Single Step Mode, depending on current setting.
+            _Kernel.singleStep = !_Kernel.singleStep;
+            // Enable or disable Step button, depending on current setting.
+            (<HTMLButtonElement>document.getElementById("btnStep")).disabled =
+                !(<HTMLButtonElement>document.getElementById("btnStep")).disabled;
+        }
+
+        public static hostBtnStep_click(btn): void {
+            // Step through execution once per click
+            _CPU.pulse();
+            _Kernel.krnTrace("Stepping through.");
         }
     }
 }

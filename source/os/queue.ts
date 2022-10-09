@@ -40,5 +40,9 @@ module TSOS {
             }
             return retVal;
         }
+
+        public peek() {
+            return this.q[0];
+        }
     }
 }

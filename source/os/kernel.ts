@@ -10,6 +10,10 @@
 module TSOS {
 
     export class Kernel {
+
+        // Boolean value to enforce Single Step Mode
+        public singleStep: boolean = false;
+
         //
         // OS Startup and Shutdown Routines
         //
@@ -24,6 +28,9 @@ module TSOS {
             // Initialize the console.
             _Console = new Console();             // The command line interface / console I/O device.
             _Console.init();
+
+            // Initialize the memory manager.
+            _MemoryManager = new MemoryManager();
 
             // Initialize standard input and output to the _Console.
             _StdIn  = _Console;
@@ -82,7 +89,12 @@ module TSOS {
                 var interrupt = _KernelInterruptQueue.dequeue();
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
             } else if (_CPU.isExecuting) { // If there are no interrupts then run one CPU cycle if there is anything being processed.
-                _CPU.cycle();
+                if (!this.singleStep) {
+                    _CPU.pulse();
+                    this.krnTrace("Executing...");
+                } else {
+                    this.krnTrace("Single Step Mode...awaiting Step...");
+                }
             } else {                       // If there are no interrupts and there is nothing being executed then just be idle.
                 this.krnTrace("Idle");
             }
@@ -154,7 +166,7 @@ module TSOS {
         public krnTrace(msg: string) {
              // Check globals to see if trace is set ON.  If so, then (maybe) log the message.
              if (_Trace) {
-                if (msg === "Idle") {
+                if (msg === "Idle" || msg === "Single Step Mode...awaiting Step...") {
                     // We can't log every idle clock pulse because it would quickly lag the browser quickly.
                     if (_OSclock % 10 == 0) {
                         // Check the CPU_CLOCK_INTERVAL in globals.ts for an
@@ -176,6 +188,21 @@ module TSOS {
                                      _DefaultFontSize + _FontHeightMargin);
             // TODO: Display error on console, perhaps in some sort of colored screen. (Maybe blue?)
             this.krnShutdown();
+        }
+
+        public krnHaltProgram() {
+            // Break current program on CTRL+C
+            _CPU.isExecuting = false;
+            _CPU.init();
+            // Display CTRL+C on console.
+            _StdOut.putText('^');
+            _StdOut.putText('C');
+            // Empty key buffer, advance line and put prompt.
+            while (!_KernelInputQueue.isEmpty()) {
+                _KernelInputQueue.dequeue();
+            }
+            _StdOut.advanceLine();
+            _OsShell.putPrompt();
         }
     }
 }

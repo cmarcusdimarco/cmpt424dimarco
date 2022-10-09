@@ -133,6 +133,12 @@ module TSOS {
                                   "- Loads and validates a user program.");
             this.commandList[this.commandList.length] = sc;
 
+            // run <pid>
+            sc = new ShellCommand(this.shellRun,
+                                  "run",
+                                  "<pid> - Runs the program in memory with the specified process ID.");
+            this.commandList[this.commandList.length] = sc;
+
             // Sort the commandList for use in tab completion
             this.commandList = this.commandList.sort((command1, command2) => {
                 if (command1.command > command2.command) {
@@ -366,6 +372,9 @@ module TSOS {
                     case "load":
                         _StdOut.putText("Loads a user program and validates the code within.");
                         break;
+                    case "run":
+                        _StdOut.putText("Runs the program at a specified process ID.");
+                        break;
                     default:
                         _StdOut.putText("No manual entry for " + args[0] + ".");
                 }
@@ -490,6 +499,55 @@ module TSOS {
                 }
             }
             _StdOut.putText("User program valid. Please proceed carefully.");
+            _StdOut.advanceLine();
+
+            // After successful validation, convert type to number.
+            let programInHex: number[] = [];
+            for (let index in program) {
+                programInHex[index] = parseInt(program[index], 16);
+            }
+
+            // What needs to happen here?
+            // System needs memory allocated by MMU - set base for logical to physical address conversion
+            _MemoryManager.allocateMemory(programInHex);
+            // System must write to memory starting at logical 0x0000 up until, but not exceeding, logical 0x0100.
+            // System should create the PCB and return the process ID of the program.
+        }
+
+        public shellRun(args: string[]) {
+            // TODO: Set base address based on process. For now, only base address is 0000.
+
+            // Get process at id of first arg
+            try {
+                let processId = parseInt(args[0]);
+                let process = _MemoryManager.registeredProcesses[processId];
+
+                // Validate if process has been executed or is currently executing
+                if (process.state != 'RESIDENT') {
+                    throw new Error(`Process with ID ${args[0]} is not available for additional execution.`);
+                }
+
+                // Reset CPU - start with 0s in all registers
+                _CPU.init();
+
+                // Update state to READY
+                process.state = 'READY';
+
+                // TODO: When executing instructions, add base address to memory operands
+
+                // Run process, setting state as appropriate.
+                _CPU.isExecuting = true;
+                process.state = 'RUNNING';
+
+                // Update OS GUI to reflect change in process state
+                let docProcess = document.getElementById('taProcessControlBlock');
+                docProcess.textContent = `PID: ${process.processId} State: ${process.state}\r\n`;
+
+                // When finished, CPU halt op code will call for memory de-allocation.
+            } catch (e) {
+                _Kernel.krnTrace(e);
+                _StdOut.putText(`ERR: Check console for details.`);
+            }
         }
     }
 }
