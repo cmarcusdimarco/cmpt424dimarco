@@ -220,8 +220,7 @@ var TSOS;
                 case 0x00: // Halt
                     this.isExecuting = false;
                     // TODO: Put the following statements where they belong. Hardware should not trigger OS level calls.
-                    let haltAddress = _MemoryAccessor.readImmediate(this.programCounter - 1);
-                    _MemoryManager.deallocateMemory(haltAddress);
+                    _MemoryManager.deallocateMemory(this.programCounter - 1);
                     _StdOut.advanceLine();
                     _OsShell.putPrompt();
                     _Kernel.singleStep = false;

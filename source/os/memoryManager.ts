@@ -48,7 +48,7 @@ module TSOS {
             // Find the non-terminated process whose halt command occurs within a specific address range.
             for (let process of this.registeredProcesses) {
                 // If found, set status to TERMINATED and update OS GUI
-                if (process.startingAddress == haltAddress % this.limitRegister && process.state != 'TERMINATED') {
+                if (process.startingAddress == Math.floor(haltAddress / this.limitRegister) && process.state != 'TERMINATED') {
                     process.state = 'TERMINATED';
                     let docProcess = document.getElementById('taProcessControlBlock');
                     docProcess.textContent = `PID: ${process.processId} State: ${process.state}\r\n`;
