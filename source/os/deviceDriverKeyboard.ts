@@ -52,8 +52,7 @@ module TSOS {
                        (keyCode == 8)                           ||   // backspace
                        (keyCode == 9)                           ||   // tab
                        (keyCode == 38 && isShifted === false)   ||   // up arrow
-                       (keyCode == 40)                          ||   // down arrow
-                       (keyCode == 17)) {                            // control
+                       (keyCode == 40)) {                            // down arrow
                 chr = String.fromCharCode(keyCode);
                 _KernelInputQueue.enqueue(chr);
             } else if (((keyCode >= 48) && (keyCode <= 57))) {  // digits
