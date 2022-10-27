@@ -31,7 +31,7 @@ h3 {
 }
 
 tr:nth-child(odd) .memoryRowStart {
-  background: lightgray;
+  background: powderblue;
 }
 
 tr:nth-child(even) {
