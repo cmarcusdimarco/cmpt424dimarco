@@ -20,6 +20,8 @@ var TSOS;
             this.MDR = 0x00;
             // Array of all memory addresses
             this.addresses = [];
+            // Array of key-value pairs for memory partitions. Key = index, value = value at index.
+            this.partitions = [0x000, 0x100, 0x200]; // 0: 0x000, 1: 0x100, 2: 0x200
         }
         // Setting initial memory values to 0x00
         initializeMemoryAddresses() {

@@ -19,6 +19,8 @@ module TSOS {
         private MDR: number = 0x00;
         // Array of all memory addresses
         private addresses: number[] = [];
+        // Array of key-value pairs for memory partitions. Key = index, value = value at index.
+        public partitions: number[] = [0x000, 0x100, 0x200];    // 0: 0x000, 1: 0x100, 2: 0x200
 
         constructor() {
             super('RAM', 0);
