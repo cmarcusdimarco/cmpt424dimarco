@@ -30,6 +30,18 @@ h3 {
   font-style: normal;
 }
 
+tr:nth-child(odd) .memoryRowStart {
+  background: lightgray;
+}
+
+tr:nth-child(even) {
+  background: aliceblue;
+}
+
+tr:nth-child(even) .memoryRowStart {
+  background: lightblue;
+}
+
 #display {
   background-color:#DFDBC3;
   border: 2px solid red;
