@@ -31,7 +31,7 @@ module TSOS {
                     _MemoryAccessor.writeProgram(program, this.baseRegister, this.limitRegister);
 
                     // Create the Process Control Block, assign a process ID, and push to the registered processes array.
-                    let processControlBlock = new ProcessControlBlock(this.processIdCounter++, this.baseRegister, _CPU);
+                    let processControlBlock = new ProcessControlBlock(this.processIdCounter++, this.baseRegister);
                     this.registeredProcesses.push(processControlBlock);
 
                     // Write the Process Control Block to index.html to test this functionality

@@ -17,6 +17,7 @@ module TSOS {
 
         private cpuClockCount: number;
         private currentStep: number = 0x0;             // Placeholder to identify current step of instruction cycle
+        private currentProcess: ProcessControlBlock;
 
         // Registers
         private accumulator: number = 0x00;
@@ -94,6 +95,26 @@ module TSOS {
             this.docXRegister.textContent = '00';
             this.docYRegister.textContent = '00';
             this.docZFlag.textContent = '00';
+        }
+
+        // Initialize CPU by passing a PCB
+        public initWithPCB(pcb: ProcessControlBlock) {
+            this.accumulator = pcb.accumulator;
+            this.instructionRegister = pcb.instructionRegister;
+            this.programCounter = pcb.programCounter;
+            this.xRegister = pcb.xRegister;
+            this.yRegister = pcb.yRegister;
+            this.carryFlag = 0x0;
+            this.zFlag = pcb.zFlag;
+            this.currentProcess = pcb;
+
+            // Update OS GUI fields.
+            this.docAccumulator.textContent = this.hexLog(this.accumulator, 2);
+            this.docInstructionRegister.textContent = this.hexLog(this.instructionRegister, 2);
+            this.docProgramCounter.textContent = this.hexLog(this.programCounter, 4);
+            this.docXRegister.textContent = this.hexLog(this.xRegister, 2);
+            this.docYRegister.textContent = this.hexLog(this.yRegister, 2);
+            this.docZFlag.textContent = this.hexLog(this.zFlag, 2);
         }
 
         public pulse() {
@@ -382,6 +403,11 @@ module TSOS {
             // handling interrupts exclusively through software.
             // this.IC.emptyNextInterruptQueues();
             this.currentStep = 0;
+        }
+
+        private updatePCB() {
+            // Update the PCB of the currently executing process to reflect changes in the CPU state.
+
         }
 
         // Returns the current state of the CPU. For use in creating Process Control Blocks.
