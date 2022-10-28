@@ -6,9 +6,20 @@
 var TSOS;
 (function (TSOS) {
     class ProcessControlBlock {
-        constructor(processId, address, CPU) {
+        constructor(processId, address) {
             this.processId = processId;
             this.startingAddress = address;
+            // Initialize state to 0's
+            this.accumulator = 0x00;
+            this.instructionRegister = 0x00;
+            this.programCounter = 0x0000;
+            this.xRegister = 0x00;
+            this.yRegister = 0x00;
+            this.zFlag = 0x0;
+            this.state = 'RESIDENT';
+        }
+        // Update PCB log of CPU state
+        update(CPU) {
             // Get state from CPU
             let currentState = CPU.getCpuState();
             this.accumulator = currentState[0];
@@ -17,7 +28,6 @@ var TSOS;
             this.xRegister = currentState[3];
             this.yRegister = currentState[4];
             this.zFlag = currentState[5];
-            this.state = 'RESIDENT';
         }
     }
     TSOS.ProcessControlBlock = ProcessControlBlock;

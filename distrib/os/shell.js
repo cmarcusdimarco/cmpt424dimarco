@@ -440,7 +440,7 @@ var TSOS;
                     throw new Error(`Process with ID ${args[0]} is not available for additional execution.`);
                 }
                 // Reset CPU - start with 0s in all registers
-                _CPU.init();
+                _CPU.initWithPCB(process);
                 // Update state to READY
                 process.state = 'READY';
                 // TODO: When executing instructions, add base address to memory operands

@@ -164,7 +164,7 @@ module TSOS {
         // Pipelining outline
         private fetch() {
             // Get the next instruction from the memory address in the program counter
-            this.instructionRegister = _MemoryAccessor.readImmediate(this.programCounter);
+            this.instructionRegister = _MemoryAccessor.readImmediate(this.programCounter + this.currentProcess.startingAddress);
             // End by incrementing program counter and step counter
             this.programCounter++;
             this.currentStep++;
@@ -205,24 +205,24 @@ module TSOS {
                     switch (this.instructionRegister) {
                         // Loading constant cases, skip to interrupt check
                         case 0xA0:
-                            this.yRegister = _MemoryAccessor.readImmediate(this.programCounter);
+                            this.yRegister = _MemoryAccessor.readImmediate(this.programCounter + this.currentProcess.startingAddress);
                             this.currentStep = 6;
                             // Update OS GUI
                             this.docYRegister.textContent = this.hexLog(this.yRegister, 2);
                             break;
                         case 0xA2:
-                            this.xRegister = _MemoryAccessor.readImmediate(this.programCounter);
+                            this.xRegister = _MemoryAccessor.readImmediate(this.programCounter + this.currentProcess.startingAddress);
                             this.currentStep = 6;
                             break;
                         case 0xA9:
-                            this.accumulator = _MemoryAccessor.readImmediate(this.programCounter);
+                            this.accumulator = _MemoryAccessor.readImmediate(this.programCounter + this.currentProcess.startingAddress);
                             this.currentStep = 6;
                             // Update OS GUI
                             this.docAccumulator.textContent = this.hexLog(this.accumulator, 2);
                             break;
                         // Branch to relative address
                         case 0xD0:
-                            _MemoryAccessor.setLowOrder(_MemoryAccessor.readImmediate(this.programCounter));
+                            _MemoryAccessor.setLowOrder(_MemoryAccessor.readImmediate(this.programCounter + this.currentProcess.startingAddress));
                             this.currentStep += 2;
                             break;
                         default:
@@ -234,7 +234,7 @@ module TSOS {
                     this.docProgramCounter.textContent = this.hexLog(this.programCounter, 4);
                     return;
                 case 0x02:
-                    _MemoryAccessor.setLowOrder(_MemoryAccessor.readImmediate(this.programCounter));
+                    _MemoryAccessor.setLowOrder(_MemoryAccessor.readImmediate(this.programCounter + this.currentProcess.startingAddress));
                     this.programCounter++;
                     this.currentStep++;
                     // Update OS GUI
@@ -247,7 +247,7 @@ module TSOS {
 
         private decode2() {
             // If reached, load high order byte
-            _MemoryAccessor.setHighOrder(_MemoryAccessor.readImmediate(this.programCounter));
+            _MemoryAccessor.setHighOrder(_MemoryAccessor.readImmediate(this.programCounter + this.currentProcess.startingAddress) + (this.currentProcess.startingAddress / 0x100));
             this.programCounter++;
             this.currentStep++;
             // Update OS GUI
@@ -352,8 +352,8 @@ module TSOS {
                         case 0x2:
                             // Print 0x00 terminating string starting from address in Y register
                             let currentAddress = this.yRegister;
-                            while (_MemoryAccessor.readImmediate(currentAddress) != 0x00) {
-                                let toPrint = Ascii.lookup(_MemoryAccessor.readImmediate(currentAddress));
+                            while (_MemoryAccessor.readImmediate(currentAddress + this.currentProcess.startingAddress) != 0x00) {
+                                let toPrint = Ascii.lookup(_MemoryAccessor.readImmediate(currentAddress + this.currentProcess.startingAddress));
                                 _StdOut.putText(toPrint);
                                 currentAddress++;
                             }
@@ -364,8 +364,8 @@ module TSOS {
                             let highString = _MemoryAccessor.getHighOrderByte().toString(16);
                             let fullString = "0x".concat(highString.concat(lowString));
                             let desiredAddress = Number(fullString);
-                            while (_MemoryAccessor.readImmediate(desiredAddress) != 0x00) {
-                                let toPrint = Ascii.lookup(_MemoryAccessor.readImmediate(desiredAddress));
+                            while (_MemoryAccessor.readImmediate(desiredAddress + this.currentProcess.startingAddress) != 0x00) {
+                                let toPrint = Ascii.lookup(_MemoryAccessor.readImmediate(desiredAddress + this.currentProcess.startingAddress));
                                 _StdOut.putText(toPrint);
                                 desiredAddress++;
                             }

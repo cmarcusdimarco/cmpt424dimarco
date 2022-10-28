@@ -528,7 +528,7 @@ module TSOS {
                 }
 
                 // Reset CPU - start with 0s in all registers
-                _CPU.init();
+                _CPU.initWithPCB(process);
 
                 // Update state to READY
                 process.state = 'READY';

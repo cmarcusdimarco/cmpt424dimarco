@@ -25,7 +25,7 @@ var TSOS;
                     this.baseRegister = partitionBaseAddress;
                     _MemoryAccessor.writeProgram(program, this.baseRegister, this.limitRegister);
                     // Create the Process Control Block, assign a process ID, and push to the registered processes array.
-                    let processControlBlock = new TSOS.ProcessControlBlock(this.processIdCounter++, this.baseRegister, _CPU);
+                    let processControlBlock = new TSOS.ProcessControlBlock(this.processIdCounter++, this.baseRegister);
                     this.registeredProcesses.push(processControlBlock);
                     // Write the Process Control Block to index.html to test this functionality
                     // TODO: Clean this up for a proper display of stored processes.
