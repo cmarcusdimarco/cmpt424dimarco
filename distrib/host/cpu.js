@@ -86,13 +86,13 @@ var TSOS;
         }
         // Initialize CPU by passing a PCB
         initWithPCB(pcb) {
-            this.accumulator = pcb.accumulator;
-            this.instructionRegister = pcb.instructionRegister;
-            this.programCounter = pcb.programCounter;
-            this.xRegister = pcb.xRegister;
-            this.yRegister = pcb.yRegister;
+            this.accumulator = parseInt(pcb.accumulator, 16);
+            this.instructionRegister = parseInt(pcb.instructionRegister, 16);
+            this.programCounter = parseInt(pcb.programCounter, 16);
+            this.xRegister = parseInt(pcb.xRegister, 16);
+            this.yRegister = parseInt(pcb.yRegister, 16);
             this.carryFlag = 0x0;
-            this.zFlag = pcb.zFlag;
+            this.zFlag = parseInt(pcb.zFlag, 16);
             this.currentProcess = pcb;
             // Update OS GUI fields.
             this.docAccumulator.textContent = this.hexLog(this.accumulator, 2);
@@ -387,12 +387,12 @@ var TSOS;
         // Returns the current state of the CPU. For use in creating Process Control Blocks.
         getCpuState() {
             return {
-                accumulator: this.accumulator,
-                instructionRegister: this.instructionRegister,
-                programCounter: this.programCounter,
-                xRegister: this.xRegister,
-                yRegister: this.yRegister,
-                zFlag: this.zFlag
+                accumulator: this.hexLog(this.accumulator, 2),
+                instructionRegister: this.hexLog(this.instructionRegister, 2),
+                programCounter: this.hexLog(this.programCounter, 4),
+                xRegister: this.hexLog(this.xRegister, 2),
+                yRegister: this.hexLog(this.yRegister, 2),
+                zFlag: this.hexLog(this.zFlag, 1)
             };
         }
     }

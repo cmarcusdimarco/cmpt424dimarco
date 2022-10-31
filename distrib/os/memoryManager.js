@@ -27,16 +27,17 @@ var TSOS;
                     // Create the Process Control Block, assign a process ID, and push to the registered processes array.
                     let processControlBlock = new TSOS.ProcessControlBlock(this.processIdCounter++, this.baseRegister);
                     this.registeredProcesses.push(processControlBlock);
-                    // Write the Process Control Block to index.html to test this functionality
-                    // TODO: Clean this up for a proper display of stored processes.
-                    let textArea = document.getElementById('taProcessControlBlock');
-                    if (!textArea.textContent) {
-                        textArea.textContent = `PID: ${processControlBlock.processId} State: ${processControlBlock.state}\r\n`;
+                    // Find the first available space in the GUI PCB table and assign it to the new PCB.
+                    let tableLength = document.getElementById('tableProcessControlBlock').rows.length;
+                    for (let i = 1; i < tableLength; i++) {
+                        let stateCell = document.getElementById(`pcb${i - 1}State`);
+                        if (stateCell.innerText == 'N/A' || stateCell.innerText == 'TERMINATED') {
+                            processControlBlock.assignDOMFields(`pcb${i - 1}`);
+                            break;
+                        }
                     }
-                    else {
-                        // TODO: Does not yet update input if textArea has text already in it.
-                        textArea.append(`PID: ${processControlBlock.processId} State: ${processControlBlock.state}\r\n`);
-                    }
+                    // Update GUI to reflect new PCB
+                    processControlBlock.updateGUI();
                     // Print info to console
                     _StdOut.putText(`Program loaded into memory block ${this.baseRegister / this.limitRegister} ` +
                         `with process ID ${processControlBlock.processId}.`);

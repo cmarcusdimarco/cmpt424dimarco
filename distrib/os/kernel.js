@@ -172,7 +172,7 @@ var TSOS;
             // Break current program on CTRL+C
             _CPU.isExecuting = false;
             // Deallocate memory using the current program counter as a pseudo-halt address
-            _MemoryManager.deallocateMemory(_CPU.getCpuState().programCounter);
+            _MemoryManager.deallocateMemory(parseInt(_CPU.getCpuState().programCounter, 16));
             _CPU.init();
             // Display CTRL+C on console.
             _StdOut.putText('^');

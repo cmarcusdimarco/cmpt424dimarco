@@ -442,14 +442,10 @@ var TSOS;
                 // Reset CPU - start with 0s in all registers
                 _CPU.initWithPCB(process);
                 // Update state to READY
-                process.state = 'READY';
-                // TODO: When executing instructions, add base address to memory operands
+                process.updateGUI('READY');
                 // Run process, setting state as appropriate.
                 _CPU.isExecuting = true;
-                process.state = 'RUNNING';
-                // Update OS GUI to reflect change in process state
-                let docProcess = document.getElementById('taProcessControlBlock');
-                docProcess.textContent = `PID: ${process.processId} State: ${process.state}\r\n`;
+                process.updateGUI('RUNNING');
                 // When finished, CPU halt op code will call for memory de-allocation.
             }
             catch (e) {
