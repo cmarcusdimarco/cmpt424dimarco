@@ -143,6 +143,8 @@ var TSOS;
                         break;
                 }
             } while (this.currentStep != 0x00);
+            // Update PCB in GUI.
+            this.updatePCB();
         }
         // Pipelining outline
         fetch() {
@@ -383,6 +385,8 @@ var TSOS;
         }
         updatePCB() {
             // Update the PCB of the currently executing process to reflect changes in the CPU state.
+            this.currentProcess.update(this);
+            this.currentProcess.updateGUI(this.currentProcess.state);
         }
         // Returns the current state of the CPU. For use in creating Process Control Blocks.
         getCpuState() {

@@ -49,12 +49,12 @@ module TSOS {
         public update(CPU: TSOS.Cpu) {
             // Get state from CPU
             let currentState = CPU.getCpuState();
-            this.accumulator = currentState[0];
-            this.instructionRegister = currentState[1];
-            this.programCounter = currentState[2];
-            this.xRegister = currentState[3];
-            this.yRegister = currentState[4];
-            this.zFlag = currentState[5];
+            this.accumulator = currentState.accumulator;
+            this.instructionRegister = currentState.instructionRegister;
+            this.programCounter = currentState.programCounter;
+            this.xRegister = currentState.xRegister;
+            this.yRegister = currentState.yRegister;
+            this.zFlag = currentState.zFlag;
         }
 
         // Assign HTML fields when htmlRoot is assigned
