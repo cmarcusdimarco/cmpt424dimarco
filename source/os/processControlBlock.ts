@@ -8,25 +8,39 @@ module TSOS {
     export class ProcessControlBlock {
         public readonly processId: number;
         public readonly startingAddress: number;
-        public programCounter: number;
-        public instructionRegister: number;
-        public accumulator: number;
-        public xRegister: number;
-        public yRegister: number;
-        public zFlag: number;
+        public programCounter: string;
+        public instructionRegister: string;
+        public accumulator: string;
+        public xRegister: string;
+        public yRegister: string;
+        public zFlag: string;
         public state: string;
+
+        // HTML/DOM fields using IDs
+        public htmlRoot: string;
+        public htmlPID: string;
+        public htmlState: string;
+        public htmlPC: string;
+        public htmlIR: string;
+        public htmlACC: string;
+        public htmlX: string;
+        public htmlY: string;
+        public htmlZ: string;
+
+        // Array of HTML/DOM fields
+        public htmlFields: string[] = [];
 
         constructor(processId: number, address: number) {
             this.processId = processId;
             this.startingAddress = address;
 
             // Initialize state to 0's
-            this.accumulator = 0x00;
-            this.instructionRegister = 0x00;
-            this.programCounter = 0x0000;
-            this.xRegister = 0x00;
-            this.yRegister = 0x00;
-            this.zFlag = 0x0;
+            this.accumulator = '00';
+            this.instructionRegister = '00';
+            this.programCounter = '0000';
+            this.xRegister = '00';
+            this.yRegister = '00';
+            this.zFlag = '0';
 
             this.state = 'RESIDENT';
         }
@@ -41,6 +55,43 @@ module TSOS {
             this.xRegister = currentState[3];
             this.yRegister = currentState[4];
             this.zFlag = currentState[5];
+        }
+
+        // Assign HTML fields when htmlRoot is assigned
+        public assignDOMFields(htmlRoot: string) {
+            this.htmlRoot = htmlRoot;
+            this.htmlPID = `${htmlRoot}ID`;
+            this.htmlState = `${htmlRoot}State`;
+            this.htmlPC = `${htmlRoot}PC`;
+            this.htmlIR = `${htmlRoot}IR`;
+            this.htmlACC = `${htmlRoot}ACC`;
+            this.htmlX = `${htmlRoot}X`;
+            this.htmlY = `${htmlRoot}Y`;
+            this.htmlZ = `${htmlRoot}Z`;
+        }
+
+        // Update GUI to most current PCB status, using optional param to update state
+        public updateGUI(state?: string) {
+            // Check for htmlRoot
+            if (this.htmlRoot.length == 0) {
+                console.log(`ERR: HTML ID is not set for process ${this.processId}`);
+                return;
+            }
+
+            // Update state if passed
+            if (state) {
+                this.state = state;
+            }
+
+            // Update GUI using htmlId
+            document.getElementById(this.htmlPID).innerText = this.processId.toString();
+            document.getElementById(this.htmlState).innerText = this.state;
+            document.getElementById(this.htmlPC).innerText = this.programCounter;
+            document.getElementById(this.htmlIR).innerText = this.instructionRegister;
+            document.getElementById(this.htmlACC).innerText = this.accumulator;
+            document.getElementById(this.htmlX).innerText = this.xRegister;
+            document.getElementById(this.htmlY).innerText = this.yRegister;
+            document.getElementById(this.htmlZ).innerText = this.zFlag;
         }
     }
 }
