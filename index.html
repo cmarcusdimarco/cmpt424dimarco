@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-   <meta name="author"             content="Alan G. Labouseur" />
+   <meta name="author"             content="Alan G. Labouseur, C. Marcus DiMarco" />
    <link rel="stylesheet" href="tsos.css" type="text/css" media="screen" />
    <title>
-      TSOS - a browser-based virtual Operating System in TypeScript
+      MarcOS - a browser-based virtual Operating System in TypeScript
    </title>
 
    <!-- Globals CONSTANTS and _Variables. Must included be first. -->
@@ -136,15 +136,95 @@
       </label>
    </div>
 
-   <div id="divProcessControlBlock" style="margin-left:520px;">
+   <div id="divProcessControlBlock" style="margin-left:520px; padding-bottom: 5px;">
       <label>
          Processes
          <br>
-         <textarea name="taProcessControlBlock"
+         <table name="taProcessControlBlock"
                    id  ="taProcessControlBlock"
-                   rows="8"
-                   cols="48"
-         ></textarea>
+                   style="background: white;
+                          border: 1px solid;
+                          font-family: monospace;
+                          border-collapse: collapse">
+            <tbody>
+               <tr id="pcbHeader">
+                  <td>|</td>
+                  <td class="pcbPID">PID</td>
+                  <td>|</td>
+                  <td class="pcbState">STATE</td>
+                  <td>|</td>
+                  <td class="pcbPC">PC</td>
+                  <td>|</td>
+                  <td class="pcbIR">IR</td>
+                  <td>|</td>
+                  <td class="pcbACC">ACC</td>
+                  <td>|</td>
+                  <td class="pcbX">X</td>
+                  <td>|</td>
+                  <td class="pcbY">Y</td>
+                  <td>|</td>
+                  <td class="pcbZ">Z</td>
+                  <td>|</td>
+               </tr>
+               <tr id="pcb0">
+                  <td>|</td>
+                  <td class="pcbPID" id="pcb0ID"></td>
+                  <td>|</td>
+                  <td class="pcbState" id="pcb0State">N/A</td>
+                  <td>|</td>
+                  <td class="pcbPC" id="pcb0PC">0000</td>
+                  <td>|</td>
+                  <td class="pcbIR" id="pcb0IR">00</td>
+                  <td>|</td>
+                  <td class="pcbACC" id="pcb0ACC">00</td>
+                  <td>|</td>
+                  <td class="pcbX" id="pcb0X">00</td>
+                  <td>|</td>
+                  <td class="pcbY" id="pcb0Y">00</td>
+                  <td>|</td>
+                  <td class="pcbZ" id="pcb0Z">0</td>
+                  <td>|</td>
+               </tr>
+               <tr id="pcb1">
+                  <td>|</td>
+                  <td class="pcbPID" id="pcb1ID"></td>
+                  <td>|</td>
+                  <td class="pcbState" id="pcb1State">N/A</td>
+                  <td>|</td>
+                  <td class="pcbPC" id="pcb1PC">0000</td>
+                  <td>|</td>
+                  <td class="pcbIR" id="pcb1IR">00</td>
+                  <td>|</td>
+                  <td class="pcbACC" id="pcb1ACC">00</td>
+                  <td>|</td>
+                  <td class="pcbX" id="pcb1X">00</td>
+                  <td>|</td>
+                  <td class="pcbY" id="pcb1Y">00</td>
+                  <td>|</td>
+                  <td class="pcbZ" id="pcb1Z">0</td>
+                  <td>|</td>
+               </tr>
+               <tr id="pcb2">
+                  <td>|</td>
+                  <td class="pcbPID" id="pcb2ID"></td>
+                  <td>|</td>
+                  <td class="pcbState" id="pcb2State">N/A</td>
+                  <td>|</td>
+                  <td class="pcbPC" id="pcb2PC">0000</td>
+                  <td>|</td>
+                  <td class="pcbIR" id="pcb2IR">00</td>
+                  <td>|</td>
+                  <td class="pcbACC" id="pcb2ACC">00</td>
+                  <td>|</td>
+                  <td class="pcbX" id="pcb2X">00</td>
+                  <td>|</td>
+                  <td class="pcbY" id="pcb2Y">00</td>
+                  <td>|</td>
+                  <td class="pcbZ" id="pcb2Z">0</td>
+                  <td>|</td>
+               </tr>
+            </tbody>
+         </table>
       </label>
    </div>
 
@@ -160,7 +240,7 @@
       </label>
    </div>
 
-   <div id="divMemory" style="margin-left:920px; position: relative; top: -442px;">
+   <div id="divMemory" style="margin-left:920px; position: relative; top: -405px;">
       <label>
          Memory
          <br>
