@@ -39,6 +39,13 @@ var TSOS;
         peek() {
             return this.q[0];
         }
+        extract(index) {
+            var retVal = null;
+            if (this.q[index] != undefined) {
+                retVal = this.q[index];
+                this.q.splice(index, 1);
+            }
+        }
     }
     TSOS.Queue = Queue;
 })(TSOS || (TSOS = {}));
