@@ -515,8 +515,6 @@ module TSOS {
         }
 
         public shellRun(args: string[]) {
-            // TODO: Set base address based on process. For now, only base address is 0000.
-
             // Get process at id of first arg
             try {
                 let processId = parseInt(args[0]);

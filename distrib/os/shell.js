@@ -430,7 +430,6 @@ var TSOS;
             // System should create the PCB and return the process ID of the program.
         }
         shellRun(args) {
-            // TODO: Set base address based on process. For now, only base address is 0000.
             // Get process at id of first arg
             try {
                 let processId = parseInt(args[0]);
