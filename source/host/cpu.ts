@@ -87,6 +87,7 @@ module TSOS {
             this.yRegister = 0x00;
             this.carryFlag = 0x0;
             this.zFlag = 0x0;
+            this.currentStep = 0x00;
 
             // Update OS GUI fields.
             this.docAccumulator.textContent = '00';
@@ -386,6 +387,20 @@ module TSOS {
         private execute2() {
             // Perform second execute phase if needed
             // Currently only exists for EE
+            if (this.accumulator == 0xFF) {
+                // Halt if current instruction would violate bounds
+                this.log('Bounds violation - attempted to increment accumulator beyond 0xFF. Halting program...');
+                this.isExecuting = false;
+                // TODO: Put the following statements where they belong. Hardware should not trigger OS level calls.
+                _MemoryManager.deallocateMemory(this.currentProcess);
+                _StdOut.advanceLine();
+                _OsShell.putPrompt();
+                _Kernel.singleStep = false;
+                (<HTMLButtonElement>document.getElementById("btnStep")).disabled = true;
+                // Reset CPU state
+                this.init();
+                return;
+            }
             this.accumulator++;
             this.currentStep++;
             // Update OS GUI
