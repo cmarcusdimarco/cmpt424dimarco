@@ -8,6 +8,8 @@ module TSOS {
     export class ProcessControlBlock {
         public readonly processId: number;
         public readonly startingAddress: number;
+        public readonly limit: number;
+        public memoryPartition: number;
         public programCounter: string;
         public instructionRegister: string;
         public accumulator: string;
@@ -27,12 +29,13 @@ module TSOS {
         public htmlY: string;
         public htmlZ: string;
 
-        // Array of HTML/DOM fields
-        public htmlFields: string[] = [];
-
-        constructor(processId: number, address: number) {
+        constructor(processId: number, address: number, limit: number) {
             this.processId = processId;
             this.startingAddress = address;
+            this.limit = limit;
+
+            // Determine partition number based on startingAddress
+            this.memoryPartition = Math.floor(this.startingAddress / this.limit);
 
             // Initialize state to 0's
             this.accumulator = '00';

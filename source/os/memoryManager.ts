@@ -31,7 +31,7 @@ module TSOS {
                     _MemoryAccessor.writeProgram(program, this.baseRegister, this.limitRegister);
 
                     // Create the Process Control Block, assign a process ID, and push to the registered processes array.
-                    let processControlBlock = new ProcessControlBlock(this.processIdCounter++, this.baseRegister);
+                    let processControlBlock = new ProcessControlBlock(this.processIdCounter++, this.baseRegister, this.limitRegister);
                     this.registeredProcesses.push(processControlBlock);
 
                     // Find the first available space in the GUI PCB table and assign it to the new PCB.
