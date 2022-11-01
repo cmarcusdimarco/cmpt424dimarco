@@ -93,7 +93,7 @@ module TSOS {
 
         // clearProgram() will remove all data from the provided range after executing that program.
         public clearProgram(address: number, limit: number) {
-            for (let i = 0; i < address + limit; i++) {
+            for (let i = 0; i < limit; i++) {
                 this.writeImmediate(address + i, 0x00);
             }
         }

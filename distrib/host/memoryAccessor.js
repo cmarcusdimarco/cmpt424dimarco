@@ -78,7 +78,7 @@ var TSOS;
         }
         // clearProgram() will remove all data from the provided range after executing that program.
         clearProgram(address, limit) {
-            for (let i = 0; i < address + limit; i++) {
+            for (let i = 0; i < limit; i++) {
                 this.writeImmediate(address + i, 0x00);
             }
         }
