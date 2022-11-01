@@ -74,7 +74,7 @@ module TSOS {
         public updateGUI(state?: string) {
             // Check for htmlRoot
             if (this.htmlRoot.length == 0) {
-                console.log(`ERR: HTML ID is not set for process ${this.processId}`);
+                console.log(`ERR: HTML ROOT is not set for process ${this.processId}`);
                 return;
             }
 
@@ -92,6 +92,29 @@ module TSOS {
             document.getElementById(this.htmlX).innerText = this.xRegister;
             document.getElementById(this.htmlY).innerText = this.yRegister;
             document.getElementById(this.htmlZ).innerText = this.zFlag;
+        }
+
+        public updateGUIToZero(state?: string) {
+            // Check for htmlRoot
+            if (this.htmlRoot.length == 0) {
+                console.log(`ERR: HTML ROOT is not set for process ${this.processId}`);
+                return;
+            }
+
+            // Update state if passed
+            if (state) {
+                this.state = state;
+            }
+
+            // Update GUI using htmlId
+            document.getElementById(this.htmlPID).innerText = this.processId.toString();
+            document.getElementById(this.htmlState).innerText = this.state;
+            document.getElementById(this.htmlPC).innerText = '0000';
+            document.getElementById(this.htmlIR).innerText = '00';
+            document.getElementById(this.htmlACC).innerText = '00';
+            document.getElementById(this.htmlX).innerText = '00';
+            document.getElementById(this.htmlY).innerText = '00';
+            document.getElementById(this.htmlZ).innerText = '0';
         }
     }
 }

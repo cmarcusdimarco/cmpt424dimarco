@@ -50,7 +50,7 @@ var TSOS;
         // Deallocates the memory assigned to a process after execution.
         deallocateMemory(process) {
             // Find the non-terminated process whose halt command occurs within a specific address range.
-            process.updateGUI('TERMINATED');
+            process.updateGUIToZero('TERMINATED');
             _MemoryAccessor.clearProgram(process.startingAddress, this.limitRegister);
         }
     }

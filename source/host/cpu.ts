@@ -17,7 +17,7 @@ module TSOS {
 
         private cpuClockCount: number;
         private currentStep: number = 0x0;             // Placeholder to identify current step of instruction cycle
-        private currentProcess: ProcessControlBlock;
+        public currentProcess: ProcessControlBlock;
 
         // Registers
         private accumulator: number = 0x00;

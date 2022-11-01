@@ -193,8 +193,8 @@ module TSOS {
         public krnHaltProgram() {
             // Break current program on CTRL+C
             _CPU.isExecuting = false;
-            // Deallocate memory using the current program counter as a pseudo-halt address
-            _MemoryManager.deallocateMemory(parseInt(_CPU.getCpuState().programCounter, 16));
+            // Deallocate memory using the current program
+            _MemoryManager.deallocateMemory(_CPU.currentProcess);
             _CPU.init();
             // Display CTRL+C on console.
             _StdOut.putText('^');
