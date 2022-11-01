@@ -3,12 +3,12 @@
  */
 var TSOS;
 (function (TSOS) {
-    class cpuScheduler {
+    class CpuScheduler {
         // Constructor
         constructor() {
             this.readyQueue = new TSOS.Queue;
         }
     }
-    TSOS.cpuScheduler = cpuScheduler;
+    TSOS.CpuScheduler = CpuScheduler;
 })(TSOS || (TSOS = {}));
 //# sourceMappingURL=cpuScheduler.js.map

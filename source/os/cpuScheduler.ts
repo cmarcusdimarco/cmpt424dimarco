@@ -3,15 +3,15 @@
  */
 
 module TSOS {
-    export class cpuScheduler {
+    export class CpuScheduler {
         public readyQueue: Queue = new TSOS.Queue;
 
         // Constructor
-        public constructor() {
-
+        constructor() {
         }
 
         // Ready queue handling
+
 
         // Set scheduling method
 
