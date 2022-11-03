@@ -16,6 +16,7 @@ var TSOS;
         enqueue(process) {
             process.updateGUI('READY');
             this.readyQueue.enqueue(process);
+            _Kernel.krnTrace(`Enqueued process ${process.processId} in ready queue.`);
             if (!_CPU.isExecuting) {
                 this.readyQueue.dequeue();
                 _Dispatcher.dispatch(process);
@@ -27,12 +28,13 @@ var TSOS;
         // Context switch poll, to be called at the end of every CPU cycle
         pollForContextSwitch(process) {
             // Increment cycleCounter to track current process's CPU time
-            if (this.readyQueue.getSize() != 0) {
+            if (this.readyQueue.getSize() !== 0) {
                 this.cycleCounter++;
             }
             // If quantum has been reached, enqueue PCB and have dispatcher switch to next process.
             if (this.cycleCounter >= this.quantum) {
                 this.readyQueue.enqueue(process);
+                _Kernel.krnTrace(`Enqueued process ${process.processId} in ready queue.`);
                 let nextProcess = this.readyQueue.dequeue();
                 _Dispatcher.dispatch(nextProcess);
                 nextProcess.updateGUI('RUNNING');

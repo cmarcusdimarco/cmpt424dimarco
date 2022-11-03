@@ -8,6 +8,7 @@ var TSOS;
     class Dispatcher {
         // Initialize CPU with a process and set isExecuting to true.
         dispatch(process) {
+            _Kernel.krnTrace(`Dispatching process ${process.processId}...`);
             _CPU.initWithPCB(process);
             _CPU.isExecuting = true;
         }

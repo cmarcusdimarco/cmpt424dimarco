@@ -9,6 +9,7 @@ module TSOS {
 
         // Initialize CPU with a process and set isExecuting to true.
         public dispatch(process: TSOS.ProcessControlBlock) {
+            _Kernel.krnTrace(`Dispatching process ${process.processId}...`);
             _CPU.initWithPCB(process);
             _CPU.isExecuting = true;
         }
