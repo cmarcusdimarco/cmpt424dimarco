@@ -442,5 +442,9 @@ module TSOS {
                 zFlag: this.hexLog(this.zFlag, 1)
             };
         }
+
+        public getCurrentProcess(): TSOS.ProcessControlBlock {
+            return this.currentProcess;
+        }
     }
 }

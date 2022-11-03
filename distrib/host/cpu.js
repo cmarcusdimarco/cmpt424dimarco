@@ -416,6 +416,9 @@ var TSOS;
                 zFlag: this.hexLog(this.zFlag, 1)
             };
         }
+        getCurrentProcess() {
+            return this.currentProcess;
+        }
     }
     TSOS.Cpu = Cpu;
 })(TSOS || (TSOS = {}));
