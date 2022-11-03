@@ -22,7 +22,7 @@ module TSOS {
 
             // Initialize our global queues.
             _KernelInterruptQueue = new Queue();  // A (currently) non-priority queue for interrupt requests (IRQs).
-            _KernelBuffers = new Array();         // Buffers... for the kernel.
+            _KernelBuffers = [];         // Buffers... for the kernel.
             _KernelInputQueue = new Queue();      // Where device input lands before being processed out somewhere.
 
             // Initialize the console.
@@ -96,6 +96,7 @@ module TSOS {
                 if (!this.singleStep) {
                     _CPU.pulse();
                     this.krnTrace("Executing...");
+                    _CPUScheduler.pollForContextSwitch(_CPU.getCurrentProcess());
                 } else {
                     this.krnTrace("Single Step Mode...awaiting Step...");
                 }

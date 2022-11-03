@@ -20,7 +20,7 @@ var TSOS;
             TSOS.Control.hostLog("bootstrap", "host"); // Use hostLog because we ALWAYS want this, even if _Trace is off.
             // Initialize our global queues.
             _KernelInterruptQueue = new TSOS.Queue(); // A (currently) non-priority queue for interrupt requests (IRQs).
-            _KernelBuffers = new Array(); // Buffers... for the kernel.
+            _KernelBuffers = []; // Buffers... for the kernel.
             _KernelInputQueue = new TSOS.Queue(); // Where device input lands before being processed out somewhere.
             // Initialize the console.
             _Console = new TSOS.Console(); // The command line interface / console I/O device.
@@ -82,6 +82,7 @@ var TSOS;
                 if (!this.singleStep) {
                     _CPU.pulse();
                     this.krnTrace("Executing...");
+                    _CPUScheduler.pollForContextSwitch(_CPU.getCurrentProcess());
                 }
                 else {
                     this.krnTrace("Single Step Mode...awaiting Step...");

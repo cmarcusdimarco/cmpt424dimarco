@@ -140,6 +140,7 @@ module TSOS {
             // Step through execution once per click
             _CPU.pulse();
             _Kernel.krnTrace("Stepping through.");
+            _CPUScheduler.pollForContextSwitch(_CPU.getCurrentProcess());
         }
     }
 }
