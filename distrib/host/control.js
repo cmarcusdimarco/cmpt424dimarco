@@ -75,7 +75,7 @@ var TSOS;
             _Memory.initializeMemoryAddresses();
             _MemoryAccessor = new TSOS.MemoryAccessor(_Memory);
             // ...set their respective debugs...
-            _CPU.debug = false;
+            _CPU.debug = true;
             _Memory.debug = false;
             _MemoryAccessor.debug = false;
             // ... then set the host clock pulse ...

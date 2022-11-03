@@ -95,7 +95,7 @@ module TSOS {
             _MemoryAccessor = new MemoryAccessor(_Memory);
 
             // ...set their respective debugs...
-            _CPU.debug = false;
+            _CPU.debug = true;
             _Memory.debug = false;
             _MemoryAccessor.debug = false;
 
