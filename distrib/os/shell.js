@@ -438,13 +438,8 @@ var TSOS;
                 if (process.state != 'RESIDENT') {
                     throw new Error(`Process with ID ${args[0]} is not available for additional execution.`);
                 }
-                // Reset CPU - start with 0s in all registers
-                _CPU.initWithPCB(process);
-                // Update state to READY
-                process.updateGUI('READY');
-                // Run process, setting state as appropriate.
-                _CPU.isExecuting = true;
-                process.updateGUI('RUNNING');
+                // Enqueue the process to the CpuScheduler's ready queue
+                _CPUScheduler.enqueue(process);
                 // When finished, CPU halt op code will call for memory de-allocation.
             }
             catch (e) {
