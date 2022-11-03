@@ -33,9 +33,7 @@ module TSOS {
         // Context switch poll, to be called at the end of every CPU cycle
         public pollForContextSwitch(process: TSOS.ProcessControlBlock) {
             // Increment cycleCounter to track current process's CPU time
-            if (this.readyQueue.getSize() !== 0) {
-                this.cycleCounter++;
-            }
+            this.cycleCounter++;
 
             // If quantum has been reached, enqueue PCB and have dispatcher switch to next process.
             if (this.cycleCounter >= this.quantum) {
