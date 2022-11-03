@@ -29,6 +29,8 @@ var TSOS;
         pollForContextSwitch(process) {
             // Increment cycleCounter to track current process's CPU time
             this.cycleCounter++;
+            // Update in GUI
+            process.updateQuantum(this.cycleCounter);
             // If quantum has been reached, enqueue PCB and have dispatcher switch to next process.
             if (this.cycleCounter >= this.quantum) {
                 this.readyQueue.enqueue(process);

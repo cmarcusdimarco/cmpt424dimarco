@@ -18,7 +18,7 @@ module TSOS {
 
             // Query memory partitions for existing data
             for (let partitionBaseAddress of _Memory.partitions) {
-                if (_MemoryAccessor.readImmediate(partitionBaseAddress) == 0x0000) {
+                if (_MemoryAccessor.readImmediate(partitionBaseAddress) === 0x0000) {
 
                     // Validate program length - return error if overflow
                     if (program.length >= this.limitRegister) {
@@ -38,7 +38,7 @@ module TSOS {
                     let tableLength: number = (<HTMLTableElement>document.getElementById('tableProcessControlBlock')).rows.length;
                     for (let i = 1; i < tableLength; i++) {
                         let stateCell = document.getElementById(`pcb${i - 1}State`);
-                        if (stateCell.innerText == 'N/A' || stateCell.innerText == 'TERMINATED') {
+                        if (stateCell.innerText === 'N/A' || stateCell.innerText === 'TERMINATED') {
                             processControlBlock.assignDOMFields(`pcb${i - 1}`);
                             break;
                         }
@@ -61,7 +61,7 @@ module TSOS {
         // Deallocates the memory assigned to a process after execution.
         public deallocateMemory(process: TSOS.ProcessControlBlock) {
             // Find the non-terminated process whose halt command occurs within a specific address range.
-            process.updateGUIToZero('TERMINATED');
+            process.updateGUI('TERMINATED');
             _MemoryAccessor.clearProgram(process.startingAddress, this.limitRegister);
         }
     }

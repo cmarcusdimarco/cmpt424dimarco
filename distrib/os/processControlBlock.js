@@ -43,11 +43,12 @@ var TSOS;
             this.htmlX = `${htmlRoot}X`;
             this.htmlY = `${htmlRoot}Y`;
             this.htmlZ = `${htmlRoot}Z`;
+            this.htmlQuantum = `${htmlRoot}Quantum`;
         }
         // Update GUI to most current PCB status, using optional param to update state
         updateGUI(state) {
             // Check for htmlRoot
-            if (this.htmlRoot.length == 0) {
+            if (this.htmlRoot.length === 0) {
                 console.log(`ERR: HTML ROOT is not set for process ${this.processId}`);
                 return;
             }
@@ -55,35 +56,31 @@ var TSOS;
             if (state) {
                 this.state = state;
             }
-            // Update GUI using htmlId
+            // Update all GUI fields
             document.getElementById(this.htmlPID).innerText = this.processId.toString();
             document.getElementById(this.htmlState).innerText = this.state;
-            document.getElementById(this.htmlPC).innerText = this.programCounter;
-            document.getElementById(this.htmlIR).innerText = this.instructionRegister;
-            document.getElementById(this.htmlACC).innerText = this.accumulator;
-            document.getElementById(this.htmlX).innerText = this.xRegister;
-            document.getElementById(this.htmlY).innerText = this.yRegister;
-            document.getElementById(this.htmlZ).innerText = this.zFlag;
+            // If terminated, set CPU registers to 0
+            if (state === 'TERMINATED') {
+                document.getElementById(this.htmlPC).innerText = '0000';
+                document.getElementById(this.htmlIR).innerText = '00';
+                document.getElementById(this.htmlACC).innerText = '00';
+                document.getElementById(this.htmlX).innerText = '00';
+                document.getElementById(this.htmlY).innerText = '00';
+                document.getElementById(this.htmlZ).innerText = '0';
+            }
+            else {
+                // Otherwise, set CPU registers to updated values
+                document.getElementById(this.htmlPC).innerText = this.programCounter;
+                document.getElementById(this.htmlIR).innerText = this.instructionRegister;
+                document.getElementById(this.htmlACC).innerText = this.accumulator;
+                document.getElementById(this.htmlX).innerText = this.xRegister;
+                document.getElementById(this.htmlY).innerText = this.yRegister;
+                document.getElementById(this.htmlZ).innerText = this.zFlag;
+            }
         }
-        updateGUIToZero(state) {
-            // Check for htmlRoot
-            if (this.htmlRoot.length == 0) {
-                console.log(`ERR: HTML ROOT is not set for process ${this.processId}`);
-                return;
-            }
-            // Update state if passed
-            if (state) {
-                this.state = state;
-            }
-            // Update GUI using htmlId
-            document.getElementById(this.htmlPID).innerText = this.processId.toString();
-            document.getElementById(this.htmlState).innerText = this.state;
-            document.getElementById(this.htmlPC).innerText = '0000';
-            document.getElementById(this.htmlIR).innerText = '00';
-            document.getElementById(this.htmlACC).innerText = '00';
-            document.getElementById(this.htmlX).innerText = '00';
-            document.getElementById(this.htmlY).innerText = '00';
-            document.getElementById(this.htmlZ).innerText = '0';
+        updateQuantum(quantum) {
+            this.quantum = quantum;
+            document.getElementById(this.htmlQuantum).innerText = this.quantum.toString();
         }
     }
     TSOS.ProcessControlBlock = ProcessControlBlock;
