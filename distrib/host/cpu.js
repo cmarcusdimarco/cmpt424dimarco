@@ -143,7 +143,7 @@ var TSOS;
                     default:
                         break;
                 }
-            } while (this.currentStep != 0x00);
+            } while (this.currentStep !== 0x00);
             // Update PCB in GUI.
             this.updatePCB();
         }
@@ -163,14 +163,14 @@ var TSOS;
             let numOperands;
             // Find instructionIndex and numOperands for the current instruction
             for (let i = 0x00; i < this.instructionSet[0x00].length; i++) {
-                if (this.instructionSet[0x00][i] == this.instructionRegister) {
+                if (this.instructionSet[0x00][i] === this.instructionRegister) {
                     numOperands = this.instructionSet[0x01][i];
                     break;
                 }
             }
             // For conditional opcodes, check X register to determine numOperands
-            if (numOperands == 0xFF) {
-                if (this.xRegister == 0x03) {
+            if (numOperands === 0xFF) {
+                if (this.xRegister === 0x03) {
                     numOperands = 0x02;
                 }
                 else {
@@ -196,6 +196,8 @@ var TSOS;
                         case 0xA2:
                             this.xRegister = _MemoryAccessor.readImmediate(this.programCounter + this.currentProcess.startingAddress);
                             this.currentStep = 6;
+                            // Update OS GUI
+                            this.docXRegister.textContent = this.hexLog(this.xRegister, 2);
                             break;
                         case 0xA9:
                             this.accumulator = _MemoryAccessor.readImmediate(this.programCounter + this.currentProcess.startingAddress);
@@ -297,7 +299,7 @@ var TSOS;
                     this.docXRegister.textContent = this.hexLog(this.xRegister, 2);
                     break;
                 case 0xD0: // Branch n bytes if Z flag not set
-                    if (this.zFlag == 0) {
+                    if (this.zFlag === 0) {
                         if (_MemoryAccessor.getLowOrderByte() <= 0x7F) {
                             this.programCounter += _MemoryAccessor.getLowOrderByte();
                         }
@@ -311,7 +313,7 @@ var TSOS;
                 case 0xEA: // No operation
                     break;
                 case 0xEC: // Compare memory to X register, set Z flag if equal
-                    if (this.xRegister == _MemoryAccessor.read()) {
+                    if (this.xRegister === _MemoryAccessor.read()) {
                         this.zFlag = 1;
                     }
                     else {
@@ -335,7 +337,7 @@ var TSOS;
                         case 0x2:
                             // Print 0x00 terminating string starting from address in Y register
                             let currentAddress = this.yRegister;
-                            while (_MemoryAccessor.readImmediate(currentAddress + this.currentProcess.startingAddress) != 0x00) {
+                            while (_MemoryAccessor.readImmediate(currentAddress + this.currentProcess.startingAddress) !== 0x00) {
                                 let toPrint = TSOS.Ascii.lookup(_MemoryAccessor.readImmediate(currentAddress + this.currentProcess.startingAddress));
                                 _StdOut.putText(toPrint);
                                 currentAddress++;
@@ -347,7 +349,7 @@ var TSOS;
                             let highString = _MemoryAccessor.getHighOrderByte().toString(16);
                             let fullString = "0x".concat(highString.concat(lowString));
                             let desiredAddress = Number(fullString);
-                            while (_MemoryAccessor.readImmediate(desiredAddress + this.currentProcess.startingAddress) != 0x00) {
+                            while (_MemoryAccessor.readImmediate(desiredAddress + this.currentProcess.startingAddress) !== 0x00) {
                                 let toPrint = TSOS.Ascii.lookup(_MemoryAccessor.readImmediate(desiredAddress + this.currentProcess.startingAddress));
                                 _StdOut.putText(toPrint);
                                 desiredAddress++;
@@ -365,7 +367,7 @@ var TSOS;
         execute2() {
             // Perform second execute phase if needed
             // Currently only exists for EE
-            if (this.accumulator == 0xFF) {
+            if (this.accumulator === 0xFF) {
                 // Halt if current instruction would violate bounds
                 this.log('Bounds violation - attempted to increment accumulator beyond 0xFF. Halting program...');
                 this.isExecuting = false;
