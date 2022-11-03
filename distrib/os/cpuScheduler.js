@@ -38,6 +38,13 @@ var TSOS;
                 nextProcess.updateGUI('RUNNING');
                 this.cycleCounter = 0;
             }
+            // If one process finishes and other processes are in the queue, dispatch next process.
+            if (!_CPU.isExecuting && this.readyQueue.getSize() > 0) {
+                let nextProcess = this.readyQueue.dequeue();
+                _Dispatcher.dispatch(nextProcess);
+                nextProcess.updateGUI('RUNNING');
+                this.cycleCounter = 0;
+            }
         }
     }
     TSOS.CpuScheduler = CpuScheduler;
