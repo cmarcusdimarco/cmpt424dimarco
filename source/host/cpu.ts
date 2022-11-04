@@ -108,6 +108,7 @@ module TSOS {
             this.carryFlag = 0x0;
             this.zFlag = parseInt(pcb.zFlag, 16);
             this.currentProcess = pcb;
+            this.currentStep = 0x00;
 
             // Update OS GUI fields.
             this.docAccumulator.textContent = this.hexLog(this.accumulator, 2);
@@ -273,7 +274,7 @@ module TSOS {
                     (<HTMLButtonElement>document.getElementById("btnStep")).disabled = true;
                     // Reset CPU state
                     this.init();
-                    break;
+                    return;
                 case 0x6D:  // Add with carry
                     this.accumulator += _MemoryAccessor.read();
                     if (this.accumulator > 0xFF) {
@@ -401,6 +402,7 @@ module TSOS {
                 (<HTMLButtonElement>document.getElementById("btnStep")).disabled = true;
                 // Reset CPU state
                 this.init();
+                this.currentStep = 0x00;
                 return;
             }
             this.accumulator++;
@@ -445,6 +447,10 @@ module TSOS {
 
         public getCurrentProcess(): TSOS.ProcessControlBlock {
             return this.currentProcess;
+        }
+
+        public currentStepReset() {
+            this.currentStep = 0x00;
         }
     }
 }

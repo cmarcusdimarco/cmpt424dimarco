@@ -95,6 +95,7 @@ var TSOS;
             this.carryFlag = 0x0;
             this.zFlag = parseInt(pcb.zFlag, 16);
             this.currentProcess = pcb;
+            this.currentStep = 0x00;
             // Update OS GUI fields.
             this.docAccumulator.textContent = this.hexLog(this.accumulator, 2);
             this.docInstructionRegister.textContent = this.hexLog(this.instructionRegister, 2);
@@ -250,7 +251,7 @@ var TSOS;
                     document.getElementById("btnStep").disabled = true;
                     // Reset CPU state
                     this.init();
-                    break;
+                    return;
                 case 0x6D: // Add with carry
                     this.accumulator += _MemoryAccessor.read();
                     if (this.accumulator > 0xFF) {
@@ -379,6 +380,7 @@ var TSOS;
                 document.getElementById("btnStep").disabled = true;
                 // Reset CPU state
                 this.init();
+                this.currentStep = 0x00;
                 return;
             }
             this.accumulator++;
@@ -418,6 +420,9 @@ var TSOS;
         }
         getCurrentProcess() {
             return this.currentProcess;
+        }
+        currentStepReset() {
+            this.currentStep = 0x00;
         }
     }
     TSOS.Cpu = Cpu;
