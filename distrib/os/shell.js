@@ -78,6 +78,24 @@ var TSOS;
             // run <pid>
             sc = new TSOS.ShellCommand(this.shellRun, "run", "<pid> - Runs the program in memory with the specified process ID.");
             this.commandList[this.commandList.length] = sc;
+            // clearmem
+            sc = new TSOS.ShellCommand(this.shellClearMem, "clearmem", "- Clears all memory partitions once the ready queue is empty.");
+            this.commandList[this.commandList.length] = sc;
+            // runall
+            sc = new TSOS.ShellCommand(this.shellRunAll, "runall", "- Runs all loaded processes.");
+            this.commandList[this.commandList.length] = sc;
+            // ps
+            sc = new TSOS.ShellCommand(this.shellPs, "ps", "- Displays the PID and state of all processes.");
+            this.commandList[this.commandList.length] = sc;
+            // kill <pid>
+            sc = new TSOS.ShellCommand(this.shellKill, "kill", "<pid> - Kills the process with the specified process ID.");
+            this.commandList[this.commandList.length] = sc;
+            // killall
+            sc = new TSOS.ShellCommand(this.shellKillAll, "killall", "- Kill all processes. None survive.");
+            this.commandList[this.commandList.length] = sc;
+            // quantum <int>
+            sc = new TSOS.ShellCommand(this.shellQuantum, "quantum", "<int> - Sets the quantum to the specified positive integer.");
+            this.commandList[this.commandList.length] = sc;
             // Sort the commandList for use in tab completion
             this.commandList = this.commandList.sort((command1, command2) => {
                 if (command1.command > command2.command) {
@@ -300,6 +318,24 @@ var TSOS;
                     case "run":
                         _StdOut.putText("Runs the program at a specified process ID.");
                         break;
+                    case "clearmem":
+                        _StdOut.putText("Clears all memory partitions once the ready queue is empty.");
+                        break;
+                    case "runall":
+                        _StdOut.putText("Runs all loaded processes.");
+                        break;
+                    case "ps":
+                        _StdOut.putText("Displays the PID and the state of all processes.");
+                        break;
+                    case "kill":
+                        _StdOut.putText("Kills the program at a specified process ID.");
+                        break;
+                    case "killall":
+                        _StdOut.putText("Kills all programs.");
+                        break;
+                    case "quantum":
+                        _StdOut.putText("Sets the quantum of the CPU scheduler.");
+                        break;
                     default:
                         _StdOut.putText("No manual entry for " + args[0] + ".");
                 }
@@ -446,6 +482,18 @@ var TSOS;
                 _Kernel.krnTrace(e);
                 _StdOut.putText(`ERR: Check console for details.`);
             }
+        }
+        shellClearMem(args) {
+        }
+        shellRunAll(args) {
+        }
+        shellPs(args) {
+        }
+        shellKill(args) {
+        }
+        shellKillAll(args) {
+        }
+        shellQuantum(args) {
         }
     }
     TSOS.Shell = Shell;
