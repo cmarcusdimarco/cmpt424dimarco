@@ -162,12 +162,20 @@ var TSOS;
         decode() {
             // Interpret the instruction and determine if more operands are necessary for execution
             let numOperands;
+            let instructionExists = false;
             // Find instructionIndex and numOperands for the current instruction
             for (let i = 0x00; i < this.instructionSet[0x00].length; i++) {
                 if (this.instructionSet[0x00][i] === this.instructionRegister) {
                     numOperands = this.instructionSet[0x01][i];
+                    instructionExists = true;
                     break;
                 }
+            }
+            // Use guard clause to halt program if instruction is invalid
+            if (!instructionExists) {
+                _StdOut.putText(`ERR: ${this.hexLog(this.instructionRegister, 2)} is not a valid instruction. Halting program...`);
+                this.haltProgram();
+                return;
             }
             // For conditional opcodes, check X register to determine numOperands
             if (numOperands === 0xFF) {
@@ -242,15 +250,7 @@ var TSOS;
             // Perform the action specified by the instruction
             switch (this.instructionRegister) {
                 case 0x00: // Halt
-                    this.isExecuting = false;
-                    // TODO: Put the following statements where they belong. Hardware should not trigger OS level calls.
-                    _MemoryManager.deallocateMemory(this.currentProcess);
-                    _StdOut.advanceLine();
-                    _OsShell.putPrompt();
-                    _Kernel.singleStep = false;
-                    document.getElementById("btnStep").disabled = true;
-                    // Reset CPU state
-                    this.init();
+                    this.haltProgram();
                     return;
                 case 0x6D: // Add with carry
                     this.accumulator += _MemoryAccessor.read();
@@ -371,15 +371,9 @@ var TSOS;
             if (this.accumulator === 0xFF) {
                 // Halt if current instruction would violate bounds
                 this.log('Bounds violation - attempted to increment accumulator beyond 0xFF. Halting program...');
-                this.isExecuting = false;
-                // TODO: Put the following statements where they belong. Hardware should not trigger OS level calls.
-                _MemoryManager.deallocateMemory(this.currentProcess);
-                _StdOut.advanceLine();
-                _OsShell.putPrompt();
-                _Kernel.singleStep = false;
-                document.getElementById("btnStep").disabled = true;
-                // Reset CPU state
-                this.init();
+                // Tell the user
+                _StdOut.putText('ERR: Bounds violation - attempted to increment accumulator beyond 0xFF. Halting program...');
+                this.haltProgram();
                 this.currentStep = 0x00;
                 return;
             }
@@ -421,8 +415,17 @@ var TSOS;
         getCurrentProcess() {
             return this.currentProcess;
         }
-        currentStepReset() {
-            this.currentStep = 0x00;
+        // Encapsulating halt function to improve readability across multiple calls
+        haltProgram() {
+            this.isExecuting = false;
+            // TODO: Put the following statements where they belong. Hardware should not trigger OS level calls.
+            _MemoryManager.deallocateMemory(this.currentProcess);
+            _StdOut.advanceLine();
+            _OsShell.putPrompt();
+            _Kernel.singleStep = false;
+            document.getElementById("btnStep").disabled = true;
+            // Reset CPU state
+            this.init();
         }
     }
     TSOS.Cpu = Cpu;
