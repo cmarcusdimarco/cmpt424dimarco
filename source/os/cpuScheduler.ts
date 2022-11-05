@@ -37,18 +37,20 @@ module TSOS {
             // Update in GUI
             process.updateQuantum(this.cycleCounter);
 
-            // If quantum has been reached, enqueue PCB and have dispatcher switch to next process.
-            if (this.cycleCounter >= this.quantum) {
-                this.enqueue(process);
-                _Kernel.krnTrace(`Enqueued process ${process.processId} in ready queue.`);
-                let nextProcess = this.readyQueue.dequeue();
-                _Dispatcher.dispatch(nextProcess);
-                nextProcess.updateGUI('RUNNING');
-                this.cycleCounter = 0;
-            }
-
             // If one process finishes and other processes are in the queue, dispatch next process.
-            if (!_CPU.isExecuting && this.readyQueue.getSize() > 0) {
+            if (!_CPU.isExecuting) {
+                if (this.readyQueue.getSize() > 0) {
+                    let nextProcess = this.readyQueue.dequeue();
+                    _Dispatcher.dispatch(nextProcess);
+                    nextProcess.updateGUI('RUNNING');
+                    this.cycleCounter = 0;
+                } else {
+                    // Return out of function if CPU is done executing and no other processes are in ready queue.
+                    return;
+                }
+            } else if (this.cycleCounter >= this.quantum) {
+                // If quantum has been reached, enqueue PCB and have dispatcher switch to next process.
+                this.enqueue(process);
                 let nextProcess = this.readyQueue.dequeue();
                 _Dispatcher.dispatch(nextProcess);
                 nextProcess.updateGUI('RUNNING');
