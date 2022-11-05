@@ -33,7 +33,7 @@ var TSOS;
             process.updateQuantum(this.cycleCounter);
             // If quantum has been reached, enqueue PCB and have dispatcher switch to next process.
             if (this.cycleCounter >= this.quantum) {
-                this.readyQueue.enqueue(process);
+                this.enqueue(process);
                 _Kernel.krnTrace(`Enqueued process ${process.processId} in ready queue.`);
                 let nextProcess = this.readyQueue.dequeue();
                 _Dispatcher.dispatch(nextProcess);
