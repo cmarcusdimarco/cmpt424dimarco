@@ -484,6 +484,13 @@ var TSOS;
             }
         }
         shellClearMem(args) {
+            if (!_CPU.isExecuting) {
+                for (let process of _MemoryManager.registeredProcesses) {
+                    if (process.state != 'TERMINATED') {
+                        _MemoryManager.deallocateMemory(process);
+                    }
+                }
+            }
         }
         shellRunAll(args) {
         }

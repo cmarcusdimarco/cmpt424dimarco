@@ -590,7 +590,13 @@ module TSOS {
         }
 
         public shellClearMem(args: string[]) {
-
+            if (!_CPU.isExecuting) {
+                for (let process of _MemoryManager.registeredProcesses) {
+                    if (process.state != 'TERMINATED') {
+                        _MemoryManager.deallocateMemory(process);
+                    }
+                }
+            }
         }
 
         public shellRunAll(args: string[]) {

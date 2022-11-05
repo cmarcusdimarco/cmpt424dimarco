@@ -19,6 +19,7 @@ var TSOS;
             this.xRegister = '00';
             this.yRegister = '00';
             this.zFlag = '0';
+            this.quantum = 0;
             this.state = 'RESIDENT';
         }
         // Update PCB log of CPU state
@@ -61,6 +62,7 @@ var TSOS;
             document.getElementById(this.htmlState).innerText = this.state;
             // If terminated, set CPU registers to 0
             if (state === 'TERMINATED') {
+                this.quantum = 0;
                 document.getElementById(this.htmlPC).innerText = '0000';
                 document.getElementById(this.htmlIR).innerText = '00';
                 document.getElementById(this.htmlACC).innerText = '00';
@@ -77,6 +79,7 @@ var TSOS;
                 document.getElementById(this.htmlY).innerText = this.yRegister;
                 document.getElementById(this.htmlZ).innerText = this.zFlag;
             }
+            this.updateQuantum(this.quantum);
         }
         updateQuantum(quantum) {
             this.quantum = quantum;
