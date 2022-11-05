@@ -486,17 +486,42 @@ var TSOS;
         shellClearMem(args) {
             if (!_CPU.isExecuting) {
                 for (let process of _MemoryManager.registeredProcesses) {
-                    if (process.state != 'TERMINATED') {
+                    if (process.state !== 'TERMINATED') {
                         _MemoryManager.deallocateMemory(process);
                     }
                 }
             }
         }
         shellRunAll(args) {
+            for (let process of _MemoryManager.registeredProcesses) {
+                if (process.state === 'RESIDENT') {
+                    _CPUScheduler.enqueue(process);
+                }
+            }
         }
         shellPs(args) {
+            for (let process of _MemoryManager.registeredProcesses) {
+                _StdOut.putText(`Process ID: ${process.processId}, State: ${process.state}`);
+                _StdOut.advanceLine();
+            }
         }
         shellKill(args) {
+            // Get process at id of first arg
+            try {
+                let processId = parseInt(args[0]);
+                let process = _MemoryManager.registeredProcesses[processId];
+                // End all life forms of the process
+                if (process.state === 'RUNNING' || process.state === 'READY') {
+                    _MemoryManager.deallocateMemory(process);
+                }
+                // Enqueue the process to the CpuScheduler's ready queue
+                _CPUScheduler.enqueue(process);
+                // When finished, CPU halt op code will call for memory de-allocation.
+            }
+            catch (e) {
+                _Kernel.krnTrace(e);
+                _StdOut.putText(`ERR: Check console for details.`);
+            }
         }
         shellKillAll(args) {
         }
