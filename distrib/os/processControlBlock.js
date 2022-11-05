@@ -62,13 +62,13 @@ var TSOS;
             document.getElementById(this.htmlState).innerText = this.state;
             // If terminated, set CPU registers to 0
             if (state === 'TERMINATED') {
-                this.quantum = 0;
                 document.getElementById(this.htmlPC).innerText = '0000';
                 document.getElementById(this.htmlIR).innerText = '00';
                 document.getElementById(this.htmlACC).innerText = '00';
                 document.getElementById(this.htmlX).innerText = '00';
                 document.getElementById(this.htmlY).innerText = '00';
                 document.getElementById(this.htmlZ).innerText = '0';
+                this.updateQuantum(0);
             }
             else {
                 // Otherwise, set CPU registers to updated values
@@ -78,8 +78,8 @@ var TSOS;
                 document.getElementById(this.htmlX).innerText = this.xRegister;
                 document.getElementById(this.htmlY).innerText = this.yRegister;
                 document.getElementById(this.htmlZ).innerText = this.zFlag;
+                this.updateQuantum(this.quantum);
             }
-            this.updateQuantum(this.quantum);
         }
         updateQuantum(quantum) {
             this.quantum = quantum;

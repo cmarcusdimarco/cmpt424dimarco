@@ -48,6 +48,19 @@ var TSOS;
                 this.cycleCounter = 0;
             }
         }
+        extractProcess(process) {
+            for (let i = 0; i < this.readyQueue.getSize(); i++) {
+                if (this.readyQueue[i] === process) {
+                    this.readyQueue.extract(i);
+                    return;
+                }
+            }
+            // Error log if process not found
+            _Kernel.krnTrace('ERR: Process to be extracted not found in ready queue.');
+        }
+        clearQueue() {
+            this.readyQueue = new TSOS.Queue();
+        }
     }
     TSOS.CpuScheduler = CpuScheduler;
 })(TSOS || (TSOS = {}));

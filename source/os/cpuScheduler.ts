@@ -55,5 +55,21 @@ module TSOS {
                 this.cycleCounter = 0;
             }
         }
+
+        public extractProcess(process: TSOS.ProcessControlBlock) {
+            for (let i = 0; i < this.readyQueue.getSize(); i++) {
+                if (this.readyQueue[i] === process) {
+                    this.readyQueue.extract(i);
+                    return;
+                }
+            }
+
+            // Error log if process not found
+            _Kernel.krnTrace('ERR: Process to be extracted not found in ready queue.');
+        }
+
+        public clearQueue() {
+            this.readyQueue = new TSOS.Queue();
+        }
     }
 }

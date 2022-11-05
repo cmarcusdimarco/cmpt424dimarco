@@ -188,6 +188,14 @@ var TSOS;
             _StdOut.advanceLine();
             _OsShell.putPrompt();
         }
+        krnHaltProgramSilent(process) {
+            // Break program passed in
+            _CPU.isExecuting = false;
+            // Deallocate memory using the current program
+            _MemoryManager.deallocateMemory(process);
+            // Poll CPU Scheduler to check for other processes in ready queue
+            _CPUScheduler.pollForContextSwitch(process);
+        }
     }
     TSOS.Kernel = Kernel;
 })(TSOS || (TSOS = {}));

@@ -621,12 +621,12 @@ module TSOS {
                 let process = _MemoryManager.registeredProcesses[processId];
 
                 // End all life forms of the process
-                if (process.state === 'RUNNING' || process.state === 'READY') {
+                if (process.state === 'RUNNING') {
+                    _Kernel.krnHaltProgramSilent(process);
+                } else if (process.state === 'READY') {
+                    _CPUScheduler.extractProcess(process);
                     _MemoryManager.deallocateMemory(process);
                 }
-
-                // Enqueue the process to the CpuScheduler's ready queue
-                _CPUScheduler.enqueue(process);
 
                 // When finished, CPU halt op code will call for memory de-allocation.
             } catch (e) {
@@ -636,11 +636,31 @@ module TSOS {
         }
 
         public shellKillAll(args: string[]) {
+            // Stop running CPU
+            _Kernel.krnHaltProgramSilent(_CPU.currentProcess);
 
+            // Clear ready queue
+            _CPUScheduler.clearQueue();
+
+            // Deallocate memory
+            for (let process of _MemoryManager.registeredProcesses) {
+                if (process.state !== 'TERMINATED') {
+                    _MemoryManager.deallocateMemory(process);
+                }
+            }
         }
 
         public shellQuantum(args: string[]) {
+            // Verify input
+            let target: number = parseInt(args[0]);
 
+            if (target < 1) {
+                _StdOut.putText(`${args[0]} is not recognized as a positive integer. Please try again.`);
+                return;
+            }
+
+            // Update quantum
+            _CPUScheduler.quantum = target;
         }
     }
 }
