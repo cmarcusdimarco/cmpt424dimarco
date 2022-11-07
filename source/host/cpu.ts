@@ -17,6 +17,7 @@ module TSOS {
 
         private cpuClockCount: number;
         private currentStep: number = 0x0;             // Placeholder to identify current step of instruction cycle
+        public currentProcess: ProcessControlBlock;
 
         // Registers
         private accumulator: number = 0x00;
@@ -86,6 +87,7 @@ module TSOS {
             this.yRegister = 0x00;
             this.carryFlag = 0x0;
             this.zFlag = 0x0;
+            this.currentStep = 0x00;
 
             // Update OS GUI fields.
             this.docAccumulator.textContent = '00';
@@ -93,7 +95,28 @@ module TSOS {
             this.docProgramCounter.textContent = '0000';
             this.docXRegister.textContent = '00';
             this.docYRegister.textContent = '00';
-            this.docZFlag.textContent = '00';
+            this.docZFlag.textContent = '0';
+        }
+
+        // Initialize CPU by passing a PCB
+        public initWithPCB(pcb: ProcessControlBlock) {
+            this.accumulator = parseInt(pcb.accumulator, 16);
+            this.instructionRegister = parseInt(pcb.instructionRegister, 16);
+            this.programCounter = parseInt(pcb.programCounter, 16);
+            this.xRegister = parseInt(pcb.xRegister, 16);
+            this.yRegister = parseInt(pcb.yRegister, 16);
+            this.carryFlag = 0x0;
+            this.zFlag = parseInt(pcb.zFlag, 16);
+            this.currentProcess = pcb;
+            this.currentStep = 0x00;
+
+            // Update OS GUI fields.
+            this.docAccumulator.textContent = this.hexLog(this.accumulator, 2);
+            this.docInstructionRegister.textContent = this.hexLog(this.instructionRegister, 2);
+            this.docProgramCounter.textContent = this.hexLog(this.programCounter, 4);
+            this.docXRegister.textContent = this.hexLog(this.xRegister, 2);
+            this.docYRegister.textContent = this.hexLog(this.yRegister, 2);
+            this.docZFlag.textContent = this.hexLog(this.zFlag, 1);
         }
 
         public pulse() {
@@ -137,36 +160,49 @@ module TSOS {
                     default:
                         break;
                 }
-            } while (this.currentStep != 0x00);
+            } while (this.currentStep !== 0x00);
+
+            // Update PCB in GUI.
+            this.updatePCB();
         }
 
         // Pipelining outline
         private fetch() {
             // Get the next instruction from the memory address in the program counter
-            this.instructionRegister = _MemoryAccessor.readImmediate(this.programCounter);
+            this.instructionRegister = _MemoryAccessor.readImmediate(this.programCounter + this.currentProcess.startingAddress);
             // End by incrementing program counter and step counter
             this.programCounter++;
             this.currentStep++;
             // Update OS GUI
             this.docInstructionRegister.textContent = this.hexLog(this.instructionRegister, 2);
             this.docProgramCounter.textContent = this.hexLog(this.programCounter, 4);
+            this.currentProcess.highlightCurrentInstructionInMemory();
         }
 
         private decode() {
             // Interpret the instruction and determine if more operands are necessary for execution
             let numOperands: number;
+            let instructionExists: boolean = false;
 
             // Find instructionIndex and numOperands for the current instruction
             for (let i = 0x00; i < this.instructionSet[0x00].length; i++) {
-                if (this.instructionSet[0x00][i] == this.instructionRegister) {
+                if (this.instructionSet[0x00][i] === this.instructionRegister) {
                     numOperands = this.instructionSet[0x01][i];
+                    instructionExists = true;
                     break;
                 }
             }
 
+            // Use guard clause to halt program if instruction is invalid
+            if (!instructionExists) {
+                _StdOut.putText(`ERR: ${this.hexLog(this.instructionRegister, 2)} is not a valid instruction. Halting program...`);
+                this.haltProgram();
+                return;
+            }
+
             // For conditional opcodes, check X register to determine numOperands
-            if (numOperands == 0xFF) {
-                if (this.xRegister == 0x03) {
+            if (numOperands === 0xFF) {
+                if (this.xRegister === 0x03) {
                     numOperands = 0x02;
                 } else {
                     numOperands = 0x00;
@@ -184,24 +220,26 @@ module TSOS {
                     switch (this.instructionRegister) {
                         // Loading constant cases, skip to interrupt check
                         case 0xA0:
-                            this.yRegister = _MemoryAccessor.readImmediate(this.programCounter);
+                            this.yRegister = _MemoryAccessor.readImmediate(this.programCounter + this.currentProcess.startingAddress);
                             this.currentStep = 6;
                             // Update OS GUI
                             this.docYRegister.textContent = this.hexLog(this.yRegister, 2);
                             break;
                         case 0xA2:
-                            this.xRegister = _MemoryAccessor.readImmediate(this.programCounter);
+                            this.xRegister = _MemoryAccessor.readImmediate(this.programCounter + this.currentProcess.startingAddress);
                             this.currentStep = 6;
+                            // Update OS GUI
+                            this.docXRegister.textContent = this.hexLog(this.xRegister, 2);
                             break;
                         case 0xA9:
-                            this.accumulator = _MemoryAccessor.readImmediate(this.programCounter);
+                            this.accumulator = _MemoryAccessor.readImmediate(this.programCounter + this.currentProcess.startingAddress);
                             this.currentStep = 6;
                             // Update OS GUI
                             this.docAccumulator.textContent = this.hexLog(this.accumulator, 2);
                             break;
                         // Branch to relative address
                         case 0xD0:
-                            _MemoryAccessor.setLowOrder(_MemoryAccessor.readImmediate(this.programCounter));
+                            _MemoryAccessor.setLowOrder(_MemoryAccessor.readImmediate(this.programCounter + this.currentProcess.startingAddress));
                             this.currentStep += 2;
                             break;
                         default:
@@ -213,7 +251,7 @@ module TSOS {
                     this.docProgramCounter.textContent = this.hexLog(this.programCounter, 4);
                     return;
                 case 0x02:
-                    _MemoryAccessor.setLowOrder(_MemoryAccessor.readImmediate(this.programCounter));
+                    _MemoryAccessor.setLowOrder(_MemoryAccessor.readImmediate(this.programCounter + this.currentProcess.startingAddress));
                     this.programCounter++;
                     this.currentStep++;
                     // Update OS GUI
@@ -226,7 +264,7 @@ module TSOS {
 
         private decode2() {
             // If reached, load high order byte
-            _MemoryAccessor.setHighOrder(_MemoryAccessor.readImmediate(this.programCounter));
+            _MemoryAccessor.setHighOrder(_MemoryAccessor.readImmediate(this.programCounter + this.currentProcess.startingAddress) + (this.currentProcess.startingAddress / 0x100));
             this.programCounter++;
             this.currentStep++;
             // Update OS GUI
@@ -237,16 +275,8 @@ module TSOS {
             // Perform the action specified by the instruction
             switch (this.instructionRegister) {
                 case 0x00:  // Halt
-                    this.isExecuting = false;
-                    // TODO: Put the following statements where they belong. Hardware should not trigger OS level calls.
-                    _MemoryManager.deallocateMemory(this.programCounter - 1);
-                    _StdOut.advanceLine();
-                    _OsShell.putPrompt();
-                    _Kernel.singleStep = false;
-                    (<HTMLButtonElement>document.getElementById("btnStep")).disabled = true;
-                    // Reset CPU state
-                    this.init();
-                    break;
+                    this.haltProgram();
+                    return;
                 case 0x6D:  // Add with carry
                     this.accumulator += _MemoryAccessor.read();
                     if (this.accumulator > 0xFF) {
@@ -295,7 +325,7 @@ module TSOS {
                     this.docXRegister.textContent = this.hexLog(this.xRegister, 2);
                     break;
                 case 0xD0:  // Branch n bytes if Z flag not set
-                    if (this.zFlag == 0) {
+                    if (this.zFlag === 0) {
                         if (_MemoryAccessor.getLowOrderByte() <= 0x7F) {
                             this.programCounter += _MemoryAccessor.getLowOrderByte();
                         } else {
@@ -308,7 +338,7 @@ module TSOS {
                 case 0xEA:  // No operation
                     break;
                 case 0xEC:  // Compare memory to X register, set Z flag if equal
-                    if (this.xRegister == _MemoryAccessor.read()) {
+                    if (this.xRegister === _MemoryAccessor.read()) {
                         this.zFlag = 1;
                     } else {
                         this.zFlag = 0;
@@ -331,8 +361,8 @@ module TSOS {
                         case 0x2:
                             // Print 0x00 terminating string starting from address in Y register
                             let currentAddress = this.yRegister;
-                            while (_MemoryAccessor.readImmediate(currentAddress) != 0x00) {
-                                let toPrint = Ascii.lookup(_MemoryAccessor.readImmediate(currentAddress));
+                            while (_MemoryAccessor.readImmediate(currentAddress + this.currentProcess.startingAddress) !== 0x00) {
+                                let toPrint = Ascii.lookup(_MemoryAccessor.readImmediate(currentAddress + this.currentProcess.startingAddress));
                                 _StdOut.putText(toPrint);
                                 currentAddress++;
                             }
@@ -343,8 +373,8 @@ module TSOS {
                             let highString = _MemoryAccessor.getHighOrderByte().toString(16);
                             let fullString = "0x".concat(highString.concat(lowString));
                             let desiredAddress = Number(fullString);
-                            while (_MemoryAccessor.readImmediate(desiredAddress) != 0x00) {
-                                let toPrint = Ascii.lookup(_MemoryAccessor.readImmediate(desiredAddress));
+                            while (_MemoryAccessor.readImmediate(desiredAddress + this.currentProcess.startingAddress) !== 0x00) {
+                                let toPrint = Ascii.lookup(_MemoryAccessor.readImmediate(desiredAddress + this.currentProcess.startingAddress));
                                 _StdOut.putText(toPrint);
                                 desiredAddress++;
                             }
@@ -362,6 +392,15 @@ module TSOS {
         private execute2() {
             // Perform second execute phase if needed
             // Currently only exists for EE
+            if (this.accumulator === 0xFF) {
+                // Halt if current instruction would violate bounds
+                this.log('Bounds violation - attempted to increment accumulator beyond 0xFF. Halting program...');
+                // Tell the user
+                _StdOut.putText('ERR: Bounds violation - attempted to increment accumulator beyond 0xFF. Halting program...');
+                this.haltProgram();
+                this.currentStep = 0x00;
+                return;
+            }
             this.accumulator++;
             this.currentStep++;
             // Update OS GUI
@@ -384,16 +423,39 @@ module TSOS {
             this.currentStep = 0;
         }
 
+        private updatePCB() {
+            // Update the PCB of the currently executing process to reflect changes in the CPU state.
+            this.currentProcess.update(this);
+            this.currentProcess.updateGUI(this.currentProcess.state);
+        }
+
         // Returns the current state of the CPU. For use in creating Process Control Blocks.
         public getCpuState() {
             return {
-                accumulator: this.accumulator,
-                instructionRegister: this.instructionRegister,
-                programCounter: this.programCounter,
-                xRegister: this.xRegister,
-                yRegister: this.yRegister,
-                zFlag: this.zFlag
+                accumulator: this.hexLog(this.accumulator, 2),
+                instructionRegister: this.hexLog(this.instructionRegister, 2),
+                programCounter: this.hexLog(this.programCounter, 4),
+                xRegister: this.hexLog(this.xRegister, 2),
+                yRegister: this.hexLog(this.yRegister, 2),
+                zFlag: this.hexLog(this.zFlag, 1)
             };
+        }
+
+        public getCurrentProcess(): TSOS.ProcessControlBlock {
+            return this.currentProcess;
+        }
+
+        // Encapsulating halt function to improve readability across multiple calls
+        public haltProgram() {
+            this.isExecuting = false;
+            // TODO: Put the following statements where they belong. Hardware should not trigger OS level calls.
+            _MemoryManager.deallocateMemory(this.currentProcess);
+            _StdOut.advanceLine();
+            _OsShell.putPrompt();
+            _Kernel.singleStep = false;
+            (<HTMLButtonElement>document.getElementById("btnStep")).disabled = true;
+            // Reset CPU state
+            this.init();
         }
     }
 }

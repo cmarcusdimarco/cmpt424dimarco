@@ -78,6 +78,24 @@ var TSOS;
             // run <pid>
             sc = new TSOS.ShellCommand(this.shellRun, "run", "<pid> - Runs the program in memory with the specified process ID.");
             this.commandList[this.commandList.length] = sc;
+            // clearmem
+            sc = new TSOS.ShellCommand(this.shellClearMem, "clearmem", "- Clears all memory partitions once the ready queue is empty.");
+            this.commandList[this.commandList.length] = sc;
+            // runall
+            sc = new TSOS.ShellCommand(this.shellRunAll, "runall", "- Runs all loaded processes.");
+            this.commandList[this.commandList.length] = sc;
+            // ps
+            sc = new TSOS.ShellCommand(this.shellPs, "ps", "- Displays the PID and state of all processes.");
+            this.commandList[this.commandList.length] = sc;
+            // kill <pid>
+            sc = new TSOS.ShellCommand(this.shellKill, "kill", "<pid> - Kills the process with the specified process ID.");
+            this.commandList[this.commandList.length] = sc;
+            // killall
+            sc = new TSOS.ShellCommand(this.shellKillAll, "killall", "- Kill all processes. None survive.");
+            this.commandList[this.commandList.length] = sc;
+            // quantum <int>
+            sc = new TSOS.ShellCommand(this.shellQuantum, "quantum", "<int> - Sets the quantum to the specified positive integer.");
+            this.commandList[this.commandList.length] = sc;
             // Sort the commandList for use in tab completion
             this.commandList = this.commandList.sort((command1, command2) => {
                 if (command1.command > command2.command) {
@@ -300,6 +318,24 @@ var TSOS;
                     case "run":
                         _StdOut.putText("Runs the program at a specified process ID.");
                         break;
+                    case "clearmem":
+                        _StdOut.putText("Clears all memory partitions once the ready queue is empty.");
+                        break;
+                    case "runall":
+                        _StdOut.putText("Runs all loaded processes.");
+                        break;
+                    case "ps":
+                        _StdOut.putText("Displays the PID and the state of all processes.");
+                        break;
+                    case "kill":
+                        _StdOut.putText("Kills the program at a specified process ID.");
+                        break;
+                    case "killall":
+                        _StdOut.putText("Kills all programs.");
+                        break;
+                    case "quantum":
+                        _StdOut.putText("Sets the quantum of the CPU scheduler.");
+                        break;
                     default:
                         _StdOut.putText("No manual entry for " + args[0] + ".");
                 }
@@ -430,7 +466,6 @@ var TSOS;
             // System should create the PCB and return the process ID of the program.
         }
         shellRun(args) {
-            // TODO: Set base address based on process. For now, only base address is 0000.
             // Get process at id of first arg
             try {
                 let processId = parseInt(args[0]);
@@ -439,23 +474,80 @@ var TSOS;
                 if (process.state != 'RESIDENT') {
                     throw new Error(`Process with ID ${args[0]} is not available for additional execution.`);
                 }
-                // Reset CPU - start with 0s in all registers
-                _CPU.init();
-                // Update state to READY
-                process.state = 'READY';
-                // TODO: When executing instructions, add base address to memory operands
-                // Run process, setting state as appropriate.
-                _CPU.isExecuting = true;
-                process.state = 'RUNNING';
-                // Update OS GUI to reflect change in process state
-                let docProcess = document.getElementById('taProcessControlBlock');
-                docProcess.textContent = `PID: ${process.processId} State: ${process.state}\r\n`;
+                // Enqueue the process to the CpuScheduler's ready queue
+                _CPUScheduler.enqueue(process);
                 // When finished, CPU halt op code will call for memory de-allocation.
             }
             catch (e) {
                 _Kernel.krnTrace(e);
                 _StdOut.putText(`ERR: Check console for details.`);
             }
+        }
+        shellClearMem(args) {
+            if (!_CPU.isExecuting) {
+                for (let process of _MemoryManager.registeredProcesses) {
+                    if (process.state !== 'TERMINATED') {
+                        _MemoryManager.deallocateMemory(process);
+                    }
+                }
+            }
+            else { }
+            _StdOut.putText('ERR: Process currently running - use command killall to halt running processes.');
+        }
+        shellRunAll(args) {
+            for (let process of _MemoryManager.registeredProcesses) {
+                if (process.state === 'RESIDENT') {
+                    _CPUScheduler.enqueue(process);
+                }
+            }
+        }
+        shellPs(args) {
+            for (let process of _MemoryManager.registeredProcesses) {
+                _StdOut.putText(`Process ID: ${process.processId}, State: ${process.state}`);
+                _StdOut.advanceLine();
+            }
+        }
+        shellKill(args) {
+            // Get process at id of first arg
+            try {
+                let processId = parseInt(args[0]);
+                let process = _MemoryManager.registeredProcesses[processId];
+                // End all life forms of the process
+                if (process.state === 'RUNNING') {
+                    _Kernel.krnHaltProgramSilent(process);
+                }
+                else if (process.state === 'READY') {
+                    _CPUScheduler.extractProcess(process);
+                    _MemoryManager.deallocateMemory(process);
+                }
+                // When finished, CPU halt op code will call for memory de-allocation.
+            }
+            catch (e) {
+                _Kernel.krnTrace(e);
+                _StdOut.putText(`ERR: Check console for details.`);
+            }
+        }
+        shellKillAll(args) {
+            // Stop running CPU
+            _Kernel.krnHaltProgramSilent(_CPU.currentProcess);
+            // Clear ready queue
+            _CPUScheduler.clearQueue();
+            // Deallocate memory
+            for (let process of _MemoryManager.registeredProcesses) {
+                if (process.state !== 'TERMINATED') {
+                    _MemoryManager.deallocateMemory(process);
+                }
+            }
+        }
+        shellQuantum(args) {
+            // Verify input
+            let target = parseInt(args[0]);
+            if (target < 1) {
+                _StdOut.putText(`${args[0]} is not recognized as a positive integer. Please try again.`);
+                return;
+            }
+            // Update quantum
+            _CPUScheduler.quantum = target;
         }
     }
     TSOS.Shell = Shell;

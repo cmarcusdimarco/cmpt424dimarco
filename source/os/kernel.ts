@@ -22,7 +22,7 @@ module TSOS {
 
             // Initialize our global queues.
             _KernelInterruptQueue = new Queue();  // A (currently) non-priority queue for interrupt requests (IRQs).
-            _KernelBuffers = new Array();         // Buffers... for the kernel.
+            _KernelBuffers = [];         // Buffers... for the kernel.
             _KernelInputQueue = new Queue();      // Where device input lands before being processed out somewhere.
 
             // Initialize the console.
@@ -31,6 +31,10 @@ module TSOS {
 
             // Initialize the memory manager.
             _MemoryManager = new MemoryManager();
+
+            // Initialize the CPU scheduler and Dispatcher.
+            _CPUScheduler = new CpuScheduler();
+            _Dispatcher = new Dispatcher();
 
             // Initialize standard input and output to the _Console.
             _StdIn  = _Console;
@@ -92,6 +96,7 @@ module TSOS {
                 if (!this.singleStep) {
                     _CPU.pulse();
                     this.krnTrace("Executing...");
+                    _CPUScheduler.pollForContextSwitch(_CPU.getCurrentProcess());
                 } else {
                     this.krnTrace("Single Step Mode...awaiting Step...");
                 }
@@ -193,8 +198,8 @@ module TSOS {
         public krnHaltProgram() {
             // Break current program on CTRL+C
             _CPU.isExecuting = false;
-            // Deallocate memory using the current program counter as a pseudo-halt address
-            _MemoryManager.deallocateMemory(_CPU.getCpuState().programCounter);
+            // Deallocate memory using the current program
+            _MemoryManager.deallocateMemory(_CPU.currentProcess);
             _CPU.init();
             // Display CTRL+C on console.
             _StdOut.putText('^');
@@ -205,6 +210,15 @@ module TSOS {
             }
             _StdOut.advanceLine();
             _OsShell.putPrompt();
+        }
+
+        public krnHaltProgramSilent(process: TSOS.ProcessControlBlock) {
+            // Break program passed in
+            _CPU.isExecuting = false;
+            // Deallocate memory using the current program
+            _MemoryManager.deallocateMemory(process);
+            // Poll CPU Scheduler to check for other processes in ready queue
+            _CPUScheduler.pollForContextSwitch(process);
         }
     }
 }

@@ -44,5 +44,13 @@ module TSOS {
         public peek() {
             return this.q[0];
         }
+
+        public extract(index: number) {
+            var retVal = null;
+            if (this.q[index] != undefined) {
+                retVal = this.q[index];
+                this.q.splice(index, 1);
+            }
+        }
     }
 }

@@ -20,13 +20,16 @@ var TSOS;
             TSOS.Control.hostLog("bootstrap", "host"); // Use hostLog because we ALWAYS want this, even if _Trace is off.
             // Initialize our global queues.
             _KernelInterruptQueue = new TSOS.Queue(); // A (currently) non-priority queue for interrupt requests (IRQs).
-            _KernelBuffers = new Array(); // Buffers... for the kernel.
+            _KernelBuffers = []; // Buffers... for the kernel.
             _KernelInputQueue = new TSOS.Queue(); // Where device input lands before being processed out somewhere.
             // Initialize the console.
             _Console = new TSOS.Console(); // The command line interface / console I/O device.
             _Console.init();
             // Initialize the memory manager.
             _MemoryManager = new TSOS.MemoryManager();
+            // Initialize the CPU scheduler and Dispatcher.
+            _CPUScheduler = new TSOS.CpuScheduler();
+            _Dispatcher = new TSOS.Dispatcher();
             // Initialize standard input and output to the _Console.
             _StdIn = _Console;
             _StdOut = _Console;
@@ -79,6 +82,7 @@ var TSOS;
                 if (!this.singleStep) {
                     _CPU.pulse();
                     this.krnTrace("Executing...");
+                    _CPUScheduler.pollForContextSwitch(_CPU.getCurrentProcess());
                 }
                 else {
                     this.krnTrace("Single Step Mode...awaiting Step...");
@@ -171,8 +175,8 @@ var TSOS;
         krnHaltProgram() {
             // Break current program on CTRL+C
             _CPU.isExecuting = false;
-            // Deallocate memory using the current program counter as a pseudo-halt address
-            _MemoryManager.deallocateMemory(_CPU.getCpuState().programCounter);
+            // Deallocate memory using the current program
+            _MemoryManager.deallocateMemory(_CPU.currentProcess);
             _CPU.init();
             // Display CTRL+C on console.
             _StdOut.putText('^');
@@ -183,6 +187,14 @@ var TSOS;
             }
             _StdOut.advanceLine();
             _OsShell.putPrompt();
+        }
+        krnHaltProgramSilent(process) {
+            // Break program passed in
+            _CPU.isExecuting = false;
+            // Deallocate memory using the current program
+            _MemoryManager.deallocateMemory(process);
+            // Poll CPU Scheduler to check for other processes in ready queue
+            _CPUScheduler.pollForContextSwitch(process);
         }
     }
     TSOS.Kernel = Kernel;
