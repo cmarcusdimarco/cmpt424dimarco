@@ -95,7 +95,7 @@ module TSOS {
             this.docProgramCounter.textContent = '0000';
             this.docXRegister.textContent = '00';
             this.docYRegister.textContent = '00';
-            this.docZFlag.textContent = '00';
+            this.docZFlag.textContent = '0';
         }
 
         // Initialize CPU by passing a PCB
@@ -116,7 +116,7 @@ module TSOS {
             this.docProgramCounter.textContent = this.hexLog(this.programCounter, 4);
             this.docXRegister.textContent = this.hexLog(this.xRegister, 2);
             this.docYRegister.textContent = this.hexLog(this.yRegister, 2);
-            this.docZFlag.textContent = this.hexLog(this.zFlag, 2);
+            this.docZFlag.textContent = this.hexLog(this.zFlag, 1);
         }
 
         public pulse() {
