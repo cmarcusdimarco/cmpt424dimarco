@@ -42,6 +42,11 @@ tr:nth-child(even) .memoryRowStart {
   background: lightblue;
 }
 
+.highlighted {
+  background: blanchedalmond;
+  color: green;
+}
+
 #display {
   background-color:#DFDBC3;
   border: 2px solid red;

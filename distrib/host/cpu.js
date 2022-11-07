@@ -158,6 +158,7 @@ var TSOS;
             // Update OS GUI
             this.docInstructionRegister.textContent = this.hexLog(this.instructionRegister, 2);
             this.docProgramCounter.textContent = this.hexLog(this.programCounter, 4);
+            this.currentProcess.highlightCurrentInstructionInMemory();
         }
         decode() {
             // Interpret the instruction and determine if more operands are necessary for execution

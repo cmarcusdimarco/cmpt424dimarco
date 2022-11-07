@@ -79,6 +79,7 @@ var TSOS;
                 document.getElementById(this.htmlY).innerText = '00';
                 document.getElementById(this.htmlZ).innerText = '0';
                 this.updateQuantum(0);
+                this.removeHighlighting();
             }
             else {
                 // Otherwise, set CPU registers to updated values
@@ -102,6 +103,18 @@ var TSOS;
         updateWaitTime(waitTime) {
             this.waitTime = waitTime;
             document.getElementById(this.htmlWaitTime).innerText = this.waitTime.toString();
+        }
+        highlightCurrentInstructionInMemory() {
+            if (this.previousHighlight) {
+                this.previousHighlight.classList.remove('highlighted');
+            }
+            // Get the memory cell where the 2nd digit is the partition and the 3rd and 4th digits reflect the program counter.
+            this.previousHighlight = document.getElementById(`memoryCell0${this.memoryPartition}${this.programCounter.substring(2)}`);
+            // Highlight the cell
+            this.previousHighlight.classList.add('highlighted');
+        }
+        removeHighlighting() {
+            this.previousHighlight.classList.remove('highlighted');
         }
     }
     TSOS.ProcessControlBlock = ProcessControlBlock;
