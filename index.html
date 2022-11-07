@@ -41,7 +41,7 @@
    <script type="text/javascript" src="distrib/utils.js"></script>
    <!-- Uncomment the line below to enable GLaDOS testing. -->
    <script type="text/javascript" src="http://alanclasses.github.io/TSOS/test/glados-ip3.js"></script>
-   
+
 </head>
 
 <body onload="onDocumentLoad()">
@@ -138,106 +138,6 @@
       </label>
    </div>
 
-   <div id="divProcessControlBlock" style="margin-left:520px; padding-bottom: 5px;">
-      <label>
-         Processes
-         <br>
-         <table name    ="tableProcessControlBlock"
-                   id   ="tableProcessControlBlock"
-                   style="background: white;
-                          border: 1px solid;
-                          font-family: monospace;
-                          border-collapse: collapse">
-            <tbody>
-               <tr id="pcbHeader">
-                  <td>|</td>
-                  <td class="pcbPID">PID</td>
-                  <td>|</td>
-                  <td class="pcbState">PROCESS STATE</td>
-                  <td>|</td>
-                  <td class="pcbPC">PC</td>
-                  <td>|</td>
-                  <td class="pcbIR">IR</td>
-                  <td>|</td>
-                  <td class="pcbACC">ACC</td>
-                  <td>|</td>
-                  <td class="pcbX">X</td>
-                  <td>|</td>
-                  <td class="pcbY">Y</td>
-                  <td>|</td>
-                  <td class="pcbZ">Z</td>
-                  <td>|</td>
-                  <td class="pcbQuantum">Q</td>
-                  <td>|</td>
-               </tr>
-               <tr id="pcb0">
-                  <td>|</td>
-                  <td class="pcbPID" id="pcb0ID"></td>
-                  <td>|</td>
-                  <td class="pcbState" id="pcb0State">N/A</td>
-                  <td>|</td>
-                  <td class="pcbPC" id="pcb0PC">0000</td>
-                  <td>|</td>
-                  <td class="pcbIR" id="pcb0IR">00</td>
-                  <td>|</td>
-                  <td class="pcbACC" id="pcb0ACC">00</td>
-                  <td>|</td>
-                  <td class="pcbX" id="pcb0X">00</td>
-                  <td>|</td>
-                  <td class="pcbY" id="pcb0Y">00</td>
-                  <td>|</td>
-                  <td class="pcbZ" id="pcb0Z">0</td>
-                  <td>|</td>
-                  <td class="pcbQuantum" id="pcb0Quantum">0</td>
-                  <td>|</td>
-               </tr>
-               <tr id="pcb1">
-                  <td>|</td>
-                  <td class="pcbPID" id="pcb1ID"></td>
-                  <td>|</td>
-                  <td class="pcbState" id="pcb1State">N/A</td>
-                  <td>|</td>
-                  <td class="pcbPC" id="pcb1PC">0000</td>
-                  <td>|</td>
-                  <td class="pcbIR" id="pcb1IR">00</td>
-                  <td>|</td>
-                  <td class="pcbACC" id="pcb1ACC">00</td>
-                  <td>|</td>
-                  <td class="pcbX" id="pcb1X">00</td>
-                  <td>|</td>
-                  <td class="pcbY" id="pcb1Y">00</td>
-                  <td>|</td>
-                  <td class="pcbZ" id="pcb1Z">0</td>
-                  <td>|</td>
-                  <td class="pcbQuantum" id="pcb1Quantum">0</td>
-                  <td>|</td>
-               </tr>
-               <tr id="pcb2">
-                  <td>|</td>
-                  <td class="pcbPID" id="pcb2ID"></td>
-                  <td>|</td>
-                  <td class="pcbState" id="pcb2State">N/A</td>
-                  <td>|</td>
-                  <td class="pcbPC" id="pcb2PC">0000</td>
-                  <td>|</td>
-                  <td class="pcbIR" id="pcb2IR">00</td>
-                  <td>|</td>
-                  <td class="pcbACC" id="pcb2ACC">00</td>
-                  <td>|</td>
-                  <td class="pcbX" id="pcb2X">00</td>
-                  <td>|</td>
-                  <td class="pcbY" id="pcb2Y">00</td>
-                  <td>|</td>
-                  <td class="pcbZ" id="pcb2Z">0</td>
-                  <td>|</td>
-                  <td class="pcbQuantum" id="pcb2Quantum">0</td>
-                  <td>|</td>
-               </tr>
-            </tbody>
-         </table>
-      </label>
-   </div>
-
    <div id="divUserProgramInput" style="margin-left:520px;">
       <label>
          User Program Input
@@ -250,7 +150,131 @@
       </label>
    </div>
 
-   <div id="divMemory" style="margin-left:928px; position: relative; top: -405px;">
+   <div id="divProcessControlBlock" style="margin-left:928px; position: relative; top: -295px;">
+      <label>
+         Processes
+         <br>
+         <table name    ="tableProcessControlBlock"
+                id   ="tableProcessControlBlock"
+                style="background: white;
+                          border: 1px solid;
+                          font-family: monospace;
+                          border-collapse: collapse">
+            <tbody>
+            <tr id="pcbHeader">
+               <td>|</td>
+               <td class="pcbPID">PID</td>
+               <td>|</td>
+               <td class="pcbState">PROCESS STATE</td>
+               <td>|</td>
+               <td class="pcbPC">PC</td>
+               <td>|</td>
+               <td class="pcbIR">IR</td>
+               <td>|</td>
+               <td class="pcbACC">ACC</td>
+               <td>|</td>
+               <td class="pcbX">X</td>
+               <td>|</td>
+               <td class="pcbY">Y</td>
+               <td>|</td>
+               <td class="pcbZ">Z</td>
+               <td>|</td>
+               <td class="pcbQuantum">Q</td>
+               <td>|</td>
+               <td class="pcbPriority">P</td>
+               <td>|</td>
+               <td class="pcbTurnaround">T</td>
+               <td>|</td>
+               <td class="pcbWaitTime">W</td>
+               <td>|</td>
+            </tr>
+            <tr id="pcb0">
+               <td>|</td>
+               <td class="pcbPID" id="pcb0ID"></td>
+               <td>|</td>
+               <td class="pcbState" id="pcb0State">N/A</td>
+               <td>|</td>
+               <td class="pcbPC" id="pcb0PC">0000</td>
+               <td>|</td>
+               <td class="pcbIR" id="pcb0IR">00</td>
+               <td>|</td>
+               <td class="pcbACC" id="pcb0ACC">00</td>
+               <td>|</td>
+               <td class="pcbX" id="pcb0X">00</td>
+               <td>|</td>
+               <td class="pcbY" id="pcb0Y">00</td>
+               <td>|</td>
+               <td class="pcbZ" id="pcb0Z">0</td>
+               <td>|</td>
+               <td class="pcbQuantum" id="pcb0Quantum">0</td>
+               <td>|</td>
+               <td class="pcbPriority" id="pcb0Priority">0</td>
+               <td>|</td>
+               <td class="pcbTurnaround" id="pcb0Turnaround">000</td>
+               <td>|</td>
+               <td class="pcbWaitTime" id="pcb0WaitTime">000</td>
+               <td>|</td>
+            </tr>
+            <tr id="pcb1">
+               <td>|</td>
+               <td class="pcbPID" id="pcb1ID"></td>
+               <td>|</td>
+               <td class="pcbState" id="pcb1State">N/A</td>
+               <td>|</td>
+               <td class="pcbPC" id="pcb1PC">0000</td>
+               <td>|</td>
+               <td class="pcbIR" id="pcb1IR">00</td>
+               <td>|</td>
+               <td class="pcbACC" id="pcb1ACC">00</td>
+               <td>|</td>
+               <td class="pcbX" id="pcb1X">00</td>
+               <td>|</td>
+               <td class="pcbY" id="pcb1Y">00</td>
+               <td>|</td>
+               <td class="pcbZ" id="pcb1Z">0</td>
+               <td>|</td>
+               <td class="pcbQuantum" id="pcb1Quantum">0</td>
+               <td>|</td>
+               <td class="pcbPriority" id="pcb1Priority">0</td>
+               <td>|</td>
+               <td class="pcbTurnaround" id="pcb1Turnaround">000</td>
+               <td>|</td>
+               <td class="pcbWaitTime" id="pcb1WaitTime">000</td>
+               <td>|</td>
+            </tr>
+            <tr id="pcb2">
+               <td>|</td>
+               <td class="pcbPID" id="pcb2ID"></td>
+               <td>|</td>
+               <td class="pcbState" id="pcb2State">N/A</td>
+               <td>|</td>
+               <td class="pcbPC" id="pcb2PC">0000</td>
+               <td>|</td>
+               <td class="pcbIR" id="pcb2IR">00</td>
+               <td>|</td>
+               <td class="pcbACC" id="pcb2ACC">00</td>
+               <td>|</td>
+               <td class="pcbX" id="pcb2X">00</td>
+               <td>|</td>
+               <td class="pcbY" id="pcb2Y">00</td>
+               <td>|</td>
+               <td class="pcbZ" id="pcb2Z">0</td>
+               <td>|</td>
+               <td class="pcbQuantum" id="pcb2Quantum">0</td>
+               <td>|</td>
+               <td class="pcbPriority" id="pcb2Priority">0</td>
+               <td>|</td>
+               <td class="pcbTurnaround" id="pcb2Turnaround">000</td>
+               <td>|</td>
+               <td class="pcbWaitTime" id="pcb2WaitTime">000</td>
+               <td>|</td>
+            </tr>
+            </tbody>
+         </table>
+      </label>
+   </div>
+
+   <div id="divMemory" style="margin-left:928px; position: relative; top: -290px;">
       <label>
          Memory
          <br>

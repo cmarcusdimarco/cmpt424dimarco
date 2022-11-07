@@ -37,6 +37,17 @@ module TSOS {
             // Update in GUI
             process.updateQuantum(this.cycleCounter);
 
+            // Increment turnaround time for executing process and all processes in ready queue
+            // Increment wait time for processes in ready queue
+            process.updateTurnaround(++process.turnaround);
+            for (let i = 0; i < this.readyQueue.getSize(); i++) {
+                // Since queue class handles objects of type <any>, check for type <ProcessControlBlock> before accessing properties.
+                if (this.readyQueue.q[i] instanceof TSOS.ProcessControlBlock) {
+                    this.readyQueue.q[i].updateTurnaround(++this.readyQueue.q[i].turnaround);
+                    this.readyQueue.q[i].updateWaitTime(++this.readyQueue.q[i].waitTime);
+                }
+            }
+
             // If one process finishes and other processes are in the queue, dispatch next process.
             if (!_CPU.isExecuting) {
                 if (this.readyQueue.getSize() > 0) {

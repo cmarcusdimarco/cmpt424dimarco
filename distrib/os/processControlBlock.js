@@ -6,7 +6,7 @@
 var TSOS;
 (function (TSOS) {
     class ProcessControlBlock {
-        constructor(processId, address, limit) {
+        constructor(processId, address, limit, priority) {
             this.processId = processId;
             this.startingAddress = address;
             this.limit = limit;
@@ -20,6 +20,10 @@ var TSOS;
             this.yRegister = '00';
             this.zFlag = '0';
             this.quantum = 0;
+            // Assign priority to passed param if present, 0 if not.
+            this.priority = priority !== null && priority !== void 0 ? priority : 0;
+            this.turnaround = 0;
+            this.waitTime = 0;
             this.state = 'RESIDENT';
         }
         // Update PCB log of CPU state
@@ -45,6 +49,9 @@ var TSOS;
             this.htmlY = `${htmlRoot}Y`;
             this.htmlZ = `${htmlRoot}Z`;
             this.htmlQuantum = `${htmlRoot}Quantum`;
+            this.htmlPriority = `${htmlRoot}Priority`;
+            this.htmlTurnaround = `${htmlRoot}Turnaround`;
+            this.htmlWaitTime = `${htmlRoot}WaitTime`;
         }
         // Update GUI to most current PCB status, using optional param to update state
         updateGUI(state) {
@@ -60,6 +67,9 @@ var TSOS;
             // Update all GUI fields
             document.getElementById(this.htmlPID).innerText = this.processId.toString();
             document.getElementById(this.htmlState).innerText = this.state;
+            document.getElementById(this.htmlPriority).innerText = this.priority.toString();
+            this.updateTurnaround(this.turnaround);
+            this.updateWaitTime(this.waitTime);
             // If terminated, set CPU registers to 0
             if (state === 'TERMINATED') {
                 document.getElementById(this.htmlPC).innerText = '0000';
@@ -84,6 +94,14 @@ var TSOS;
         updateQuantum(quantum) {
             this.quantum = quantum;
             document.getElementById(this.htmlQuantum).innerText = this.quantum.toString();
+        }
+        updateTurnaround(turnaround) {
+            this.turnaround = turnaround;
+            document.getElementById(this.htmlTurnaround).innerText = this.turnaround.toString();
+        }
+        updateWaitTime(waitTime) {
+            this.waitTime = waitTime;
+            document.getElementById(this.htmlWaitTime).innerText = this.waitTime.toString();
         }
     }
     TSOS.ProcessControlBlock = ProcessControlBlock;

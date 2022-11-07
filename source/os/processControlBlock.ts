@@ -17,6 +17,9 @@ module TSOS {
         public yRegister: string;
         public zFlag: string;
         public quantum: number;
+        public priority: number;
+        public turnaround: number;
+        public waitTime: number;
         public state: string;
 
         // HTML/DOM fields using IDs
@@ -29,9 +32,12 @@ module TSOS {
         public htmlX: string;
         public htmlY: string;
         public htmlZ: string;
+        public htmlPriority: string;
         public htmlQuantum: string;
+        public htmlTurnaround: string;
+        public htmlWaitTime: string;
 
-        constructor(processId: number, address: number, limit: number) {
+        constructor(processId: number, address: number, limit: number, priority?: number) {
             this.processId = processId;
             this.startingAddress = address;
             this.limit = limit;
@@ -47,6 +53,10 @@ module TSOS {
             this.yRegister = '00';
             this.zFlag = '0';
             this.quantum = 0;
+            // Assign priority to passed param if present, 0 if not.
+            this.priority = priority ?? 0;
+            this.turnaround = 0;
+            this.waitTime = 0;
 
             this.state = 'RESIDENT';
         }
@@ -75,6 +85,9 @@ module TSOS {
             this.htmlY = `${htmlRoot}Y`;
             this.htmlZ = `${htmlRoot}Z`;
             this.htmlQuantum = `${htmlRoot}Quantum`;
+            this.htmlPriority = `${htmlRoot}Priority`;
+            this.htmlTurnaround = `${htmlRoot}Turnaround`;
+            this.htmlWaitTime = `${htmlRoot}WaitTime`;
         }
 
         // Update GUI to most current PCB status, using optional param to update state
@@ -93,6 +106,9 @@ module TSOS {
             // Update all GUI fields
             document.getElementById(this.htmlPID).innerText = this.processId.toString();
             document.getElementById(this.htmlState).innerText = this.state;
+            document.getElementById(this.htmlPriority).innerText = this.priority.toString();
+            this.updateTurnaround(this.turnaround);
+            this.updateWaitTime(this.waitTime);
 
             // If terminated, set CPU registers to 0
             if (state === 'TERMINATED') {
@@ -118,6 +134,16 @@ module TSOS {
         public updateQuantum(quantum: number) {
             this.quantum = quantum;
             document.getElementById(this.htmlQuantum).innerText = this.quantum.toString();
+        }
+
+        public updateTurnaround(turnaround: number) {
+            this.turnaround = turnaround;
+            document.getElementById(this.htmlTurnaround).innerText = this.turnaround.toString();
+        }
+
+        public updateWaitTime(waitTime: number) {
+            this.waitTime = waitTime;
+            document.getElementById(this.htmlWaitTime).innerText = this.waitTime.toString();
         }
     }
 }
