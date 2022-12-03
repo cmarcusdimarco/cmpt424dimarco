@@ -596,8 +596,9 @@ module TSOS {
                         _MemoryManager.deallocateMemory(process);
                     }
                 }
-            } else {}
-            _StdOut.putText('ERR: Process currently running - use command killall to halt running processes.');
+            } else {
+                _StdOut.putText('ERR: Process currently running - use command killall to halt running processes.');
+            }
         }
 
         public shellRunAll(args: string[]) {

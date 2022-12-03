@@ -163,7 +163,9 @@ module TSOS {
         }
 
         public removeHighlighting() {
-            this.previousHighlight.classList.remove('highlighted');
+            if (this.previousHighlight) {
+                this.previousHighlight.classList.remove('highlighted');
+            }
         }
     }
 }

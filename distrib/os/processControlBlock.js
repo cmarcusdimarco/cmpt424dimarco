@@ -114,7 +114,9 @@ var TSOS;
             this.previousHighlight.classList.add('highlighted');
         }
         removeHighlighting() {
-            this.previousHighlight.classList.remove('highlighted');
+            if (this.previousHighlight) {
+                this.previousHighlight.classList.remove('highlighted');
+            }
         }
     }
     TSOS.ProcessControlBlock = ProcessControlBlock;

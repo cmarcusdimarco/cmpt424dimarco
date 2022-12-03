@@ -491,8 +491,9 @@ var TSOS;
                     }
                 }
             }
-            else { }
-            _StdOut.putText('ERR: Process currently running - use command killall to halt running processes.');
+            else {
+                _StdOut.putText('ERR: Process currently running - use command killall to halt running processes.');
+            }
         }
         shellRunAll(args) {
             for (let process of _MemoryManager.registeredProcesses) {
