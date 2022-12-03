@@ -22,8 +22,8 @@ module TSOS {
             _Kernel.krnTrace(`Enqueued process ${process.processId} in ready queue.`);
             if (!_CPU.isExecuting) {
                 this.readyQueue.dequeue();
-                _Dispatcher.dispatch(process);
-                process.updateGUI('RUNNING');
+                let params = new Array(process);
+                _Dispatcher.dispatch(params);
             }
         }
 
@@ -52,8 +52,8 @@ module TSOS {
             if (!_CPU.isExecuting) {
                 if (this.readyQueue.getSize() > 0) {
                     let nextProcess = this.readyQueue.dequeue();
-                    _Dispatcher.dispatch(nextProcess);
-                    nextProcess.updateGUI('RUNNING');
+                    let params = new Array(nextProcess);
+                    _KernelInterruptQueue.enqueue(new Interrupt(CPU_SCHEDULER_IRQ, params));
                     this.cycleCounter = 0;
                 } else {
                     // Return out of function if CPU is done executing and no other processes are in ready queue.
@@ -63,8 +63,8 @@ module TSOS {
                 // If quantum has been reached, enqueue PCB and have dispatcher switch to next process.
                 this.enqueue(process);
                 let nextProcess = this.readyQueue.dequeue();
-                _Dispatcher.dispatch(nextProcess);
-                nextProcess.updateGUI('RUNNING');
+                let params = new Array(nextProcess);
+                _KernelInterruptQueue.enqueue(new Interrupt(CPU_SCHEDULER_IRQ, params));
                 this.cycleCounter = 0;
             }
         }

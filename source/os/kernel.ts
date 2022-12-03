@@ -138,6 +138,9 @@ module TSOS {
                     _krnKeyboardDriver.isr(params);   // Kernel mode device driver
                     _StdIn.handleInput();
                     break;
+                case CPU_SCHEDULER_IRQ:
+                    _Dispatcher.dispatch(params);     // Context-switching in the dispatcher from software interrupts
+                    break;
                 default:
                     this.krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
             }

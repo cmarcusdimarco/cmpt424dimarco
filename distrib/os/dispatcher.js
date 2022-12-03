@@ -7,10 +7,17 @@ var TSOS;
 (function (TSOS) {
     class Dispatcher {
         // Initialize CPU with a process and set isExecuting to true.
-        dispatch(process) {
-            _Kernel.krnTrace(`Dispatching process ${process.processId}...`);
-            _CPU.initWithPCB(process);
-            _CPU.isExecuting = true;
+        dispatch(params) {
+            // Since this method will be called with a param of type <any> from the Kernel, we need to check type.
+            if (params[0] instanceof TSOS.ProcessControlBlock) {
+                _Kernel.krnTrace(`Dispatching process ${params[0].processId}...`);
+                params[0].updateGUI('RUNNING');
+                _CPU.initWithPCB(params[0]);
+                _CPU.isExecuting = true;
+            }
+            else {
+                console.log('ERR: Dispatcher passed a parameter not of type ProcessControlBlock.');
+            }
         }
     }
     TSOS.Dispatcher = Dispatcher;
