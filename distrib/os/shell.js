@@ -96,6 +96,30 @@ var TSOS;
             // quantum <int>
             sc = new TSOS.ShellCommand(this.shellQuantum, "quantum", "<int> - Sets the quantum to the specified positive integer.");
             this.commandList[this.commandList.length] = sc;
+            // format
+            sc = new TSOS.ShellCommand(this.shellFormat, "format", "- Initialize all blocks in all sectors in all tracks.");
+            this.commandList[this.commandList.length] = sc;
+            // create <filename>
+            sc = new TSOS.ShellCommand(this.shellCreateFilename, "create", "<filename> - Creates the file <filename>.");
+            this.commandList[this.commandList.length] = sc;
+            // read <filename>
+            sc = new TSOS.ShellCommand(this.shellReadFilename, "read", "<filename> - Reads and displays the contents of file <filename>.");
+            this.commandList[this.commandList.length] = sc;
+            // write <filename> "data"
+            sc = new TSOS.ShellCommand(this.shellWriteFilename, "write", "<filename> 'data' - Writes the data inside the quotes to <filename>.");
+            this.commandList[this.commandList.length] = sc;
+            // delete <filename>
+            sc = new TSOS.ShellCommand(this.shellDeleteFilename, "delete", "<filename> - Deletes the file <filename>.");
+            this.commandList[this.commandList.length] = sc;
+            // copy <existing filename> <new filename>
+            sc = new TSOS.ShellCommand(this.shellCopyFilename, "copy", "<existing filename> <new filename> - Creates a copy of <existing filename> with the new name.");
+            this.commandList[this.commandList.length] = sc;
+            // rename <current filename> <new filename>
+            sc = new TSOS.ShellCommand(this.shellRenameFilename, "rename", "<current filename> <new filename> - Renames the file from <current filename> to <new filename>.");
+            this.commandList[this.commandList.length] = sc;
+            // ls
+            sc = new TSOS.ShellCommand(this.shellLs, "ls", "- Lists the files currently stored on the disk.");
+            this.commandList[this.commandList.length] = sc;
             // Sort the commandList for use in tab completion
             this.commandList = this.commandList.sort((command1, command2) => {
                 if (command1.command > command2.command) {
@@ -336,6 +360,30 @@ var TSOS;
                     case "quantum":
                         _StdOut.putText("Sets the quantum of the CPU scheduler.");
                         break;
+                    case "format":
+                        _StdOut.putText("Initializes all blocks in all sectors in all tracks.");
+                        break;
+                    case "create":
+                        _StdOut.putText("Creates a file with the specified filename.");
+                        break;
+                    case "read":
+                        _StdOut.putText("Reads and displays the contents of the file specified.");
+                        break;
+                    case "write":
+                        _StdOut.putText("Writes the specified data to the specified filename.");
+                        break;
+                    case "delete":
+                        _StdOut.putText("Deletes the specified filename.");
+                        break;
+                    case "copy":
+                        _StdOut.putText("Makes a copy of the specified file under a different specified name.");
+                        break;
+                    case "rename":
+                        _StdOut.putText("Renames a file to the specified name.");
+                        break;
+                    case "ls":
+                        _StdOut.putText("Lists all files currently stored on the disk.");
+                        break;
                     default:
                         _StdOut.putText("No manual entry for " + args[0] + ".");
                 }
@@ -549,6 +597,22 @@ var TSOS;
             }
             // Update quantum
             _CPUScheduler.quantum = target;
+        }
+        shellFormat(args) {
+        }
+        shellCreateFilename(args) {
+        }
+        shellReadFilename(args) {
+        }
+        shellWriteFilename(args) {
+        }
+        shellDeleteFilename(args) {
+        }
+        shellCopyFilename(args) {
+        }
+        shellRenameFilename(args) {
+        }
+        shellLs(args) {
         }
     }
     TSOS.Shell = Shell;
