@@ -17,6 +17,22 @@ module TSOS {
             // Initialization routine for this, the kernel-mode Disk System Device Driver
             this.status = "loaded";
         }
+
+        // Format
+
+        // Create filename
+
+        // Write file
+
+        // Read file
+
+        // Delete file
+
+        // Copy file
+
+        // Rename file
+
+        // ls
     }
 
 }
