@@ -29,9 +29,40 @@ var TSOS;
                         if (track + sector + block === 0) {
                             sessionStorage.setItem(`${track}:${sector}:${block}`, masterBootRecordString);
                         }
-                        sessionStorage.setItem(`${track}:${sector}:${block}`, zeroString);
+                        else {
+                            sessionStorage.setItem(`${track}:${sector}:${block}`, zeroString);
+                        }
+                        this.updateGUI(`${track}:${sector}:${block}`);
                     }
                 }
+            }
+        }
+        // Create filename
+        // Write file
+        // Read file
+        // Delete file
+        // Copy file
+        // Rename file
+        // ls
+        // Update GUI
+        updateGUI(rowID) {
+            // Remove colon-delineation for compatibility with HTML Frontend
+            let id = rowID.replace(/:/g, '');
+            // Parse input
+            // Index 0 - active flag
+            // Index 1 - header pointer
+            // Index 2 - data string
+            let values = sessionStorage.getItem(rowID).split(' ');
+            // If values is not null, assign fields
+            if (values) {
+                document.getElementById(`diskCell${id}active`).innerText = values[0];
+                document.getElementById(`diskCell${id}header`).innerText = values[1];
+                document.getElementById(`diskCell${id}data`).innerText = values[2];
+                return true;
+            }
+            else {
+                console.error('Error updating GUI for disk system.');
+                return false;
             }
         }
     }

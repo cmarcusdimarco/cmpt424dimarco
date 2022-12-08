@@ -738,7 +738,7 @@ module TSOS {
         }
 
         public shellFormat(args: string[]) {
-
+            _krnDiskSystemDriver.format();
         }
 
         public shellCreateFilename(args: string[]) {

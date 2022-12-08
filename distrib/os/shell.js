@@ -599,6 +599,7 @@ var TSOS;
             _CPUScheduler.quantum = target;
         }
         shellFormat(args) {
+            _krnDiskSystemDriver.format();
         }
         shellCreateFilename(args) {
         }
