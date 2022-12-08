@@ -35,7 +35,7 @@ module TSOS {
                         if (track + sector + block === 0) {
                             sessionStorage.setItem(`${track}:${sector}:${block}`, masterBootRecordString);
                         }
-                        sessionStorage.set(`${track}:${sector}:${block}`, zeroString);
+                        sessionStorage.setItem(`${track}:${sector}:${block}`, zeroString);
                     }
                 }
             }
