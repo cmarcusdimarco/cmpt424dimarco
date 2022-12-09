@@ -602,6 +602,12 @@ var TSOS;
             _krnDiskSystemDriver.format();
         }
         shellCreateFilename(args) {
+            if (args.length > 0) {
+                _krnDiskSystemDriver.create(args[0]);
+            }
+            else {
+                _StdOut.putText("Usage: prompt <filename>  Please supply a string.");
+            }
         }
         shellReadFilename(args) {
         }

@@ -742,7 +742,11 @@ module TSOS {
         }
 
         public shellCreateFilename(args: string[]) {
-
+            if (args.length > 0) {
+                _krnDiskSystemDriver.create(args[0]);
+            } else {
+                _StdOut.putText("Usage: prompt <filename>  Please supply a string.");
+            }
         }
 
         public shellReadFilename(args: string[]) {

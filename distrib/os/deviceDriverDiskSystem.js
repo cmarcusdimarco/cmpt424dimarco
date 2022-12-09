@@ -8,6 +8,7 @@ var TSOS;
     class DeviceDriverDiskSystem extends TSOS.DeviceDriver {
         constructor() {
             super();
+            this.diskDataLength = 120; // String length of data entries for any disk storage record
             this.driverEntry = this.krnDSDriverEntry;
         }
         krnDSDriverEntry() {
@@ -38,6 +39,42 @@ var TSOS;
             }
         }
         // Create filename
+        create(filename) {
+            // Convert filename to ASCII
+            let asciiFilename = '';
+            for (let i = 0; i < filename.length; i++) {
+                asciiFilename += TSOS.Ascii.lookupCode(filename.charAt(i)).toString(16);
+            }
+            // Add trailing 0s to filename for consistency between GUI and disk data
+            for (let i = asciiFilename.length; i < this.diskDataLength; i++) {
+                asciiFilename += '0';
+            }
+            // Loop through data map to find next available disk location, starting in track 1
+            let header = ''; // Pointer to file data location on disk
+            headerLoops: for (let track = 1; track < 4; track++) {
+                for (let sector = 0; sector < 8; sector++) {
+                    for (let block = 0; block < 8; block++) {
+                        if (sessionStorage.getItem(`${track}:${sector}:${block}`).startsWith('0')) {
+                            header = `${track}${sector}${block}`;
+                            break headerLoops;
+                        }
+                    }
+                }
+            }
+            // Loop through directory map to find first available directory entry
+            for (let sector = 0; sector < 8; sector++) {
+                for (let block = 0; block < 8; block++) {
+                    // Upon finding an available directory entry...
+                    if (sessionStorage.getItem(`0:${sector}:${block}`).startsWith('0')) {
+                        // ...overwrite its contents with the new data...
+                        sessionStorage.setItem(`0:${sector}:${block}`, `1 ${header} ${asciiFilename.toUpperCase()}`);
+                        // ...and update the GUI.
+                        this.updateGUI(`0:${sector}:${block}`);
+                        return true;
+                    }
+                }
+            }
+        }
         // Write file
         // Read file
         // Delete file
