@@ -9,6 +9,9 @@ var TSOS;
         constructor() {
             super();
             this.diskDataLength = 120; // String length of data entries for any disk storage record
+            this.trackMax = 4; // Number of tracks available to disk storage
+            this.sectorMax = 8; // Number of sectors available within each track
+            this.blockMax = 8; // Number of blocks available within each sector
             this.driverEntry = this.krnDSDriverEntry;
         }
         krnDSDriverEntry() {
@@ -23,9 +26,9 @@ var TSOS;
             let zeroString = "0 000 000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
             let masterBootRecordString = "1 000 000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
             // Initialize and/or reset the storage map
-            for (let track = 0; track < 4; track++) {
-                for (let sector = 0; sector < 8; sector++) {
-                    for (let block = 0; block < 8; block++) {
+            for (let track = 0; track < this.trackMax; track++) {
+                for (let sector = 0; sector < this.sectorMax; sector++) {
+                    for (let block = 0; block < this.blockMax; block++) {
                         // Skip the master boot record, held at 0:0:0
                         if (track + sector + block === 0) {
                             sessionStorage.setItem(`${track}:${sector}:${block}`, masterBootRecordString);
@@ -48,9 +51,9 @@ var TSOS;
             }
             // Loop through data map to find next available disk location, starting in track 1
             let header = ''; // Pointer to file data location on disk
-            headerLoops: for (let track = 1; track < 4; track++) {
-                for (let sector = 0; sector < 8; sector++) {
-                    for (let block = 0; block < 8; block++) {
+            headerLoops: for (let track = 1; track < this.trackMax; track++) {
+                for (let sector = 0; sector < this.sectorMax; sector++) {
+                    for (let block = 0; block < this.blockMax; block++) {
                         if (sessionStorage.getItem(`${track}:${sector}:${block}`).startsWith('0')) {
                             header = `${track}${sector}${block}`;
                             break headerLoops;
@@ -59,8 +62,8 @@ var TSOS;
                 }
             }
             // Loop through directory map to find first available directory entry
-            directoryLoops: for (let sector = 0; sector < 8; sector++) {
-                for (let block = 0; block < 8; block++) {
+            directoryLoops: for (let sector = 0; sector < this.sectorMax; sector++) {
+                for (let block = 0; block < this.blockMax; block++) {
                     // Upon finding an available directory entry...
                     if (sessionStorage.getItem(`0:${sector}:${block}`).startsWith('0')) {
                         // ...overwrite its contents with the new data...
@@ -105,14 +108,60 @@ var TSOS;
             let blockAddress = this.getFileAddressByFilename(filename);
             let asciiData = TSOS.Ascii.convertStringToAscii(data);
             // Determine amount of blocks needed to write data
-            // Pad asciiData with 0s at end to fit length of data possible in one block
+            let blocksToWrite = Math.ceil(asciiData.length / this.diskDataLength);
+            // Pad asciiData with 0s at end if needed
+            for (let i = asciiData.length; i < (blocksToWrite * this.diskDataLength); i++) {
+                asciiData += '0';
+            }
             // Starting with the initial block...
-            // ...update its data with the first section of asciiData...
-            // ...check if data remains to be written, and if so...
-            // ...find the next available (preferably adjacent) block...
-            // ...update the initial header to the new block...
-            // ...set the new block's header to '999'...
-            // ...repeat as needed until out of data to write.
+            for (let i = 0; i < blocksToWrite; i++) {
+                // ...update its data with the first section of asciiData...
+                let values = sessionStorage.getItem(blockAddress).split(' ');
+                let substringStart = i * this.diskDataLength;
+                let substringEnd = (i * this.diskDataLength) + this.diskDataLength;
+                values[2] = asciiData.substring(substringStart, substringEnd);
+                // ...check if data remains to be written...
+                if (blocksToWrite > i + 1) {
+                    // ...if so, find the next available (preferably adjacent) block...
+                    let nextBlockAddress = '';
+                    findNextBlock: for (let track = parseInt(blockAddress.charAt(0)); track < this.trackMax; track++) {
+                        // We need conditional assignment of inner loop iterators to ensure that once the local track is searched,
+                        // we can start the next track from sector instead of the current block's sector.
+                        let sector = track === parseInt(blockAddress.charAt(0)) ? parseInt(blockAddress.charAt(2)) : 0;
+                        for (; sector < this.sectorMax; sector++) {
+                            // Same here, but starting the next sector from block 0 instead of the current block.
+                            let block = sector === parseInt(blockAddress.charAt(2)) ? parseInt(blockAddress.charAt(4)) : 0;
+                            for (; block < this.blockMax; block++) {
+                                // Upon finding an inactive block...
+                                if (sessionStorage.getItem(`${track}:${sector}:${block}`).startsWith('0')) {
+                                    // ...set nextBlockAddress to the new block and set the current block's header to point to the new block.
+                                    nextBlockAddress = `${track}:${sector}:${block}`;
+                                    values[1] = `${track}${sector}${block}`;
+                                    break findNextBlock;
+                                }
+                            }
+                        }
+                    }
+                    // If no nextBlockAddress was found, throw an error.
+                    if (nextBlockAddress === '') {
+                        throw new Error('ERR: Unable to find sufficient available blocks to write data. Please reduce the file size or free some disk space and try again.');
+                    }
+                    // Join the values and write the full string to the disk...
+                    sessionStorage.setItem(blockAddress, values.join(' '));
+                    // ...update the GUI...
+                    this.updateGUI(blockAddress);
+                    // ...and update blockAddress to nextBlockAddress.
+                    blockAddress = nextBlockAddress;
+                }
+                else {
+                    // If there is no more data to write, update the header to '999' to show that it is the final block in the file...
+                    values[1] = '999';
+                    // ...join the values and write the full string to the disk...
+                    sessionStorage.setItem(blockAddress, values.join(' '));
+                    // ... and update the GUI.
+                    this.updateGUI(blockAddress);
+                }
+            }
         }
         // Delete file
         // Copy file
@@ -145,8 +194,8 @@ var TSOS;
             // Get ASCII filename.
             let asciiFilename = TSOS.Ascii.convertStringToAscii(filename);
             // Loop through directory map to find matching directory entry
-            for (let sector = 0; sector < 8; sector++) {
-                for (let block = 0; block < 8; block++) {
+            for (let sector = 0; sector < this.sectorMax; sector++) {
+                for (let block = 0; block < this.blockMax; block++) {
                     let directoryEntry = sessionStorage.getItem(`0:${sector}:${block}`);
                     // Only check active (and existing!) entries.
                     if (directoryEntry && directoryEntry.startsWith('1')) {

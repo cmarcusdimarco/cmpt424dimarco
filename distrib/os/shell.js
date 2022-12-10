@@ -623,6 +623,25 @@ var TSOS;
             }
         }
         shellWriteFilename(args) {
+            if (args.length > 1) {
+                try {
+                    let filename = args.shift();
+                    let data = args.join(' ');
+                    if (data.startsWith('"') && data.endsWith('"')) {
+                        data = data.substring(1, data.length - 1);
+                        _krnDiskSystemDriver.write(filename, data);
+                    }
+                    else {
+                        throw new Error('ERR: Data to be written must be enclosed within double quotations.');
+                    }
+                }
+                catch (e) {
+                    _StdOut.putText(e.message);
+                }
+            }
+            else {
+                _StdOut.putText("Usage: prompt <filename>  Please supply a string.");
+            }
         }
         shellDeleteFilename(args) {
         }
