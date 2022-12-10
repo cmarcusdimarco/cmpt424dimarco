@@ -85,22 +85,35 @@ var TSOS;
         }
         // Read file
         read(filename) {
-            let fileAddress;
+            let blockAddress;
             let fileContents = '';
             let blockContents;
             // Get the starting block of the filename.
-            fileAddress = this.getFileAddressByFilename(filename);
+            blockAddress = this.getFileAddressByFilename(filename);
             do {
                 // Split the sessionStorage item and return the data portion.
-                blockContents = sessionStorage.getItem(fileAddress).split(' ');
+                blockContents = sessionStorage.getItem(blockAddress).split(' ');
                 // Append the block contents to the file contents.
                 fileContents += TSOS.Ascii.convertAsciiToString(blockContents[2]);
                 // Reassign fileAddress to the value in the header section of the current block.
-                fileAddress = blockContents[1];
-            } while (fileAddress !== '999'); // If the block header points to another block, continue the process.
+                blockAddress = blockContents[1];
+            } while (blockAddress !== '999'); // If the block header points to another block, continue the process.
             return fileContents;
         }
         // Write file
+        write(filename, data) {
+            let blockAddress = this.getFileAddressByFilename(filename);
+            let asciiData = TSOS.Ascii.convertStringToAscii(data);
+            // Determine amount of blocks needed to write data
+            // Pad asciiData with 0s at end to fit length of data possible in one block
+            // Starting with the initial block...
+            // ...update its data with the first section of asciiData...
+            // ...check if data remains to be written, and if so...
+            // ...find the next available (preferably adjacent) block...
+            // ...update the initial header to the new block...
+            // ...set the new block's header to '999'...
+            // ...repeat as needed until out of data to write.
+        }
         // Delete file
         // Copy file
         // Rename file
