@@ -83,40 +83,24 @@ var TSOS;
             this.updateGUI(fileAddress);
             return true;
         }
-        // Write file
         // Read file
         read(filename) {
-            let fileAddress = '';
-            let fileContents;
-            // Get ASCII filename.
-            let asciiFilename = TSOS.Ascii.convertStringToAscii(filename);
-            // Loop through directory map to find matching directory entry
-            for (let sector = 0; sector < 8; sector++) {
-                for (let block = 0; block < 8; block++) {
-                    let directoryEntry = sessionStorage.getItem(`0:${sector}:${block}`);
-                    // Only check active (and existing!) entries.
-                    if (directoryEntry && directoryEntry.startsWith('1')) {
-                        // If active, split into an array for easier parsing.
-                        let directoryEntryValues = directoryEntry.split(' ');
-                        // Check the data value (index = 2) for matching filename.
-                        // Since we are using 0-padded string values, our comparison is using two checks:
-                        // the string must start with the filename, and the string must only contain 0 after the filename.
-                        // The second test occurs using this very cool regex.
-                        if (directoryEntryValues[2].startsWith(asciiFilename) && /^0+$/.test(directoryEntryValues[2].substring(asciiFilename.length))) {
-                            // Manipulate the fileAddress to be colon-delineated for sessionStorage lookup.
-                            fileAddress = directoryEntryValues[1].charAt(0) + ':' +
-                                directoryEntryValues[1].charAt(1) + ':' +
-                                directoryEntryValues[1].charAt(2);
-                            // Split the sessionStorage item the same way we did above, and return the data portion.
-                            fileContents = sessionStorage.getItem(fileAddress).split(' ');
-                            return TSOS.Ascii.convertAsciiToString(fileContents[2]);
-                        }
-                    }
-                }
-            }
-            // Throw error if no match found
-            throw new Error(`ERR: No file named ${filename} found in file system.`);
+            let fileAddress;
+            let fileContents = '';
+            let blockContents;
+            // Get the starting block of the filename.
+            fileAddress = this.getFileAddressByFilename(filename);
+            do {
+                // Split the sessionStorage item and return the data portion.
+                blockContents = sessionStorage.getItem(fileAddress).split(' ');
+                // Append the block contents to the file contents.
+                fileContents += TSOS.Ascii.convertAsciiToString(blockContents[2]);
+                // Reassign fileAddress to the value in the header section of the current block.
+                fileAddress = blockContents[1];
+            } while (fileAddress !== '999'); // If the block header points to another block, continue the process.
+            return fileContents;
         }
+        // Write file
         // Delete file
         // Copy file
         // Rename file
@@ -141,6 +125,37 @@ var TSOS;
                 console.error('Error updating GUI for disk system.');
                 return false;
             }
+        }
+        // Helper method to reduce duplicate lines of code.
+        getFileAddressByFilename(filename) {
+            let fileAddress = '';
+            // Get ASCII filename.
+            let asciiFilename = TSOS.Ascii.convertStringToAscii(filename);
+            // Loop through directory map to find matching directory entry
+            for (let sector = 0; sector < 8; sector++) {
+                for (let block = 0; block < 8; block++) {
+                    let directoryEntry = sessionStorage.getItem(`0:${sector}:${block}`);
+                    // Only check active (and existing!) entries.
+                    if (directoryEntry && directoryEntry.startsWith('1')) {
+                        // If active, split into an array for easier parsing.
+                        let directoryEntryValues = directoryEntry.split(' ');
+                        // Check the data value (index = 2) for matching filename.
+                        // Since we are using 0-padded string values, our comparison is using two checks:
+                        // the string must start with the filename, and the string must only contain 0 after the filename.
+                        // The second test occurs using this very cool regex.
+                        if (directoryEntryValues[2].startsWith(asciiFilename) && /^0+$/.test(directoryEntryValues[2].substring(asciiFilename.length))) {
+                            // Manipulate the fileAddress to be colon-delineated for sessionStorage lookup.
+                            fileAddress = directoryEntryValues[1].charAt(0) + ':' +
+                                directoryEntryValues[1].charAt(1) + ':' +
+                                directoryEntryValues[1].charAt(2);
+                            // Return formatted fileAddress.
+                            return fileAddress;
+                        }
+                    }
+                }
+            }
+            // Throw error if no match found
+            throw new Error(`ERR: No file named ${filename} found in file system.`);
         }
     }
     TSOS.DeviceDriverDiskSystem = DeviceDriverDiskSystem;
