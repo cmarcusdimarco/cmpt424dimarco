@@ -25,6 +25,30 @@ var TSOS;
                 return 0xFF;
             }
         }
+        // Helper function for converting a full string to ASCII hex codes.
+        static convertStringToAscii(string) {
+            let asciiString = '';
+            for (let i = 0; i < string.length; i++) {
+                asciiString += this.lookupCode(string.charAt(i)).toString(16);
+            }
+            return asciiString.toUpperCase();
+        }
+        static convertAsciiToString(ascii) {
+            // Input validation: since ASCII is represented in hex codes, input string must be divisible by 2.
+            if (ascii.length % 2 !== 0) {
+                console.log(`ERR: could not validate ${ascii} as a valid ASCII-encoded string.`);
+                return false;
+            }
+            let string = '';
+            for (let i = 0; i < ascii.length; i += 2) {
+                // Get the two-character hex code.
+                let asciiCharString = '';
+                asciiCharString += ascii.substring(i, i + 1);
+                // Convert to standard notation and append to result string.
+                string += this.lookup(parseInt(asciiCharString, 16));
+            }
+            return string.toUpperCase();
+        }
         // Initialize ASCII character codes for lookup
         static initializeTables() {
             Ascii.toTable.set(0x0A, '\n');
