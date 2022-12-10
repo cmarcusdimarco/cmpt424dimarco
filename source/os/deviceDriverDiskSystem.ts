@@ -50,7 +50,7 @@ module TSOS {
         public create(filename: string) {
 
             // Convert filename to ASCII
-            let asciiFilename = this.convertFilenameToAscii(filename);
+            let asciiFilename = Ascii.convertStringToAscii(filename);
 
             // Add trailing 0s to filename for consistency between GUI and disk data
             for (let i = asciiFilename.length; i < this.diskDataLength; i++) {
@@ -110,7 +110,7 @@ module TSOS {
             let fileContents: string[];
 
             // Get ASCII filename.
-            let asciiFilename = this.convertFilenameToAscii(filename);
+            let asciiFilename = Ascii.convertStringToAscii(filename);
 
             // Loop through directory map to find matching directory entry
             for (let sector = 0; sector < 8; sector++) {
@@ -131,7 +131,7 @@ module TSOS {
                                           directoryEntryValues[1].charAt(2);
                             // Split the sessionStorage item the same way we did above, and return the data portion.
                             fileContents = sessionStorage.getItem(fileAddress).split(' ');
-                            return fileContents[2];
+                            return Ascii.convertAsciiToString(fileContents[2]);
                         }
                     }
                 }
@@ -170,16 +170,6 @@ module TSOS {
                 console.error('Error updating GUI for disk system.');
                 return false;
             }
-        }
-
-        private convertFilenameToAscii(filename: string) {
-            // Helper function for converting a full string to ASCII hex codes.
-            let asciiFilename: string = '';
-            for (let i = 0; i < filename.length; i++) {
-                asciiFilename += Ascii.lookupCode(filename.charAt(i)).toString(16);
-            }
-
-            return asciiFilename.toUpperCase();
         }
     }
 

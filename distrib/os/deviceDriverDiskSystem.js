@@ -41,7 +41,7 @@ var TSOS;
         // Create filename
         create(filename) {
             // Convert filename to ASCII
-            let asciiFilename = this.convertFilenameToAscii(filename);
+            let asciiFilename = TSOS.Ascii.convertStringToAscii(filename);
             // Add trailing 0s to filename for consistency between GUI and disk data
             for (let i = asciiFilename.length; i < this.diskDataLength; i++) {
                 asciiFilename += '0';
@@ -89,7 +89,7 @@ var TSOS;
             let fileAddress = '';
             let fileContents;
             // Get ASCII filename.
-            let asciiFilename = this.convertFilenameToAscii(filename);
+            let asciiFilename = TSOS.Ascii.convertStringToAscii(filename);
             // Loop through directory map to find matching directory entry
             for (let sector = 0; sector < 8; sector++) {
                 for (let block = 0; block < 8; block++) {
@@ -109,7 +109,7 @@ var TSOS;
                                 directoryEntryValues[1].charAt(2);
                             // Split the sessionStorage item the same way we did above, and return the data portion.
                             fileContents = sessionStorage.getItem(fileAddress).split(' ');
-                            return fileContents[2];
+                            return TSOS.Ascii.convertAsciiToString(fileContents[2]);
                         }
                     }
                 }
@@ -141,14 +141,6 @@ var TSOS;
                 console.error('Error updating GUI for disk system.');
                 return false;
             }
-        }
-        convertFilenameToAscii(filename) {
-            // Helper function for converting a full string to ASCII hex codes.
-            let asciiFilename = '';
-            for (let i = 0; i < filename.length; i++) {
-                asciiFilename += TSOS.Ascii.lookupCode(filename.charAt(i)).toString(16);
-            }
-            return asciiFilename.toUpperCase();
         }
     }
     TSOS.DeviceDriverDiskSystem = DeviceDriverDiskSystem;
