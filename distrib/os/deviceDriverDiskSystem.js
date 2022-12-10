@@ -115,10 +115,11 @@ var TSOS;
             }
             // Starting with the initial block...
             for (let i = 0; i < blocksToWrite; i++) {
-                // ...update its data with the first section of asciiData...
+                // ...update its active flag and its data with the appropriate section of asciiData...
                 let values = sessionStorage.getItem(blockAddress).split(' ');
                 let substringStart = i * this.diskDataLength;
                 let substringEnd = (i * this.diskDataLength) + this.diskDataLength;
+                values[0] = '1';
                 values[2] = asciiData.substring(substringStart, substringEnd);
                 // ...check if data remains to be written...
                 if (blocksToWrite > i + 1) {
@@ -130,7 +131,7 @@ var TSOS;
                         let sector = track === parseInt(blockAddress.charAt(0)) ? parseInt(blockAddress.charAt(2)) : 0;
                         for (; sector < this.sectorMax; sector++) {
                             // Same here, but starting the next sector from block 0 instead of the current block.
-                            let block = sector === parseInt(blockAddress.charAt(2)) ? parseInt(blockAddress.charAt(4)) : 0;
+                            let block = sector === parseInt(blockAddress.charAt(2)) ? parseInt(blockAddress.charAt(4)) + 1 : 0;
                             for (; block < this.blockMax; block++) {
                                 // Upon finding an inactive block...
                                 if (sessionStorage.getItem(`${track}:${sector}:${block}`).startsWith('0')) {
@@ -154,7 +155,14 @@ var TSOS;
                     blockAddress = nextBlockAddress;
                 }
                 else {
-                    // If there is no more data to write, update the header to '999' to show that it is the final block in the file...
+                    // If there is no more data to write, check the header to mark any previously used blocks as inactive
+                    if (values[1] !== '000' && values[1] !== '999') {
+                        let blockToDeactivate = values[1].charAt(0) + ':' +
+                            values[1].charAt(1) + ':' +
+                            values[1].charAt(2);
+                        this.deactivateUnreferencedBlocks(blockToDeactivate);
+                    }
+                    // ...update the header to '999' to show that it is the final block in the file...
                     values[1] = '999';
                     // ...join the values and write the full string to the disk...
                     sessionStorage.setItem(blockAddress, values.join(' '));
@@ -218,6 +226,21 @@ var TSOS;
             }
             // Throw error if no match found
             throw new Error(`ERR: No file named ${filename} found in file system.`);
+        }
+        deactivateUnreferencedBlocks(blockAddress) {
+            let values = sessionStorage.getItem(blockAddress).split(' ');
+            // Recursive call to traverse all blocks in the unreferenced path
+            if (values[1] !== '000' && values[1] !== '999') {
+                let blockToDeactivate = values[1].charAt(0) + ':' +
+                    values[1].charAt(1) + ':' +
+                    values[1].charAt(2);
+                this.deactivateUnreferencedBlocks(blockToDeactivate);
+            }
+            // Set active flag to inactive
+            values[0] = '0';
+            // Don't change anything else. Update GUI.
+            sessionStorage.setItem(blockAddress, values.join(' '));
+            this.updateGUI(blockAddress);
         }
     }
     TSOS.DeviceDriverDiskSystem = DeviceDriverDiskSystem;
