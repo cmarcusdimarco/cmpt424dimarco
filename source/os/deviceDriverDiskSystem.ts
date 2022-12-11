@@ -204,6 +204,20 @@ module TSOS {
         }
 
         // Delete file
+        public delete(filename: string) {
+            let directoryAddress = this.getDirectoryAddressByFilename(filename);
+            let fileStartingAddress = this.getFileAddressByFilename(filename);
+
+            // Set the directory record to inactive.
+            let directoryValues = sessionStorage.getItem(directoryAddress).split(' ');
+            directoryValues[0] = '0';
+            sessionStorage.setItem(directoryAddress, directoryValues.join(' '));
+            // Update the GUI.
+            this.updateGUI(directoryAddress);
+
+            // Set each block address within the file to inactive.
+            this.deactivateUnreferencedBlocks(fileStartingAddress);
+        }
 
         // Copy file
 
@@ -267,6 +281,34 @@ module TSOS {
 
             // Throw error if no match found
             throw new Error(`ERR: No file named ${filename} found in file system.`);
+        }
+
+        // A modified version of the getFileAddressByFilename helper function that returns the directory address.
+        private getDirectoryAddressByFilename(filename: string) {
+            // Get ASCII filename.
+            let asciiFilename = Ascii.convertStringToAscii(filename);
+
+            // Loop through directory map to find matching directory entry
+            for (let sector = 0; sector < this.sectorMax; sector++) {
+                for (let block = 0; block < this.blockMax; block++) {
+                    let directoryEntry = sessionStorage.getItem(`0:${sector}:${block}`);
+                    // Only check active (and existing!) entries.
+                    if (directoryEntry && directoryEntry.startsWith('1')) {
+                        // If active, split into an array for easier parsing.
+                        let directoryEntryValues = directoryEntry.split(' ');
+                        // Check the data value (index = 2) for matching filename.
+                        // Since we are using 0-padded string values, our comparison is using two checks:
+                        // the string must start with the filename, and the string must only contain 0 after the filename.
+                        // The second test occurs using this very cool regex.
+                        if (directoryEntryValues[2].startsWith(asciiFilename) && /^0+$/.test(directoryEntryValues[2].substring(asciiFilename.length))) {
+                            return `0:${sector}:${block}`;
+                        }
+                    }
+                }
+            }
+
+            // If not found, throw an error.
+            throw new Error(`ERR: File ${filename} not found within the directory.`);
         }
 
         private deactivateUnreferencedBlocks(blockAddress: string) {

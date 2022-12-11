@@ -644,6 +644,17 @@ var TSOS;
             }
         }
         shellDeleteFilename(args) {
+            if (args.length > 0) {
+                try {
+                    _krnDiskSystemDriver.delete(args[0]);
+                }
+                catch (e) {
+                    _StdOut.putText(e.message);
+                }
+            }
+            else {
+                _StdOut.putText("Usage: prompt <filename>  Please supply a string.");
+            }
         }
         shellCopyFilename(args) {
         }
