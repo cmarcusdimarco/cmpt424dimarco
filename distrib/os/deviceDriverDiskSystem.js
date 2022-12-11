@@ -213,6 +213,25 @@ var TSOS;
             this.updateGUI(directoryAddress);
         }
         // ls
+        ls() {
+            let filenames = [];
+            // Loop through directory...
+            for (let sector = 0; sector < this.sectorMax; sector++) {
+                for (let block = 0; block < this.blockMax; block++) {
+                    // ...and if an entry is active...
+                    if (sessionStorage.getItem(`0:${sector}:${block}`).startsWith('1')) {
+                        // ...get the values, convert the filename from ASCII, and push it to the results array.
+                        let directoryValues = sessionStorage.getItem(`0:${sector}:${block}`).split(' ');
+                        let filename = TSOS.Ascii.convertAsciiToString(directoryValues[2]);
+                        if (filename) {
+                            filenames.push(filename);
+                        }
+                    }
+                }
+            }
+            // Return the array of filenames.
+            return filenames;
+        }
         // Update GUI
         updateGUI(rowID) {
             // Remove colon-delineation for compatibility with HTML Frontend
