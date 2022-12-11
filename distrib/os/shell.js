@@ -601,6 +601,8 @@ var TSOS;
         shellFormat(args) {
             _krnDiskSystemDriver.format();
         }
+        // TODO: Remove support for filenames with spaces.
+        // TODO: Return error in shellCreateFilename if filename already in use.
         shellCreateFilename(args) {
             if (args.length > 0) {
                 let filename = args.join(' ');
@@ -662,6 +664,20 @@ var TSOS;
             }
         }
         shellCopyFilename(args) {
+            if (args.length > 1) {
+                try {
+                    let existingFilename = args[0];
+                    let newFilename = args[1];
+                    _krnDiskSystemDriver.copy(existingFilename, newFilename);
+                    _StdOut.putText(`Created copy of ${existingFilename} as ${newFilename}.`);
+                }
+                catch (e) {
+                    _StdOut.putText(e.message);
+                }
+            }
+            else {
+                _StdOut.putText("Usage: prompt <filename>  Please supply a string.");
+            }
         }
         shellRenameFilename(args) {
         }

@@ -187,6 +187,14 @@ var TSOS;
             this.deactivateUnreferencedBlocks(fileStartingAddress);
         }
         // Copy file
+        copy(existingFilename, newFilename) {
+            // Get contents of existingFilename
+            let fileContents = this.read(existingFilename);
+            // Create new filename
+            this.create(newFilename);
+            // Write contents to new filename
+            this.write(newFilename, fileContents);
+        }
         // Rename file
         // ls
         // Update GUI
