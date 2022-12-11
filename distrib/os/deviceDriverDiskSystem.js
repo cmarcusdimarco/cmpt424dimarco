@@ -196,6 +196,22 @@ var TSOS;
             this.write(newFilename, fileContents);
         }
         // Rename file
+        rename(previousFilename, newFilename) {
+            // Get directory address of previousFilename
+            let directoryAddress = this.getDirectoryAddressByFilename(previousFilename);
+            // Get contents of directory address
+            let directoryContents = sessionStorage.getItem(directoryAddress).split(' ');
+            // Convert newFilename to ASCII and append trailing 0s to fit length requirement
+            let asciiFilename = TSOS.Ascii.convertStringToAscii(newFilename);
+            for (let i = asciiFilename.length; i < this.diskDataLength; i++) {
+                asciiFilename += '0';
+            }
+            // Update data portion of directoryContents and save back to disk
+            directoryContents[2] = asciiFilename;
+            sessionStorage.setItem(directoryAddress, directoryContents.join(' '));
+            // Update the GUI.
+            this.updateGUI(directoryAddress);
+        }
         // ls
         // Update GUI
         updateGUI(rowID) {

@@ -680,6 +680,20 @@ var TSOS;
             }
         }
         shellRenameFilename(args) {
+            if (args.length > 1) {
+                try {
+                    let previousFilename = args[0];
+                    let newFilename = args[1];
+                    _krnDiskSystemDriver.rename(previousFilename, newFilename);
+                    _StdOut.putText(`Renamed ${previousFilename} as ${newFilename}.`);
+                }
+                catch (e) {
+                    _StdOut.putText(e.message);
+                }
+            }
+            else {
+                _StdOut.putText("Usage: prompt <filename>  Please supply a string.");
+            }
         }
         shellLs(args) {
         }
