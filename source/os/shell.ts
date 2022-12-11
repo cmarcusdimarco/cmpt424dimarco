@@ -743,7 +743,9 @@ module TSOS {
 
         public shellCreateFilename(args: string[]) {
             if (args.length > 0) {
-                _krnDiskSystemDriver.create(args[0]);
+                let filename = args.join(' ');
+                _krnDiskSystemDriver.create(filename);
+                _StdOut.putText(`File ${filename} created.`);
             } else {
                 _StdOut.putText("Usage: prompt <filename>  Please supply a string.");
             }
@@ -769,6 +771,7 @@ module TSOS {
                     if (data.startsWith('"') && data.endsWith('"')) {
                         data = data.substring(1, data.length - 1);
                         _krnDiskSystemDriver.write(filename, data);
+                        _StdOut.putText(`File ${filename} updated.`);
                     } else {
                         throw new Error('ERR: Data to be written must be enclosed within double quotations.');
                     }
@@ -783,7 +786,9 @@ module TSOS {
         public shellDeleteFilename(args: string[]) {
             if (args.length > 0) {
                 try {
-                    _krnDiskSystemDriver.delete(args[0]);
+                    let filename = args.join(' ');
+                    _krnDiskSystemDriver.delete(filename);
+                    _StdOut.putText(`File ${filename} deleted.`);
                 } catch (e) {
                     _StdOut.putText(e.message);
                 }
