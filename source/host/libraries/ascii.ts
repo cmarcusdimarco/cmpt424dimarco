@@ -52,12 +52,12 @@ module TSOS {
             for (let i = 0; i < ascii.length; i += 2) {
                 // Get the two-character hex code.
                 let asciiCharString: string = '';
-                asciiCharString += ascii.substring(i, i + 1);
+                asciiCharString += ascii.substring(i, i + 2);
                 // Convert to standard notation and append to result string.
                 string += this.lookup(parseInt(asciiCharString, 16));
             }
 
-            return string.toUpperCase();
+            return string;
         }
 
         // Initialize ASCII character codes for lookup

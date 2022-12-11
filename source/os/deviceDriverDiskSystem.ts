@@ -120,8 +120,10 @@ module TSOS {
                 // Append the block contents to the file contents.
                 fileContents += Ascii.convertAsciiToString(blockContents[2]);
                 // Reassign fileAddress to the value in the header section of the current block.
-                blockAddress = blockContents[1];
-            } while (blockAddress !== '999');   // If the block header points to another block, continue the process.
+                blockAddress = blockContents[1].charAt(0) + ':' +
+                               blockContents[1].charAt(1) + ':' +
+                               blockContents[1].charAt(2);
+            } while (blockAddress !== '9:9:9');   // If the block header points to another block, continue the process.
             return fileContents;
         }
 

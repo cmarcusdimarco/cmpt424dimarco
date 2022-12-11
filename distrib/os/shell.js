@@ -612,7 +612,7 @@ var TSOS;
         shellReadFilename(args) {
             if (args.length > 0) {
                 try {
-                    _krnDiskSystemDriver.read(args[0]);
+                    _StdOut.putText(_krnDiskSystemDriver.read(args[0]));
                 }
                 catch (e) {
                     _StdOut.putText(e.message);
