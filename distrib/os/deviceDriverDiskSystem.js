@@ -20,7 +20,7 @@ var TSOS;
         }
         // Format
         format() {
-            // These variable is redundant, but they help with readability to reference the long strings as the shorter
+            // These variables are redundant, but they help with readability to reference the long strings as the shorter
             // variable names for the loops below. The strings are space-delineated to partition between the
             // active flag, the reference pointer to the next storage address, and the actual data within
             let zeroString = "0 000 000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
