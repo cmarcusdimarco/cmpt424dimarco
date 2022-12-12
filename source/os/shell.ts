@@ -742,13 +742,16 @@ module TSOS {
         }
 
         // TODO: Remove support for filenames with spaces.
-        // TODO: Return error in shellCreateFilename if filename already in use.
 
         public shellCreateFilename(args: string[]) {
             if (args.length > 0) {
                 let filename = args.join(' ');
-                _krnDiskSystemDriver.create(filename);
-                _StdOut.putText(`File ${filename} created.`);
+                try {
+                    _krnDiskSystemDriver.create(filename);
+                    _StdOut.putText(`File ${filename} created.`);
+                } catch (error) {
+                    _StdOut.putText(error.message);
+                }
             } else {
                 _StdOut.putText("Usage: prompt <filename>  Please supply a string.");
             }
@@ -758,8 +761,8 @@ module TSOS {
             if (args.length > 0) {
                 try {
                     _StdOut.putText(_krnDiskSystemDriver.read(args[0]));
-                } catch (e) {
-                    _StdOut.putText(e.message);
+                } catch (error) {
+                    _StdOut.putText(error.message);
                 }
             } else {
                 _StdOut.putText("Usage: prompt <filename>  Please supply a string.");
@@ -778,8 +781,8 @@ module TSOS {
                     } else {
                         throw new Error('ERR: Data to be written must be enclosed within double quotations.');
                     }
-                } catch (e) {
-                    _StdOut.putText(e.message);
+                } catch (error) {
+                    _StdOut.putText(error.message);
                 }
             } else {
                 _StdOut.putText("Usage: prompt <filename>  Please supply a string.");
@@ -792,8 +795,8 @@ module TSOS {
                     let filename = args.join(' ');
                     _krnDiskSystemDriver.delete(filename);
                     _StdOut.putText(`File ${filename} deleted.`);
-                } catch (e) {
-                    _StdOut.putText(e.message);
+                } catch (error) {
+                    _StdOut.putText(error.message);
                 }
             } else {
                 _StdOut.putText("Usage: prompt <filename>  Please supply a string.");
@@ -807,8 +810,8 @@ module TSOS {
                     let newFilename = args[1];
                     _krnDiskSystemDriver.copy(existingFilename, newFilename);
                     _StdOut.putText(`Created copy of ${existingFilename} as ${newFilename}.`);
-                } catch (e) {
-                    _StdOut.putText(e.message);
+                } catch (error) {
+                    _StdOut.putText(error.message);
                 }
             } else {
                 _StdOut.putText("Usage: prompt <filename>  Please supply a string.");
@@ -822,8 +825,8 @@ module TSOS {
                     let newFilename = args[1];
                     _krnDiskSystemDriver.rename(previousFilename, newFilename);
                     _StdOut.putText(`Renamed ${previousFilename} as ${newFilename}.`);
-                } catch (e) {
-                    _StdOut.putText(e.message);
+                } catch (error) {
+                    _StdOut.putText(error.message);
                 }
             } else {
                 _StdOut.putText("Usage: prompt <filename>  Please supply a string.");

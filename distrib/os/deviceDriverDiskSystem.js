@@ -49,6 +49,15 @@ var TSOS;
             for (let i = asciiFilename.length; i < this.diskDataLength; i++) {
                 asciiFilename += '0';
             }
+            // Check if filename is already in use
+            for (let sector = 0; sector < this.sectorMax; sector++) {
+                for (let block = 0; block < this.blockMax; block++) {
+                    let directoryEntry = sessionStorage.getItem(`0:${sector}:${block}`).split(' ');
+                    if (directoryEntry[0] === '1' && directoryEntry[2] === asciiFilename) {
+                        throw new Error(`ERR: Filename ${filename} is already in use.`);
+                    }
+                }
+            }
             // Loop through data map to find next available disk location, starting in track 1
             let header = ''; // Pointer to file data location on disk
             headerLoops: for (let track = 1; track < this.trackMax; track++) {
