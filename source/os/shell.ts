@@ -741,14 +741,11 @@ module TSOS {
             _krnDiskSystemDriver.format();
         }
 
-        // TODO: Remove support for filenames with spaces.
-
         public shellCreateFilename(args: string[]) {
             if (args.length > 0) {
-                let filename = args.join(' ');
                 try {
-                    _krnDiskSystemDriver.create(filename);
-                    _StdOut.putText(`File ${filename} created.`);
+                    _krnDiskSystemDriver.create(args[0]);
+                    _StdOut.putText(`File ${args[0]} created.`);
                 } catch (error) {
                     _StdOut.putText(error.message);
                 }
@@ -792,9 +789,8 @@ module TSOS {
         public shellDeleteFilename(args: string[]) {
             if (args.length > 0) {
                 try {
-                    let filename = args.join(' ');
-                    _krnDiskSystemDriver.delete(filename);
-                    _StdOut.putText(`File ${filename} deleted.`);
+                    _krnDiskSystemDriver.delete(args[0]);
+                    _StdOut.putText(`File ${args[0]} deleted.`);
                 } catch (error) {
                     _StdOut.putText(error.message);
                 }
