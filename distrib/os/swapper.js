@@ -34,6 +34,7 @@ var TSOS;
             process.startingAddress = -1;
             process.memoryPartition = -1;
             process.location = 'DSK';
+            process.updateLocationGUI();
         }
         // Swap into memory
         swapIntoMemory(process) {
@@ -55,6 +56,7 @@ var TSOS;
                     process.memoryPartition = partitionBaseAddress / process.limit;
                     process.startingAddress = partitionBaseAddress;
                     process.location = 'RAM';
+                    process.updateLocationGUI();
                     return;
                 }
             }
