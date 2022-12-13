@@ -12,6 +12,7 @@ module TSOS {
         private readonly trackMax: number = 4;          // Number of tracks available to disk storage
         private readonly sectorMax: number = 8;         // Number of sectors available within each track
         private readonly blockMax: number = 8;          // Number of blocks available within each sector
+        private isFormatted: boolean = false;           // Validation checker for methods to ensure disk is formatted
 
         constructor() {
             super();
@@ -47,10 +48,14 @@ module TSOS {
                 }
             }
 
+            this.isFormatted = true;
         }
 
         // Create filename
         public create(filename: string) {
+
+            // Check that disk is formatted
+            this.checkIfFormatted();
 
             // Convert filename to ASCII
             let asciiFilename = Ascii.convertStringToAscii(filename);
@@ -117,6 +122,10 @@ module TSOS {
 
         // Read file
         public read(filename: string) {
+
+            // Check that disk is formatted
+            this.checkIfFormatted();
+
             let blockAddress: string;
             let fileContents: string = '';
             let blockContents: string[];
@@ -139,6 +148,10 @@ module TSOS {
 
         // Write file
         public write(filename: string, data: string) {
+
+            // Check that disk is formatted
+            this.checkIfFormatted();
+
             let blockAddress: string = this.getFileAddressByFilename(filename);
             let asciiData: string = Ascii.convertStringToAscii(data);
 
@@ -215,6 +228,10 @@ module TSOS {
 
         // Delete file
         public delete(filename: string) {
+
+            // Check that disk is formatted
+            this.checkIfFormatted();
+
             let directoryAddress = this.getDirectoryAddressByFilename(filename);
             let fileStartingAddress = this.getFileAddressByFilename(filename);
 
@@ -232,6 +249,9 @@ module TSOS {
         // Copy file
         public copy(existingFilename: string, newFilename: string) {
 
+            // Check that disk is formatted
+            this.checkIfFormatted();
+
             // Get contents of existingFilename
             let fileContents = this.read(existingFilename);
 
@@ -244,6 +264,9 @@ module TSOS {
 
         // Rename file
         public rename(previousFilename: string, newFilename: string) {
+
+            // Check that disk is formatted
+            this.checkIfFormatted();
 
             // Get directory address of previousFilename
             let directoryAddress = this.getDirectoryAddressByFilename(previousFilename);
@@ -267,6 +290,10 @@ module TSOS {
 
         // ls
         public ls() {
+
+            // Check that disk is formatted
+            this.checkIfFormatted();
+
             let filenames: string[] = [];
 
             // Loop through directory...
@@ -391,6 +418,12 @@ module TSOS {
             // Don't change anything else. Update GUI.
             sessionStorage.setItem(blockAddress, values.join(' '));
             this.updateGUI(blockAddress);
+        }
+
+        private checkIfFormatted() {
+            if (!this.isFormatted) {
+                throw new Error('ERR: No disk formatted.');
+            }
         }
     }
 }

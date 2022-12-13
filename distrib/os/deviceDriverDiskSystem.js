@@ -12,6 +12,7 @@ var TSOS;
             this.trackMax = 4; // Number of tracks available to disk storage
             this.sectorMax = 8; // Number of sectors available within each track
             this.blockMax = 8; // Number of blocks available within each sector
+            this.isFormatted = false; // Validation checker for methods to ensure disk is formatted
             this.driverEntry = this.krnDSDriverEntry;
         }
         krnDSDriverEntry() {
@@ -40,9 +41,12 @@ var TSOS;
                     }
                 }
             }
+            this.isFormatted = true;
         }
         // Create filename
         create(filename) {
+            // Check that disk is formatted
+            this.checkIfFormatted();
             // Convert filename to ASCII
             let asciiFilename = TSOS.Ascii.convertStringToAscii(filename);
             // Add trailing 0s to filename for consistency between GUI and disk data
@@ -97,6 +101,8 @@ var TSOS;
         }
         // Read file
         read(filename) {
+            // Check that disk is formatted
+            this.checkIfFormatted();
             let blockAddress;
             let fileContents = '';
             let blockContents;
@@ -116,6 +122,8 @@ var TSOS;
         }
         // Write file
         write(filename, data) {
+            // Check that disk is formatted
+            this.checkIfFormatted();
             let blockAddress = this.getFileAddressByFilename(filename);
             let asciiData = TSOS.Ascii.convertStringToAscii(data);
             // Determine amount of blocks needed to write data
@@ -184,6 +192,8 @@ var TSOS;
         }
         // Delete file
         delete(filename) {
+            // Check that disk is formatted
+            this.checkIfFormatted();
             let directoryAddress = this.getDirectoryAddressByFilename(filename);
             let fileStartingAddress = this.getFileAddressByFilename(filename);
             // Set the directory record to inactive.
@@ -197,6 +207,8 @@ var TSOS;
         }
         // Copy file
         copy(existingFilename, newFilename) {
+            // Check that disk is formatted
+            this.checkIfFormatted();
             // Get contents of existingFilename
             let fileContents = this.read(existingFilename);
             // Create new filename
@@ -206,6 +218,8 @@ var TSOS;
         }
         // Rename file
         rename(previousFilename, newFilename) {
+            // Check that disk is formatted
+            this.checkIfFormatted();
             // Get directory address of previousFilename
             let directoryAddress = this.getDirectoryAddressByFilename(previousFilename);
             // Get contents of directory address
@@ -223,6 +237,8 @@ var TSOS;
         }
         // ls
         ls() {
+            // Check that disk is formatted
+            this.checkIfFormatted();
             let filenames = [];
             // Loop through directory...
             for (let sector = 0; sector < this.sectorMax; sector++) {
@@ -332,6 +348,11 @@ var TSOS;
             // Don't change anything else. Update GUI.
             sessionStorage.setItem(blockAddress, values.join(' '));
             this.updateGUI(blockAddress);
+        }
+        checkIfFormatted() {
+            if (!this.isFormatted) {
+                throw new Error('ERR: No disk formatted.');
+            }
         }
     }
     TSOS.DeviceDriverDiskSystem = DeviceDriverDiskSystem;
