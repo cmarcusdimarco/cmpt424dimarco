@@ -833,13 +833,29 @@ module TSOS {
             try{
                 let filenames: string[] = _krnDiskSystemDriver.ls();
 
-                // Print each filename to console.
-                for (let i = 0; i < filenames.length; i++) {
-                    _StdOut.putText(filenames[i]);
+                // Check for -a command
+                if (args.length > 0 && args[0] === '-a') {
+                    // If -a, list all files.
+                    for (let i = 0; i < filenames.length; i++) {
+                        _StdOut.putText(filenames[i]);
 
-                    // Break the line if there are more filenames to print.
-                    if (i < filenames.length - 1) {
-                        _StdOut.advanceLine();
+                        // Break the line if there are more filenames to print.
+                        if (i < filenames.length - 1) {
+                            _StdOut.advanceLine();
+                        }
+                    }
+                } else {
+                    // Print each non-hidden filename to console.
+                    for (let i = 0; i < filenames.length; i++) {
+                        if (filenames[i].startsWith('.')) {
+                            continue;
+                        }
+                        _StdOut.putText(filenames[i]);
+
+                        // Break the line if there are more filenames to print.
+                        if (i < filenames.length - 1) {
+                            _StdOut.advanceLine();
+                        }
                     }
                 }
             } catch (error) {
