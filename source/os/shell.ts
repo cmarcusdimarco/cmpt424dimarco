@@ -664,7 +664,7 @@ module TSOS {
         public shellClearMem(args: string[]) {
             if (!_CPU.isExecuting) {
                 for (let process of _MemoryManager.registeredProcesses) {
-                    if (process.state !== 'TERMINATED') {
+                    if (process.state !== 'TERMINATED' && process.location === 'RAM') {
                         _MemoryManager.deallocateMemory(process);
                     }
                 }
