@@ -48,7 +48,7 @@ module TSOS {
             this.location = location;
 
             // Determine partition number based on startingAddress
-            if (this.location === 'MEMORY') {
+            if (this.location === 'RAM') {
                 this.memoryPartition = Math.floor(this.startingAddress / this.limit);
             } else {
                 this.memoryPartition = -1;
