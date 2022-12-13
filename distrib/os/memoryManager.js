@@ -78,6 +78,14 @@ var TSOS;
             process.updateGUI('TERMINATED');
             _MemoryAccessor.clearProgram(process.startingAddress, this.limitRegister);
         }
+        hasAvailableMemoryPartition() {
+            for (let partitionBaseAddress of _Memory.partitions) {
+                if (_MemoryAccessor.readImmediate(partitionBaseAddress) === 0x0000) {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
     TSOS.MemoryManager = MemoryManager;
 })(TSOS || (TSOS = {}));

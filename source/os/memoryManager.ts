@@ -94,5 +94,15 @@ module TSOS {
             process.updateGUI('TERMINATED');
             _MemoryAccessor.clearProgram(process.startingAddress, this.limitRegister);
         }
+
+        public hasAvailableMemoryPartition() {
+            for (let partitionBaseAddress of _Memory.partitions) {
+                if (_MemoryAccessor.readImmediate(partitionBaseAddress) === 0x0000) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 }
