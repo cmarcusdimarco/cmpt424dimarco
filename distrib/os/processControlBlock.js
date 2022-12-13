@@ -6,12 +6,18 @@
 var TSOS;
 (function (TSOS) {
     class ProcessControlBlock {
-        constructor(processId, address, limit, priority) {
+        constructor(processId, address, limit, location, priority) {
             this.processId = processId;
             this.startingAddress = address;
             this.limit = limit;
+            this.location = location;
             // Determine partition number based on startingAddress
-            this.memoryPartition = Math.floor(this.startingAddress / this.limit);
+            if (this.location === 'MEMORY') {
+                this.memoryPartition = Math.floor(this.startingAddress / this.limit);
+            }
+            else {
+                this.memoryPartition = -1;
+            }
             // Initialize state to 0's
             this.accumulator = '00';
             this.instructionRegister = '00';

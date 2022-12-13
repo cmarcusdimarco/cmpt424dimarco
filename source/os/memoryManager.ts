@@ -31,7 +31,7 @@ module TSOS {
                     _MemoryAccessor.writeProgram(program, this.baseRegister, this.limitRegister);
 
                     // Create the Process Control Block, assign a process ID, and push to the registered processes array.
-                    let processControlBlock = new ProcessControlBlock(this.processIdCounter++, this.baseRegister, this.limitRegister);
+                    let processControlBlock = new ProcessControlBlock(this.processIdCounter++, this.baseRegister, this.limitRegister, 'MEMORY');
                     this.registeredProcesses.push(processControlBlock);
 
                     // Find the first available space in the GUI PCB table and assign it to the new PCB.
@@ -54,8 +54,38 @@ module TSOS {
                 }
             }
 
-            // Print error message if memory is full
-            _StdOut.putText('ERR: Unable to allocate memory - all memory partitions already in use.');
+            // If memory is full, create PCB and write it to the disk
+            let processID = this.processIdCounter++;
+            let processFilename = `.process${processID}.swp`;
+            _krnDiskSystemDriver.create(processFilename);
+            let processControlBlock = new ProcessControlBlock(processID, -1, this.limitRegister, 'DISK');
+            this.registeredProcesses.push(processControlBlock);
+
+            // Convert program to strings
+            let programValues: string[] = [];
+            // The reference to CPU here is calling a pre-existing function in its Hardware superclass. We are not
+            // accessing the CPU from the MemoryManager. I'm just cutting a quick corner with a publicly-scoped function on a
+            // global object.
+            program.forEach((value) => programValues.push(_CPU.hexLog(value, 2)));
+
+            // Write the program data to the new file
+            _krnDiskSystemDriver.write(processFilename, programValues.join(' '));
+
+            // Find the first available space in the GUI PCB table and assign it to the new PCB.
+            let tableLength: number = (<HTMLTableElement>document.getElementById('tableProcessControlBlock')).rows.length;
+            for (let i = 1; i < tableLength; i++) {
+                let stateCell = document.getElementById(`pcb${i - 1}State`);
+                if (stateCell.innerText === 'N/A' || stateCell.innerText === 'TERMINATED') {
+                    processControlBlock.assignDOMFields(`pcb${i - 1}`);
+                    break;
+                }
+            }
+
+            // Update GUI to reflect new PCB
+            processControlBlock.updateGUI();
+
+            // Print info to console
+            _StdOut.putText(`Program loaded onto disk with process ID ${processControlBlock.processId}.`);
         }
 
         // Deallocates the memory assigned to a process after execution.

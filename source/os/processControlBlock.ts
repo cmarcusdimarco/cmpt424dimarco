@@ -7,7 +7,7 @@
 module TSOS {
     export class ProcessControlBlock {
         public readonly processId: number;
-        public readonly startingAddress: number;
+        public startingAddress: number;
         public readonly limit: number;
         public memoryPartition: number;
         public programCounter: string;
@@ -21,6 +21,7 @@ module TSOS {
         public turnaround: number;
         public waitTime: number;
         public state: string;
+        public location: string;
 
         // HTML/DOM fields using IDs
         public htmlRoot: string;
@@ -40,13 +41,18 @@ module TSOS {
         // Used to track previous calls to highlightCurrentInstructionInMemory()
         public previousHighlight: HTMLElement;
 
-        constructor(processId: number, address: number, limit: number, priority?: number) {
+        constructor(processId: number, address: number, limit: number, location: string, priority?: number) {
             this.processId = processId;
             this.startingAddress = address;
             this.limit = limit;
+            this.location = location;
 
             // Determine partition number based on startingAddress
-            this.memoryPartition = Math.floor(this.startingAddress / this.limit);
+            if (this.location === 'MEMORY') {
+                this.memoryPartition = Math.floor(this.startingAddress / this.limit);
+            } else {
+                this.memoryPartition = -1;
+            }
 
             // Initialize state to 0's
             this.accumulator = '00';
