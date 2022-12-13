@@ -36,8 +36,8 @@ var TSOS;
             }
             return retVal;
         }
-        peek() {
-            return this.q[0];
+        peekTail() {
+            return this.q[this.q.length - 1];
         }
         extract(index) {
             var retVal = null;
