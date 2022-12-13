@@ -21,7 +21,7 @@ module TSOS {
                 if (_MemoryAccessor.readImmediate(partitionBaseAddress) === 0x0000) {
 
                     // Validate program length - return error if overflow
-                    if (program.length >= this.limitRegister) {
+                    if (program.length > this.limitRegister) {
                         _StdOut.putText('ERR: Unable to allocate memory - user program exceeds available memory.');
                         return;
                     }
@@ -31,7 +31,7 @@ module TSOS {
                     _MemoryAccessor.writeProgram(program, this.baseRegister, this.limitRegister);
 
                     // Create the Process Control Block, assign a process ID, and push to the registered processes array.
-                    let processControlBlock = new ProcessControlBlock(this.processIdCounter++, this.baseRegister, this.limitRegister, 'MEMORY');
+                    let processControlBlock = new ProcessControlBlock(this.processIdCounter++, this.baseRegister, this.limitRegister, 'RAM');
                     this.registeredProcesses.push(processControlBlock);
 
                     // Find the first available space in the GUI PCB table and assign it to the new PCB.
@@ -58,7 +58,7 @@ module TSOS {
             let processID = this.processIdCounter++;
             let processFilename = `.process${processID}.swp`;
             _krnDiskSystemDriver.create(processFilename);
-            let processControlBlock = new ProcessControlBlock(processID, -1, this.limitRegister, 'DISK');
+            let processControlBlock = new ProcessControlBlock(processID, -1, this.limitRegister, 'DSK');
             this.registeredProcesses.push(processControlBlock);
 
             // Convert program to strings
