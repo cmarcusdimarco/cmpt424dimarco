@@ -697,14 +697,19 @@ var TSOS;
             }
         }
         shellLs(args) {
-            let filenames = _krnDiskSystemDriver.ls();
-            // Print each filename to console.
-            for (let i = 0; i < filenames.length; i++) {
-                _StdOut.putText(filenames[i]);
-                // Break the line if there are more filenames to print.
-                if (i < filenames.length - 1) {
-                    _StdOut.advanceLine();
+            try {
+                let filenames = _krnDiskSystemDriver.ls();
+                // Print each filename to console.
+                for (let i = 0; i < filenames.length; i++) {
+                    _StdOut.putText(filenames[i]);
+                    // Break the line if there are more filenames to print.
+                    if (i < filenames.length - 1) {
+                        _StdOut.advanceLine();
+                    }
                 }
+            }
+            catch (error) {
+                _StdOut.putText(error.message);
             }
         }
     }
