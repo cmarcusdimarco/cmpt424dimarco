@@ -19,6 +19,24 @@ var TSOS;
             _Kernel.krnTrace(`Enqueued process ${process.processId} in ready queue.`);
             if (!_CPU.isExecuting) {
                 this.readyQueue.dequeue();
+                // If no other processes in readyQueue and process is on the disk...
+                if (this.readyQueue.isEmpty() && process.location === 'DSK') {
+                    // ...check for an available memory partition...
+                    if (_MemoryManager.hasAvailableMemoryPartition()) {
+                        // ...if one is present, swap in the process.
+                        _Swapper.swapIntoMemory(process);
+                    }
+                    else {
+                        // otherwise, swap one out and then swap in the process.
+                        for (let otherProcess of _MemoryManager.registeredProcesses) {
+                            if (otherProcess.state !== 'TERMINATED' && process.processId !== otherProcess.processId) {
+                                _Swapper.swapOutFromMemory(otherProcess);
+                                _Swapper.swapIntoMemory(process);
+                                break;
+                            }
+                        }
+                    }
+                }
                 let params = new Array(process);
                 _Dispatcher.dispatch(params);
             }
@@ -45,6 +63,19 @@ var TSOS;
             if (!_CPU.isExecuting) {
                 if (this.readyQueue.getSize() > 0) {
                     let nextProcess = this.readyQueue.dequeue();
+                    // If nextProcess is on the disk...
+                    if (nextProcess.location === 'DSK') {
+                        // ...check for an available memory partition (which there should be, since one process finished)...
+                        if (_MemoryManager.hasAvailableMemoryPartition()) {
+                            // ...if one is present, swap in the process.
+                            _Swapper.swapIntoMemory(nextProcess);
+                        }
+                        else {
+                            // otherwise, swap out the process at the end of the queue and then swap in the nextProcess.
+                            _Swapper.swapOutFromMemory(this.readyQueue.peekTail());
+                            _Swapper.swapIntoMemory(nextProcess);
+                        }
+                    }
                     let params = new Array(nextProcess);
                     _KernelInterruptQueue.enqueue(new TSOS.Interrupt(CPU_SCHEDULER_IRQ, params));
                     this.cycleCounter = 0;
@@ -58,6 +89,19 @@ var TSOS;
                 // If quantum has been reached, enqueue PCB and have dispatcher switch to next process.
                 this.enqueue(process);
                 let nextProcess = this.readyQueue.dequeue();
+                // If nextProcess is on the disk...
+                if (nextProcess.location === 'DSK') {
+                    // ...check for an available memory partition...
+                    if (_MemoryManager.hasAvailableMemoryPartition()) {
+                        // ...if one is present, swap in the process.
+                        _Swapper.swapIntoMemory(nextProcess);
+                    }
+                    else {
+                        // otherwise, swap out the process that was just requeued and then swap in the nextProcess.
+                        _Swapper.swapOutFromMemory(process);
+                        _Swapper.swapIntoMemory(nextProcess);
+                    }
+                }
                 let params = new Array(nextProcess);
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(CPU_SCHEDULER_IRQ, params));
                 this.cycleCounter = 0;
