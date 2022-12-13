@@ -32,9 +32,10 @@ module TSOS {
             // Initialize the memory manager.
             _MemoryManager = new MemoryManager();
 
-            // Initialize the CPU scheduler and Dispatcher.
+            // Initialize the CPU scheduler, Dispatcher and Swapper.
             _CPUScheduler = new CpuScheduler();
             _Dispatcher = new Dispatcher();
+            _Swapper = new Swapper();
 
             // Initialize standard input and output to the _Console.
             _StdIn  = _Console;
