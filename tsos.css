@@ -53,6 +53,10 @@ tr:nth-child(even) .memoryRowStart {
   cursor: default;
 }
 
+table#tableProcessControlBlock {
+  font-size: 11pt;
+}
+
 table#tableDisk {
   font-size: 10pt;
 }
