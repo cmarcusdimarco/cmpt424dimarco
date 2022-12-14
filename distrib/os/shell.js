@@ -599,7 +599,12 @@ var TSOS;
             _CPUScheduler.quantum = target;
         }
         shellFormat(args) {
-            _krnDiskSystemDriver.format();
+            if (args.length > 0 && args[0] === '-quick') {
+                _krnDiskSystemDriver.formatQuick();
+            }
+            else {
+                _krnDiskSystemDriver.format();
+            }
         }
         shellCreateFilename(args) {
             if (args.length > 0) {

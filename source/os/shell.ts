@@ -738,7 +738,11 @@ module TSOS {
         }
 
         public shellFormat(args: string[]) {
-            _krnDiskSystemDriver.format();
+            if (args.length > 0 && args[0] === '-quick') {
+                _krnDiskSystemDriver.formatQuick();
+            } else {
+                _krnDiskSystemDriver.format();
+            }
         }
 
         public shellCreateFilename(args: string[]) {

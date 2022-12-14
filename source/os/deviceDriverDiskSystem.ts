@@ -51,6 +51,43 @@ module TSOS {
             this.isFormatted = true;
         }
 
+        // Format quick
+        public formatQuick() {
+
+            // Initialize and/or reset the storage map
+            for (let track = 0; track < this.trackMax; track++) {
+                for (let sector = 0; sector < this.sectorMax; sector++) {
+                    for (let block = 0; block < this.blockMax; block++) {
+                        // Skip the master boot record, held at 0:0:0
+                        if (track + sector + block === 0) {
+                            let values;
+                            if (this.isFormatted) {
+                                values = sessionStorage.getItem(`${track}:${sector}:${block}`).split(' ');
+                                values[0] = '1';
+                                values[1] = '000';
+                            } else {
+                                values = ['1', '000'];
+                            }
+                            sessionStorage.setItem(`${track}:${sector}:${block}`, values.join(' '));
+                        } else {
+                            let values;
+                            if (this.isFormatted) {
+                                values = sessionStorage.getItem(`${track}:${sector}:${block}`).split(' ');
+                                values[0] = '0';
+                                values[1] = '000';
+                            } else {
+                                values = ['0', '000'];
+                            }
+                            sessionStorage.setItem(`${track}:${sector}:${block}`, values.join(' '));
+                        }
+                        this.updateGUI(`${track}:${sector}:${block}`);
+                    }
+                }
+            }
+
+            this.isFormatted = true;
+        }
+
         // Create filename
         public create(filename: string) {
 
@@ -332,7 +369,8 @@ module TSOS {
             if (values) {
                 document.getElementById(`diskCell${id}active`).innerText = values[0];
                 document.getElementById(`diskCell${id}header`).innerText = values[1];
-                document.getElementById(`diskCell${id}data`).innerText = values[2];
+                document.getElementById(`diskCell${id}data`).innerText = values[2] ??
+                                        '------------------------------------------------------------------------------------------------------------------------';
                 return true;
             } else {
                 console.error('Error updating GUI for disk system.');
