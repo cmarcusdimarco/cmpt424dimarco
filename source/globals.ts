@@ -32,6 +32,7 @@ var _MemoryAccessor: TSOS.MemoryAccessor;
 var _MemoryManager: TSOS.MemoryManager;
 var _CPUScheduler: TSOS.CpuScheduler;
 var _Dispatcher: TSOS.Dispatcher;
+var _Swapper: TSOS.Swapper;
 
 var _OSclock: number = 0;  // Page 23.
 
@@ -63,7 +64,8 @@ var _OsShell: TSOS.Shell;
 var _SarcasticMode: boolean = false;
 
 // Global Device Driver Objects - page 12
-var _krnKeyboardDriver: TSOS.DeviceDriverKeyboard  = null;
+var _krnKeyboardDriver: TSOS.DeviceDriverKeyboard = null;
+var _krnDiskSystemDriver: TSOS.DeviceDriverDiskSystem = null;
 
 var _hardwareClockID: number = null;
 

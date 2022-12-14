@@ -41,8 +41,12 @@ module TSOS {
             return retVal;
         }
 
-        public peek() {
-            return this.q[0];
+        public peekTail() {
+            return this.q[this.q.length - 1];
+        }
+
+        public peekIndex(index: number) {
+            return this.q[index];
         }
 
         public extract(index: number) {

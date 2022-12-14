@@ -31,6 +31,35 @@ module TSOS {
             }
         }
 
+        // Helper function for converting a full string to ASCII hex codes.
+        public static convertStringToAscii(string: string) {
+            let asciiString: string = '';
+            for (let i = 0; i < string.length; i++) {
+                asciiString += this.lookupCode(string.charAt(i)).toString(16);
+            }
+
+            return asciiString.toUpperCase();
+        }
+
+        public static convertAsciiToString(ascii: string) {
+            // Input validation: since ASCII is represented in hex codes, input string must be divisible by 2.
+            if (ascii.length % 2 !== 0) {
+                console.log(`ERR: could not validate ${ascii} as a valid ASCII-encoded string.`);
+                return false;
+            }
+
+            let string: string = '';
+            for (let i = 0; i < ascii.length; i += 2) {
+                // Get the two-character hex code.
+                let asciiCharString: string = '';
+                asciiCharString += ascii.substring(i, i + 2);
+                // Convert to standard notation and append to result string.
+                string += this.lookup(parseInt(asciiCharString, 16));
+            }
+
+            return string;
+        }
+
         // Initialize ASCII character codes for lookup
         private static initializeTables() {
             Ascii.toTable.set(0x0A, '\n');

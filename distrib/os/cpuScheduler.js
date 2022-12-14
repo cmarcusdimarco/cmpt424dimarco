@@ -11,6 +11,7 @@ var TSOS;
             this.readyQueue = new TSOS.Queue;
             this.quantum = 6;
             this.cycleCounter = 0;
+            this.schedulingAlgorithm = 'ROUND ROBIN';
         }
         // Add a process to the ready queue. Begin execution if no program is currently being run.
         enqueue(process) {
@@ -19,18 +20,52 @@ var TSOS;
             _Kernel.krnTrace(`Enqueued process ${process.processId} in ready queue.`);
             if (!_CPU.isExecuting) {
                 this.readyQueue.dequeue();
+                // If no other processes in readyQueue and process is on the disk...
+                if (this.readyQueue.isEmpty() && process.location === 'DSK') {
+                    // ...check for an available memory partition...
+                    if (_MemoryManager.hasAvailableMemoryPartition()) {
+                        // ...if one is present, swap in the process.
+                        _Swapper.swapIntoMemory(process);
+                    }
+                    else {
+                        // otherwise, swap one out and then swap in the process.
+                        for (let otherProcess of _MemoryManager.registeredProcesses) {
+                            if (otherProcess.state !== 'TERMINATED' && process.processId !== otherProcess.processId) {
+                                _Swapper.swapOutFromMemory(otherProcess);
+                                _Swapper.swapIntoMemory(process);
+                                break;
+                            }
+                        }
+                    }
+                }
                 let params = new Array(process);
                 _Dispatcher.dispatch(params);
             }
         }
         // Set scheduling method
         // Default = Round Robin
+        getSchedule() {
+            return this.schedulingAlgorithm;
+        }
+        setSchedule(schedulingAlgorithm) {
+            // Validate input
+            if (schedulingAlgorithm === 'ROUND ROBIN') {
+                this.schedulingAlgorithm = schedulingAlgorithm;
+                this.quantum = 6;
+            }
+            else if (schedulingAlgorithm === 'PRIORITY' || schedulingAlgorithm === 'FCFS') {
+                this.schedulingAlgorithm = schedulingAlgorithm;
+                this.quantum = Number.MAX_VALUE;
+            }
+        }
         // Context switch poll, to be called at the end of every CPU cycle
         pollForContextSwitch(process) {
             // Increment cycleCounter to track current process's CPU time
             this.cycleCounter++;
             // Update in GUI
-            process.updateQuantum(this.cycleCounter);
+            if (this.schedulingAlgorithm === 'ROUND ROBIN') {
+                process.updateQuantum(this.cycleCounter);
+            }
             // Increment turnaround time for executing process and all processes in ready queue
             // Increment wait time for processes in ready queue
             process.updateTurnaround(++process.turnaround);
@@ -44,7 +79,20 @@ var TSOS;
             // If one process finishes and other processes are in the queue, dispatch next process.
             if (!_CPU.isExecuting) {
                 if (this.readyQueue.getSize() > 0) {
-                    let nextProcess = this.readyQueue.dequeue();
+                    let nextProcess = this.schedulingAlgorithm === 'PRIORITY' ? this.extractHighPriorityProcess() : this.readyQueue.dequeue();
+                    // If nextProcess is on the disk...
+                    if (nextProcess.location === 'DSK') {
+                        // ...check for an available memory partition (which there should be, since one process finished)...
+                        if (_MemoryManager.hasAvailableMemoryPartition()) {
+                            // ...if one is present, swap in the process.
+                            _Swapper.swapIntoMemory(nextProcess);
+                        }
+                        else {
+                            // otherwise, swap out the process at the end of the queue and then swap in the nextProcess.
+                            _Swapper.swapOutFromMemory(this.readyQueue.peekTail());
+                            _Swapper.swapIntoMemory(nextProcess);
+                        }
+                    }
                     let params = new Array(nextProcess);
                     _KernelInterruptQueue.enqueue(new TSOS.Interrupt(CPU_SCHEDULER_IRQ, params));
                     this.cycleCounter = 0;
@@ -56,8 +104,22 @@ var TSOS;
             }
             else if (this.cycleCounter >= this.quantum) {
                 // If quantum has been reached, enqueue PCB and have dispatcher switch to next process.
+                // Note: quantum should not be reachable in FCFS and Priority.
                 this.enqueue(process);
                 let nextProcess = this.readyQueue.dequeue();
+                // If nextProcess is on the disk...
+                if (nextProcess.location === 'DSK') {
+                    // ...check for an available memory partition...
+                    if (_MemoryManager.hasAvailableMemoryPartition()) {
+                        // ...if one is present, swap in the process.
+                        _Swapper.swapIntoMemory(nextProcess);
+                    }
+                    else {
+                        // otherwise, swap out the process that was just requeued and then swap in the nextProcess.
+                        _Swapper.swapOutFromMemory(process);
+                        _Swapper.swapIntoMemory(nextProcess);
+                    }
+                }
                 let params = new Array(nextProcess);
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(CPU_SCHEDULER_IRQ, params));
                 this.cycleCounter = 0;
@@ -75,6 +137,20 @@ var TSOS;
         }
         clearQueue() {
             this.readyQueue = new TSOS.Queue();
+        }
+        extractHighPriorityProcess() {
+            let highestPriority = Number.MAX_VALUE;
+            let highestPriorityProcessIndex;
+            let highestPriorityProcess;
+            for (let i = 0; i < this.readyQueue.getSize(); i++) {
+                if (this.readyQueue.peekIndex(i).priority < highestPriority) {
+                    highestPriorityProcessIndex = i;
+                    highestPriority = this.readyQueue.peekIndex(i).priority;
+                    highestPriorityProcess = this.readyQueue.peekIndex(i);
+                }
+            }
+            this.readyQueue.extract(highestPriorityProcessIndex);
+            return highestPriorityProcess;
         }
     }
     TSOS.CpuScheduler = CpuScheduler;

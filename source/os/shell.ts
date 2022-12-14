@@ -175,6 +175,66 @@ module TSOS {
                                   "<int> - Sets the quantum to the specified positive integer.");
             this.commandList[this.commandList.length] = sc;
 
+            // format
+            sc = new ShellCommand(this.shellFormat,
+                                  "format",
+                                  "- Initialize all blocks in all sectors in all tracks.");
+            this.commandList[this.commandList.length] = sc;
+
+            // create <filename>
+            sc = new ShellCommand(this.shellCreateFilename,
+                                  "create",
+                                  "<filename> - Creates the file <filename>.");
+            this.commandList[this.commandList.length] = sc;
+
+            // read <filename>
+            sc = new ShellCommand(this.shellReadFilename,
+                                  "read",
+                                  "<filename> - Reads and displays the contents of file <filename>.");
+            this.commandList[this.commandList.length] = sc;
+
+            // write <filename> "data"
+            sc = new ShellCommand(this.shellWriteFilename,
+                                  "write",
+                                  "<filename> 'data' - Writes the data inside the quotes to <filename>.");
+            this.commandList[this.commandList.length] = sc;
+
+            // delete <filename>
+            sc = new ShellCommand(this.shellDeleteFilename,
+                                  "delete",
+                                  "<filename> - Deletes the file <filename>.");
+            this.commandList[this.commandList.length] = sc;
+
+            // copy <existing filename> <new filename>
+            sc = new ShellCommand(this.shellCopyFilename,
+                                  "copy",
+                                  "<existing filename> <new filename> - Creates a copy of <existing filename> with the new name.");
+            this.commandList[this.commandList.length] = sc;
+
+            // rename <current filename> <new filename>
+            sc = new ShellCommand(this.shellRenameFilename,
+                                  "rename",
+                                  "<current filename> <new filename> - Renames the file from <current filename> to <new filename>.");
+            this.commandList[this.commandList.length] = sc;
+
+            // ls
+            sc = new ShellCommand(this.shellLs,
+                                  "ls",
+                                  "- Lists the files currently stored on the disk.");
+            this.commandList[this.commandList.length] = sc;
+
+            // getschedule
+            sc = new ShellCommand(this.shellGetSchedule,
+                                  "getschedule",
+                                  "- Returns the current scheduling algorithm.");
+            this.commandList[this.commandList.length] = sc;
+
+            // setschedule
+            sc = new ShellCommand(this.shellSetSchedule,
+                                  "setschedule",
+                                  "- Sets the current scheduling algorithm.");
+            this.commandList[this.commandList.length] = sc;
+
             // Sort the commandList for use in tab completion
             this.commandList = this.commandList.sort((command1, command2) => {
                 if (command1.command > command2.command) {
@@ -429,6 +489,36 @@ module TSOS {
                     case "quantum":
                         _StdOut.putText("Sets the quantum of the CPU scheduler.");
                         break;
+                    case "format":
+                        _StdOut.putText("Initializes all blocks in all sectors in all tracks.");
+                        break;
+                    case "create":
+                        _StdOut.putText("Creates a file with the specified filename.");
+                        break;
+                    case "read":
+                        _StdOut.putText("Reads and displays the contents of the file specified.");
+                        break;
+                    case "write":
+                        _StdOut.putText("Writes the specified data to the specified filename.");
+                        break;
+                    case "delete":
+                        _StdOut.putText("Deletes the specified filename.");
+                        break;
+                    case "copy":
+                        _StdOut.putText("Makes a copy of the specified file under a different specified name.");
+                        break;
+                    case "rename":
+                        _StdOut.putText("Renames a file to the specified name.");
+                        break;
+                    case "ls":
+                        _StdOut.putText("Lists all files currently stored on the disk.");
+                        break;
+                    case "getschedule":
+                        _StdOut.putText("Returns the current scheduling algorithm.");
+                        break;
+                    case "setschedule":
+                        _StdOut.putText("Sets the current scheduling algorithm.");
+                        break;
                     default:
                         _StdOut.putText("No manual entry for " + args[0] + ".");
                 }
@@ -563,7 +653,13 @@ module TSOS {
 
             // What needs to happen here?
             // System needs memory allocated by MMU - set base for logical to physical address conversion
-            _MemoryManager.allocateMemory(programInHex);
+
+            // If priority was passed, pass it along to the MMU.
+            if (args.length > 0 && parseInt(args[0]) >= 0) {
+                _MemoryManager.allocateMemory(programInHex, parseInt(args[0]));
+            } else {
+                _MemoryManager.allocateMemory(programInHex);
+            }
             // System must write to memory starting at logical 0x0000 up until, but not exceeding, logical 0x0100.
             // System should create the PCB and return the process ID of the program.
         }
@@ -592,7 +688,7 @@ module TSOS {
         public shellClearMem(args: string[]) {
             if (!_CPU.isExecuting) {
                 for (let process of _MemoryManager.registeredProcesses) {
-                    if (process.state !== 'TERMINATED') {
+                    if (process.state !== 'TERMINATED' && process.location === 'RAM') {
                         _MemoryManager.deallocateMemory(process);
                     }
                 }
@@ -663,6 +759,155 @@ module TSOS {
 
             // Update quantum
             _CPUScheduler.quantum = target;
+        }
+
+        public shellFormat(args: string[]) {
+            if (args.length > 0 && args[0] === '-quick') {
+                _krnDiskSystemDriver.formatQuick();
+            } else {
+                _krnDiskSystemDriver.format();
+            }
+        }
+
+        public shellCreateFilename(args: string[]) {
+            if (args.length > 0) {
+                try {
+                    _krnDiskSystemDriver.create(args[0]);
+                    _StdOut.putText(`File ${args[0]} created.`);
+                } catch (error) {
+                    _StdOut.putText(error.message);
+                }
+            } else {
+                _StdOut.putText("Usage: prompt <filename>  Please supply a string.");
+            }
+        }
+
+        public shellReadFilename(args: string[]) {
+            if (args.length > 0) {
+                try {
+                    _StdOut.putText(_krnDiskSystemDriver.read(args[0]));
+                } catch (error) {
+                    _StdOut.putText(error.message);
+                }
+            } else {
+                _StdOut.putText("Usage: prompt <filename>  Please supply a string.");
+            }
+        }
+
+        public shellWriteFilename(args: string[]) {
+            if (args.length > 1) {
+                try {
+                    let filename = args.shift();
+                    let data = args.join(' ');
+                    if (data.startsWith('"') && data.endsWith('"')) {
+                        data = data.substring(1, data.length - 1);
+                        _krnDiskSystemDriver.write(filename, data);
+                        _StdOut.putText(`File ${filename} updated.`);
+                    } else {
+                        throw new Error('ERR: Data to be written must be enclosed within double quotations.');
+                    }
+                } catch (error) {
+                    _StdOut.putText(error.message);
+                }
+            } else {
+                _StdOut.putText("Usage: prompt <filename>  Please supply a string.");
+            }
+        }
+
+        public shellDeleteFilename(args: string[]) {
+            if (args.length > 0) {
+                try {
+                    _krnDiskSystemDriver.delete(args[0]);
+                    _StdOut.putText(`File ${args[0]} deleted.`);
+                } catch (error) {
+                    _StdOut.putText(error.message);
+                }
+            } else {
+                _StdOut.putText("Usage: prompt <filename>  Please supply a string.");
+            }
+        }
+
+        public shellCopyFilename(args: string[]) {
+            if (args.length > 1) {
+                try {
+                    let existingFilename = args[0];
+                    let newFilename = args[1];
+                    _krnDiskSystemDriver.copy(existingFilename, newFilename);
+                    _StdOut.putText(`Created copy of ${existingFilename} as ${newFilename}.`);
+                } catch (error) {
+                    _StdOut.putText(error.message);
+                }
+            } else {
+                _StdOut.putText("Usage: prompt <filename>  Please supply a string.");
+            }
+        }
+
+        public shellRenameFilename(args: string[]) {
+            if (args.length > 1) {
+                try {
+                    let previousFilename = args[0];
+                    let newFilename = args[1];
+                    _krnDiskSystemDriver.rename(previousFilename, newFilename);
+                    _StdOut.putText(`Renamed ${previousFilename} as ${newFilename}.`);
+                } catch (error) {
+                    _StdOut.putText(error.message);
+                }
+            } else {
+                _StdOut.putText("Usage: prompt <filename>  Please supply a string.");
+            }
+        }
+
+        public shellLs(args: string[]) {
+            try{
+                let filenames: string[] = _krnDiskSystemDriver.ls();
+
+                // Check for -a command
+                if (args.length > 0 && args[0] === '-a') {
+                    // If -a, list all files.
+                    for (let i = 0; i < filenames.length; i++) {
+                        _StdOut.putText(filenames[i]);
+
+                        // Break the line if there are more filenames to print.
+                        if (i < filenames.length - 1) {
+                            _StdOut.advanceLine();
+                        }
+                    }
+                } else {
+                    // Print each non-hidden filename to console.
+                    for (let i = 0; i < filenames.length; i++) {
+                        if (filenames[i].startsWith('.')) {
+                            continue;
+                        }
+                        _StdOut.putText(filenames[i]);
+
+                        // Break the line if there are more filenames to print.
+                        if (i < filenames.length - 1) {
+                            _StdOut.advanceLine();
+                        }
+                    }
+                }
+            } catch (error) {
+                _StdOut.putText(error.message);
+            }
+        }
+
+        public shellGetSchedule(args: string[]) {
+            _StdOut.putText(_CPUScheduler.getSchedule());
+        }
+
+        public shellSetSchedule(args: string[]) {
+            if (args.length > 0) {
+                switch (args[0].toUpperCase()) {
+                    case 'ROUND ROBIN':
+                    case 'FCFS':
+                    case 'PRIORITY':
+                        _CPUScheduler.setSchedule(args[0].toUpperCase());
+                        _StdOut.putText(`Schedule set: ${args[0].toUpperCase()}`);
+                        break;
+                    default:
+                        _StdOut.putText(`ERR: ${args[0]} not recognized as a compatible scheduling algorithm.`);
+                }
+            }
         }
     }
 }

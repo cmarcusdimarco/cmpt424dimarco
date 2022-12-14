@@ -7,6 +7,9 @@
 module TSOS {
     export class Dispatcher {
 
+        constructor() {
+        }
+
         // Initialize CPU with a process and set isExecuting to true.
         public dispatch(params) {
             // Since this method will be called with a param of type <any> from the Kernel, we need to check type.

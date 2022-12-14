@@ -6,12 +6,18 @@
 var TSOS;
 (function (TSOS) {
     class ProcessControlBlock {
-        constructor(processId, address, limit, priority) {
+        constructor(processId, address, limit, location, priority) {
             this.processId = processId;
             this.startingAddress = address;
             this.limit = limit;
+            this.location = location;
             // Determine partition number based on startingAddress
-            this.memoryPartition = Math.floor(this.startingAddress / this.limit);
+            if (this.location === 'RAM') {
+                this.memoryPartition = Math.floor(this.startingAddress / this.limit);
+            }
+            else {
+                this.memoryPartition = -1;
+            }
             // Initialize state to 0's
             this.accumulator = '00';
             this.instructionRegister = '00';
@@ -52,6 +58,7 @@ var TSOS;
             this.htmlPriority = `${htmlRoot}Priority`;
             this.htmlTurnaround = `${htmlRoot}Turnaround`;
             this.htmlWaitTime = `${htmlRoot}WaitTime`;
+            this.htmlLocation = `${htmlRoot}Location`;
         }
         // Update GUI to most current PCB status, using optional param to update state
         updateGUI(state) {
@@ -70,6 +77,7 @@ var TSOS;
             document.getElementById(this.htmlPriority).innerText = this.priority.toString();
             this.updateTurnaround(this.turnaround);
             this.updateWaitTime(this.waitTime);
+            this.updateLocationGUI();
             // If terminated, set CPU registers to 0
             if (state === 'TERMINATED') {
                 document.getElementById(this.htmlPC).innerText = '0000';
@@ -117,6 +125,11 @@ var TSOS;
             if (this.previousHighlight) {
                 this.previousHighlight.classList.remove('highlighted');
             }
+        }
+        // Since location changes occur independently of all other fields in the PCB, we can localize
+        // its GUI update to let the system be more responsive.
+        updateLocationGUI() {
+            document.getElementById(this.htmlLocation).innerText = this.location;
         }
     }
     TSOS.ProcessControlBlock = ProcessControlBlock;

@@ -32,9 +32,10 @@ module TSOS {
             // Initialize the memory manager.
             _MemoryManager = new MemoryManager();
 
-            // Initialize the CPU scheduler and Dispatcher.
+            // Initialize the CPU scheduler, Dispatcher and Swapper.
             _CPUScheduler = new CpuScheduler();
             _Dispatcher = new Dispatcher();
+            _Swapper = new Swapper();
 
             // Initialize standard input and output to the _Console.
             _StdIn  = _Console;
@@ -45,6 +46,12 @@ module TSOS {
             _krnKeyboardDriver = new DeviceDriverKeyboard();     // Construct it.
             _krnKeyboardDriver.driverEntry();                    // Call the driverEntry() initialization routine.
             this.krnTrace(_krnKeyboardDriver.status);
+
+            // Load the Disk System Device Driver
+            this.krnTrace("Loading the disk system device driver.");
+            _krnDiskSystemDriver = new DeviceDriverDiskSystem();     // Construct it.
+            _krnDiskSystemDriver.driverEntry();                      // Call the driverEntry() initialization routine.
+            this.krnTrace(_krnDiskSystemDriver.status);
 
             //
             // ... more?
