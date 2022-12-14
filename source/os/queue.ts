@@ -45,6 +45,10 @@ module TSOS {
             return this.q[this.q.length - 1];
         }
 
+        public peekIndex(index: number) {
+            return this.q[index];
+        }
+
         public extract(index: number) {
             var retVal = null;
             if (this.q[index] != undefined) {

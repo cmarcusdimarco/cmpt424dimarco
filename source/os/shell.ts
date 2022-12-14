@@ -223,6 +223,18 @@ module TSOS {
                                   "- Lists the files currently stored on the disk.");
             this.commandList[this.commandList.length] = sc;
 
+            // getschedule
+            sc = new ShellCommand(this.shellGetSchedule,
+                                  "getschedule",
+                                  "- Returns the current scheduling algorithm.");
+            this.commandList[this.commandList.length] = sc;
+
+            // setschedule
+            sc = new ShellCommand(this.shellSetSchedule,
+                                  "setschedule",
+                                  "- Sets the current scheduling algorithm.");
+            this.commandList[this.commandList.length] = sc;
+
             // Sort the commandList for use in tab completion
             this.commandList = this.commandList.sort((command1, command2) => {
                 if (command1.command > command2.command) {
@@ -501,6 +513,12 @@ module TSOS {
                     case "ls":
                         _StdOut.putText("Lists all files currently stored on the disk.");
                         break;
+                    case "getschedule":
+                        _StdOut.putText("Returns the current scheduling algorithm.");
+                        break;
+                    case "setschedule":
+                        _StdOut.putText("Sets the current scheduling algorithm.");
+                        break;
                     default:
                         _StdOut.putText("No manual entry for " + args[0] + ".");
                 }
@@ -635,7 +653,13 @@ module TSOS {
 
             // What needs to happen here?
             // System needs memory allocated by MMU - set base for logical to physical address conversion
-            _MemoryManager.allocateMemory(programInHex);
+
+            // If priority was passed, pass it along to the MMU.
+            if (args.length > 0 && parseInt(args[0]) >= 0) {
+                _MemoryManager.allocateMemory(programInHex, parseInt(args[0]));
+            } else {
+                _MemoryManager.allocateMemory(programInHex);
+            }
             // System must write to memory starting at logical 0x0000 up until, but not exceeding, logical 0x0100.
             // System should create the PCB and return the process ID of the program.
         }
@@ -864,6 +888,25 @@ module TSOS {
                 }
             } catch (error) {
                 _StdOut.putText(error.message);
+            }
+        }
+
+        public shellGetSchedule(args: string[]) {
+            _StdOut.putText(_CPUScheduler.getSchedule());
+        }
+
+        public shellSetSchedule(args: string[]) {
+            if (args.length > 0) {
+                switch (args[0].toUpperCase()) {
+                    case 'ROUND ROBIN':
+                    case 'FCFS':
+                    case 'PRIORITY':
+                        _CPUScheduler.setSchedule(args[0].toUpperCase());
+                        _StdOut.putText(`Schedule set: ${args[0].toUpperCase()}`);
+                        break;
+                    default:
+                        _StdOut.putText(`ERR: ${args[0]} not recognized as a compatible scheduling algorithm.`);
+                }
             }
         }
     }

@@ -9,12 +9,13 @@ module TSOS {
         public readonly limitRegister: number = 0x0100;     // Maximum range of logical addresses
         public registeredProcesses: ProcessControlBlock[] = [];
         public processIdCounter: number = 0;
+        public defaultPriority = 32;
 
         constructor() {
         }
 
         // Allocates memory for the program passed via param.
-        public allocateMemory(program: number[]) {
+        public allocateMemory(program: number[], priority?: number) {
 
             // Query memory partitions for existing data
             for (let partitionBaseAddress of _Memory.partitions) {
@@ -31,7 +32,7 @@ module TSOS {
                     _MemoryAccessor.writeProgram(program, this.baseRegister, this.limitRegister);
 
                     // Create the Process Control Block, assign a process ID, and push to the registered processes array.
-                    let processControlBlock = new ProcessControlBlock(this.processIdCounter++, this.baseRegister, this.limitRegister, 'RAM');
+                    let processControlBlock = new ProcessControlBlock(this.processIdCounter++, this.baseRegister, this.limitRegister, 'RAM', priority ?? this.defaultPriority);
                     this.registeredProcesses.push(processControlBlock);
 
                     // Find the first available space in the GUI PCB table and assign it to the new PCB.
@@ -58,7 +59,7 @@ module TSOS {
             let processID = this.processIdCounter++;
             let processFilename = `.process${processID}.swp`;
             _krnDiskSystemDriver.create(processFilename);
-            let processControlBlock = new ProcessControlBlock(processID, -1, this.limitRegister, 'DSK');
+            let processControlBlock = new ProcessControlBlock(processID, -1, this.limitRegister, 'DSK', priority ?? this.defaultPriority);
             this.registeredProcesses.push(processControlBlock);
 
             // Convert program to strings

@@ -10,9 +10,10 @@ var TSOS;
             this.limitRegister = 0x0100; // Maximum range of logical addresses
             this.registeredProcesses = [];
             this.processIdCounter = 0;
+            this.defaultPriority = 32;
         }
         // Allocates memory for the program passed via param.
-        allocateMemory(program) {
+        allocateMemory(program, priority) {
             // Query memory partitions for existing data
             for (let partitionBaseAddress of _Memory.partitions) {
                 if (_MemoryAccessor.readImmediate(partitionBaseAddress) === 0x0000) {
@@ -25,7 +26,7 @@ var TSOS;
                     this.baseRegister = partitionBaseAddress;
                     _MemoryAccessor.writeProgram(program, this.baseRegister, this.limitRegister);
                     // Create the Process Control Block, assign a process ID, and push to the registered processes array.
-                    let processControlBlock = new TSOS.ProcessControlBlock(this.processIdCounter++, this.baseRegister, this.limitRegister, 'RAM');
+                    let processControlBlock = new TSOS.ProcessControlBlock(this.processIdCounter++, this.baseRegister, this.limitRegister, 'RAM', priority !== null && priority !== void 0 ? priority : this.defaultPriority);
                     this.registeredProcesses.push(processControlBlock);
                     // Find the first available space in the GUI PCB table and assign it to the new PCB.
                     let tableLength = document.getElementById('tableProcessControlBlock').rows.length;
@@ -48,7 +49,7 @@ var TSOS;
             let processID = this.processIdCounter++;
             let processFilename = `.process${processID}.swp`;
             _krnDiskSystemDriver.create(processFilename);
-            let processControlBlock = new TSOS.ProcessControlBlock(processID, -1, this.limitRegister, 'DSK');
+            let processControlBlock = new TSOS.ProcessControlBlock(processID, -1, this.limitRegister, 'DSK', priority !== null && priority !== void 0 ? priority : this.defaultPriority);
             this.registeredProcesses.push(processControlBlock);
             // Convert program to strings
             let programValues = [];

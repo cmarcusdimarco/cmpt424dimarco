@@ -39,6 +39,9 @@ var TSOS;
         peekTail() {
             return this.q[this.q.length - 1];
         }
+        peekIndex(index) {
+            return this.q[index];
+        }
         extract(index) {
             var retVal = null;
             if (this.q[index] != undefined) {

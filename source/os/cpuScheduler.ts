@@ -9,6 +9,7 @@ module TSOS {
         public readyQueue: Queue = new TSOS.Queue;
         public quantum: number = 6;
         public cycleCounter: number = 0;
+        public schedulingAlgorithm: string = 'ROUND ROBIN';
 
 
         // Constructor
@@ -46,13 +47,29 @@ module TSOS {
 
         // Set scheduling method
         // Default = Round Robin
+        public getSchedule() {
+            return this.schedulingAlgorithm;
+        }
+
+        public setSchedule(schedulingAlgorithm: string) {
+            // Validate input
+            if (schedulingAlgorithm === 'ROUND ROBIN') {
+                this.schedulingAlgorithm = schedulingAlgorithm;
+                this.quantum = 6;
+            } else if (schedulingAlgorithm === 'PRIORITY' || schedulingAlgorithm === 'FCFS') {
+                this.schedulingAlgorithm = schedulingAlgorithm;
+                this.quantum = Number.MAX_VALUE;
+            }
+        }
 
         // Context switch poll, to be called at the end of every CPU cycle
         public pollForContextSwitch(process: TSOS.ProcessControlBlock) {
             // Increment cycleCounter to track current process's CPU time
             this.cycleCounter++;
             // Update in GUI
-            process.updateQuantum(this.cycleCounter);
+            if (this.schedulingAlgorithm === 'ROUND ROBIN') {
+                process.updateQuantum(this.cycleCounter);
+            }
 
             // Increment turnaround time for executing process and all processes in ready queue
             // Increment wait time for processes in ready queue
@@ -68,7 +85,7 @@ module TSOS {
             // If one process finishes and other processes are in the queue, dispatch next process.
             if (!_CPU.isExecuting) {
                 if (this.readyQueue.getSize() > 0) {
-                    let nextProcess = this.readyQueue.dequeue();
+                    let nextProcess = this.schedulingAlgorithm === 'PRIORITY' ? this.extractHighPriorityProcess() : this.readyQueue.dequeue();
                     // If nextProcess is on the disk...
                     if (nextProcess.location === 'DSK') {
                         // ...check for an available memory partition (which there should be, since one process finished)...
@@ -90,6 +107,7 @@ module TSOS {
                 }
             } else if (this.cycleCounter >= this.quantum) {
                 // If quantum has been reached, enqueue PCB and have dispatcher switch to next process.
+                // Note: quantum should not be reachable in FCFS and Priority.
                 this.enqueue(process);
                 let nextProcess = this.readyQueue.dequeue();
                 // If nextProcess is on the disk...
@@ -124,6 +142,23 @@ module TSOS {
 
         public clearQueue() {
             this.readyQueue = new TSOS.Queue();
+        }
+
+        public extractHighPriorityProcess() {
+            let highestPriority = Number.MAX_VALUE;
+            let highestPriorityProcessIndex;
+            let highestPriorityProcess;
+            for (let i = 0; i < this.readyQueue.getSize(); i++) {
+                if (this.readyQueue.peekIndex(i).priority < highestPriority) {
+                    highestPriorityProcessIndex = i;
+                    highestPriority = this.readyQueue.peekIndex(i).priority;
+                    highestPriorityProcess = this.readyQueue.peekIndex(i);
+                }
+            }
+
+            this.readyQueue.extract(highestPriorityProcessIndex);
+
+            return highestPriorityProcess;
         }
     }
 }
